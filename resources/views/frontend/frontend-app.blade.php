@@ -65,7 +65,7 @@ href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.m
                   <a href="https://www.instagram.com/dealshood?igsh=NHJpdDhkYmJ2dTlj"
                     target="_blank"
                     class="btn btn-danger m-0 p-1 mt-1">
-                    <i class="bi bi-instagram"></i> 
+                    <i class="bi bi-instagram" style="font-size:14px;"></i> Follow Us
                   </a>
                 </li>
 
