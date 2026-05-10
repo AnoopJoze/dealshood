@@ -84,79 +84,46 @@ href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.m
   <!-- End Navbar -->
   <!-- -------- START HEADER 7 w/ text and video ------- -->
   <header class="bg-gradient-white">
-    <div class="page-header min-vh-75" style="background-image: url('../frontend/img/office-dark.jpg');">
+    <div class="page-header min-vh-85" style="margin-top:75px;">
+      <div class="position-absolute border-radius-lg border-top-start-radius-0 border-top-end-radius-0 border-bottom-end-radius-0 fixed-top ms-auto w-50 h-100 z-index-0 d-none d-sm-none d-md-block" style="background-image: url('https://raw.githubusercontent.com/creativetimofficial/public-assets/master/soft-ui-design-system/assets/img/office.jpg'); background-size:cover;">
+      </div>
       <div class="container">
-        <div class="row justify-content-center">
-          <div class="col-lg-8 text-center mx-auto my-auto">
-            <h1 class="text-white">Discover best deals !...</h1>
-            <p class="lead mb-4 text-white opacity-8">Find the best deals from your neighbourhood.</p>
-            <div class="d-flex justify-content-center">
-              <a href="javascript:;"><i class="fab fa-facebook text-lg text-white me-4"></i></a>
-              <a href="javascript:;"><i class="fab fa-instagram text-lg text-white me-4"></i></a>
-              <a href="javascript:;"><i class="fab fa-twitter text-lg text-white me-4"></i></a>
-              <a href="javascript:;"><i class="fab fa-google-plus text-lg text-white"></i></a>
+        <div class="row">
+          <div class="col-lg-7 d-flex justify-content-center flex-column">
+            <div class="card card-body blur d-flex justify-content-center px-5 shadow-lg mt-lg-5 mt-3 py-5">
+              <h1 class="text-gradient text-primary mb-0">Soft Design - News</h1>
+              <h1 class="mb-4">Actualize dreams</h1>
+              <p class="lead pe-sm-5 me-sm-5">The time is now for it be okay to be great. People in this world shun people for being nice. </p>
+              <h5 class="mt-3">Connect with us on</h5>
+              <div class="d-flex justify-content-start">
+                <a href="javascript:;"><i class="fab fa-facebook text-dark me-4 text-lg"></i></a>
+                <a href="javascript:;"><i class="fab fa-instagram text-dark me-4 text-lg"></i></a>
+                <a href="javascript:;"><i class="fab fa-twitter text-dark me-4 text-lg"></i></a>
+                <a href="javascript:;"><i class="fab fa-google-plus text-dark text-lg"></i></a>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="position-absolute w-100 bottom-0">
-        <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 40" preserveAspectRatio="none" shape-rendering="auto">
-          <defs>
-            <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
-          </defs>
-          <g class="moving-waves">
-            <use xlink:href="#gentle-wave" x="48" y="-1" fill="rgba(255,255,255,0.40" />
-            <use xlink:href="#gentle-wave" x="48" y="3" fill="rgba(255,255,255,0.35)" />
-            <use xlink:href="#gentle-wave" x="48" y="5" fill="rgba(255,255,255,0.25)" />
-            <use xlink:href="#gentle-wave" x="48" y="8" fill="rgba(255,255,255,0.20)" />
-            <use xlink:href="#gentle-wave" x="48" y="13" fill="rgba(255,255,255,0.15)" />
-            <use xlink:href="#gentle-wave" x="48" y="16" fill="rgba(255,255,255,1" />
-          </g>
-        </svg>
-      </div>
-    </div><div class="position-relative overflow-hidden" style="height:36px;margin-top:30px;">
-      <div class="w-full absolute bottom-0 start-0 end-0" style="transform: scale(2);transform-origin: top center;color: #fff;">
-        <svg viewBox="0 0 2880 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0 48H1437.5H2880V0H2160C1442.5 52 720 0 720 0H0V48Z" fill="currentColor"></path>
-        </svg>
-      </div>
     </div>
+  </header><section class="py-5 mt-5">
     <div class="container">
-      <div class="row bg-white shadow-lg mt-n6 border-radius-md pb-4 p-3 mx-sm-0 mx-1 position-relative">
-        <div class="col-lg-3 mt-lg-n2 mt-2">
-          <label class="">Localities</label>
-          <select class="form-control" name="choices-button" id="choices-button">
-            <option value="Choice 1" selected="">Brazil</option>
-            <option value="Choice 2">Bucharest</option>
-            <option value="Choice 3">London</option>
-            <option value="Choice 4">USA</option>
-          </select>
-        </div>
-        <div class="col-lg-3 mt-lg-n2 mt-2">
-          <label class="">Category</label>
-          <select class="form-control" name="choices-remove-button" id="choices-remove-button">
-            <option value="Choice 1" selected="">Italy</option>
-            <option value="Choice 2">Spain</option>
-            <option value="Choice 3">Denmark</option>
-            <option value="Choice 4">Poland</option>
-          </select>
-        </div>
-        <div class="col-lg-3 mt-lg-n2 mt-2">
-          <label class="">Sub Category</label>
-          <select class="form-control" name="choices-remove-button" id="choices-remove-button">
-            <option value="Choice 1" selected="">Italy</option>
-            <option value="Choice 2">Spain</option>
-            <option value="Choice 3">Denmark</option>
-            <option value="Choice 4">Poland</option>
-          </select>
-        </div>
-        <div class="col-lg-3 mt-lg-n2 mt-2">
-          <label class="">&nbsp;</label>
-          <button type="button" class="btn bg-gradient-dark w-100 mb-0">Search</button>
+      <div class="row">
+        <div class="col-lg-8 ms-auto me-auto">
+          <h6 class="opacity-7 text-uppercase font-weight-bolder text-sm">The Idea</h6>
+          <h3 class="title mb-4">Create a design system that can be used in any product available</h3>
+          <p class="text-dark">
+            This is the paragraph where you can write more details about your product. Keep you user engaged by providing meaningful information. Remember that by this time, the user is curious, otherwise he wouldn't scroll to get here. Add a button if
+            you want the user to see more. We are here to make life better.
+            <br> <br>
+            And now I look and look around and there’s so many Kanyes I've been trying to figure out the bed design for the master bedroom at our Hidden Hills compound... and thank you for turning my personal jean jacket into a couture piece.
+            <br> <br>
+            The way to survive in modern society is to be an ascetic. It is to retreat from society. There’s too much society everywhere you go…The only solution is turn it off.
+          </p>
         </div>
       </div>
-    </div>
-  </header>
+      </div>
+</section>
   <section class="pt-7 pb-0">
     <div class="container">
       <div class="row">
@@ -177,7 +144,7 @@ href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.m
               <p>
                 Siri's latest trick is offering a hands-free TV viewing experience, that will allow consumers to turn on or off their television, change inputs, fast forward.
               </p>
-              <a href="{{route('post-details')}}" class="btn btn-outline-primary btn-sm">View Details</a>
+              <button type="button" class="btn btn-outline-primary btn-sm">From / Night</button>
             </div>
           </div>
         </div>
@@ -198,7 +165,7 @@ href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.m
               <p>
                 As Uber works through a huge amount of internal management turmoil, the company is also consolidating and rationalizing more of its international business.
               </p>
-              <a href="{{route('post-details')}}" class="btn btn-outline-primary btn-sm">View Details</a>
+              <button type="button" class="btn btn-outline-primary btn-sm">From / Night</button>
             </div>
           </div>
         </div>
@@ -219,7 +186,7 @@ href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.m
               <p>
                 Music is something that every person has his or her own specific opinion about. Different people have different taste, and various types of music.
               </p>
-              <a href="{{route('post-details')}}" class="btn btn-outline-primary btn-sm">View Details</a>
+              <button type="button" class="btn btn-outline-primary btn-sm">From / Night</button>
             </div>
           </div>
         </div>
@@ -241,7 +208,7 @@ href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.m
                 Fast forward, rewind and more, without having to first invoke a specific skill, or even
                 press a button on their remote.
               </p>
-              <a href="{{route('post-details')}}" class="btn btn-outline-primary btn-sm">View Details</a>
+              <button type="button" class="btn btn-outline-primary btn-sm">From / Night</button>
             </div>
           </div>
         </div>
@@ -262,7 +229,7 @@ href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.m
               <p>
                 Today, the company announced it will be combining its rides-on-demand business and UberEATS.
               </p>
-              <a href="{{route('post-details')}}" class="btn btn-outline-primary btn-sm">View Details</a>
+              <button type="button" class="btn btn-outline-primary btn-sm">From / Night</button>
             </div>
           </div>
         </div>
@@ -283,7 +250,7 @@ href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.m
               <p>
                 Different people have different taste, and various types of music have many ways of leaving an impact on someone.
               </p>
-              <a href="{{route('post-details')}}" class="btn btn-outline-primary btn-sm">View Details</a>
+              <button type="button" class="btn btn-outline-primary btn-sm">From / Night</button>
             </div>
           </div>
         </div>

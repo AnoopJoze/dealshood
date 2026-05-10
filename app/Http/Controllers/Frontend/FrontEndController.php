@@ -11,4 +11,8 @@ class FrontEndController extends Controller
     {
         return view('frontend.frontend-app');
     }
+    public function postDetail()
+    {
+        return view('frontend.post-details');
+    }
 }
