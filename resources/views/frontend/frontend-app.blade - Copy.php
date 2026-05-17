@@ -7,7 +7,7 @@
   <link rel="apple-touch-icon" sizes="76x76" href="../frontend/img/apple-icon.png">
   <link rel="icon" type="image/png" href="../frontend/img/favicon.png">
   <title>
-    Soft UI Design 3 System by Creative Tim
+    DealsHood  
   </title>
   <!--     Fonts and icons     -->
   <link href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700,800" rel="stylesheet" />
@@ -31,8 +31,8 @@
   <!-- Navbar Transparent -->
   <nav class="navbar navbar-expand-lg position-absolute top-0 z-index-3 w-100 shadow-none my-3  navbar-transparent ">
     <div class="container">
-      <a class="navbar-brand  text-white " href=" https://demos.creative-tim.com/soft-ui-design-system-pro/presentation.html " rel="tooltip" title="Designed and Coded by Creative Tim" data-placement="bottom" target="_blank">
-        Soft UI 3 PRO
+      <a class="navbar-brand  text-white " href=" https://demos.creative-tim.com/soft-ui-design-system-pro/presentation.html " rel="tooltip" title="Designed and Coded by DealsHood" data-placement="bottom" target="_blank">
+        DealsHood 3 PRO
       </a>
       <button class="navbar-toggler shadow-none ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#navigation" aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon mt-2">
@@ -1793,7 +1793,7 @@
       <div class=" row">
         <div class="col-md-3 mb-4 ms-auto">
           <div>
-            <h6 class="text-gradient text-primary font-weight-bolder">Soft UI Design System 3 PRO</h6>
+            <h6 class="text-gradient text-primary font-weight-bolder">DealsHood Design System 3 PRO</h6>
           </div>
           <div>
             <h6 class="mt-3 mb-2 opacity-8">Social</h6>
@@ -1929,7 +1929,7 @@
             <p class="my-4 text-sm">
               All rights reserved. Copyright © <script>
                 document.write(new Date().getFullYear())
-              </script> Soft UI Design System by <a href="https://www.creative-tim.com" target="_blank">Creative Tim</a>.
+              </script> DealsHood Design System by <a href="https://www.creative-tim.com" target="_blank">DealsHood</a>.
             </p>
           </div>
         </div>
@@ -1944,7 +1944,7 @@
   <script src="../frontend/js/plugins/countup.min.js"></script>
   <!--  Plugin for Parallax, full documentation here: https://github.com/wagerfield/parallax  -->
   <script src="../frontend/js/plugins/parallax.min.js"></script>
-  <!-- Control Center for Soft UI Kit: parallax effects, scripts for the example pages etc -->
+  <!-- Control Center for DealsHood Kit: parallax effects, scripts for the example pages etc -->
   <!--  Google Maps Plugin    -->
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDTTfWur0PDbZWPr7Pmq8K3jiDp0_xUziI"></script>
   <script src="../frontend/js/soft-design-system.min.js?v=1.1.0" type="text/javascript"></script>

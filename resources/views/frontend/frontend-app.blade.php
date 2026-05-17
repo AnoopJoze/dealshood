@@ -7,7 +7,7 @@
   <link rel="apple-touch-icon" sizes="76x76" href="../frontend/img/apple-icon.png">
   <link rel="icon" type="image/png" href="../frontend/img/favicon.png">
   <title>
-    Soft UI Design 3 System by Creative Tim
+    DealsHood  
   </title>
   <!--     Fonts and icons     -->
   <link href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700,800" rel="stylesheet" />
@@ -640,7 +640,7 @@ href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.m
       <div class=" row">
         <div class="col-md-3 mb-4 ms-auto">
           <div>
-            <h6 class="text-gradient text-primary font-weight-bolder">Soft UI Design 3 System</h6>
+            <h6 class="text-gradient text-primary font-weight-bolder">DealsHood  System</h6>
           </div>
           <div>
             <h6 class="mt-3 mb-2 opacity-8">Social</h6>
@@ -776,7 +776,7 @@ href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.m
             <p class="my-4 text-sm">
               All rights reserved. Copyright © <script>
                 document.write(new Date().getFullYear())
-              </script> Soft UI Design System by <a href="https://www.creative-tim.com" target="_blank">Creative Tim</a>.
+              </script> DealsHood Design System by <a href="https://www.creative-tim.com" target="_blank">DealsHood</a>.
             </p>
           </div>
         </div>
@@ -791,7 +791,7 @@ href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.m
   <script src="../frontend/js/plugins/countup.min.js"></script>
   <!--  Plugin for Parallax, full documentation here: https://github.com/wagerfield/parallax  -->
   <script src="../frontend/js/plugins/parallax.min.js"></script>
-  <!-- Control Center for Soft UI Kit: parallax effects, scripts for the example pages etc -->
+  <!-- Control Center for DealsHood Kit: parallax effects, scripts for the example pages etc -->
   <!--  Google Maps Plugin    -->
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDTTfWur0PDbZWPr7Pmq8K3jiDp0_xUziI"></script>
   <script src="../frontend/js/soft-design-system.min.js?v=1.1.0" type="text/javascript"></script>

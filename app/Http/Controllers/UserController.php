@@ -22,167 +22,252 @@ class UserController extends Controller
 {
     function __construct()
     {
-        //$this->middleware('permission:passport_tracking_list|passport_tracking_scan');
+        //$this->middleware('permission:user_list|user_scan');
     }
 
     public function index(Request $request)
     {
-        if ($request->type == 'staff' || $request->type == 'technician') {
-            $title = 'Paasport Tracking';
-            $type = $request->type;
-            return view('passport_tracking.index', compact('title', 'type'));
-        } else {
-            return redirect()->route('dashboard');
-        }
+    return view('users.list');
     }
 
     public function getlist(Request $request)
-    {
-        $query = Employee::query()
-            ->select(
-                'employee_master.id',
-                'employee_master.slug',
-                'employee_master.emp_code',
-                'employee_master.emp_name',
-                'employee_master.created_at',
-                'passport_tracking.date_of_birth',
-                'passport_tracking.status',
-                'passport_tracking.passport_number',
-                'passport_tracking.passport_issue_date',
-                'passport_tracking.passport_expiry_date',
-                'passport_tracking.last_locker_number',
-                'passport_tracking.last_batch_bundle_number',
-                'passport_tracking.last_action_date',
-                'employee_master.date_of_joining',
-                'employee_master.category'
-            )
-            ->leftJoin('passport_tracking', 'passport_tracking.employee_id', '=', 'employee_master.id')
-            ->where('employee_master.ps_emp_status', 'Active');
+{
+    $query = User::with('roles')->select('users.*');
 
-        if ($request->filled('type')) {
-            $query->where('employee_master.category', $request->type);
-        }
-        //dd($query->toSql(), $query->getBindings());
-        return DataTables::of($query)
+    return DataTables::of($query)
 
-            ->filter(function ($query) use ($request) {
+        /*
+        |--------------------------------------------------------------------------
+        | Filters
+        |--------------------------------------------------------------------------
+        */
+        ->filter(function ($query) use ($request) {
 
-                // if ($request->has('columns') && !$request->filled('start_date') && !$request->filled('end_date')) {
-                //     foreach ($request->get('columns') as $col) {
-                //         $name = $col['data'];
-                //         $value = $col['search']['value'] ?? null;
+            // Search Name
+            if ($request->filled('name')) {
+                $query->where('users.name', 'like', '%' . $request->name . '%');
+            }
 
-                //         // Only apply if value and column exist in selected fields
-                //         if ($value && in_array($name, [
-                //             'employee_master.emp_code',
-                //             'employee_master.emp_name',
-                //             'passport_tracking.passport_number',
-                //             'passport_tracking.status',
-                //             'passport_tracking.last_locker_number',
-                //             'passport_tracking.last_batch_bundle_number'
-                //         ])) {
-                //             $query->where($name, 'like', "%{$value}%");
-                //         }
-                //     }
-                // }
+            // Search Email
+            if ($request->filled('email')) {
+                $query->where('users.email', 'like', '%' . $request->email . '%');
+            }
 
-                // ✅ Status
-                if ($request->filled('status')) {
-                    $query->where('passport_tracking.status', 'like', "%{$request->status}%");
+            // Search Status
+            if ($request->filled('status')) {
+                $query->where('users.status', $request->status);
+            }
+
+            // Date Range Filter
+            if ($request->filled('start_date') && $request->filled('end_date')) {
+
+                $start = Carbon::parse($request->start_date)
+                    ->startOfDay();
+
+                $end = Carbon::parse($request->end_date)
+                    ->endOfDay();
+
+                $query->whereBetween('users.created_at', [$start, $end]);
+            }
+        })
+
+        /*
+        |--------------------------------------------------------------------------
+        | Sorting
+        |--------------------------------------------------------------------------
+        */
+        ->order(function ($query) use ($request) {
+
+            if ($order = $request->get('order')[0] ?? null) {
+
+                $columns = $request->get('columns');
+
+                $column = $columns[$order['column']]['data'];
+
+                $dir = $order['dir'];
+
+                // Prevent sorting issue for custom columns
+                $allowed = [
+                    'name',
+                    'email',
+                    'status',
+                    'created_at'
+                ];
+
+                if (in_array($column, $allowed)) {
+                    $query->orderBy('users.' . $column, $dir);
                 }
+            } else {
 
-                // ✅ Date range filter (created_at)
-                if ($request->filled('start_date') && $request->filled('end_date')) {
-                    $start = $request->start_date;
-                    $end = $request->end_date;
-                    $query->whereBetween('employee_master.created_at', [$start, $end]);
-                }
+                // Default sorting
+                $query->latest('users.id');
+            }
+        })
 
-                if ($request->filled('action_start_date') && $request->filled('action_end_date')) {
-                    $start = Carbon::parse($request->action_start_date)->startOfDay();
-                    $end = Carbon::parse($request->action_end_date)->endOfDay();
-                    $query->whereBetween('passport_tracking.last_action_date', [$start, $end]);
-                }
+        /*
+        |--------------------------------------------------------------------------
+        | User Column
+        |--------------------------------------------------------------------------
+        */
+        ->editColumn('name', function ($row) {
 
-                if ($request->filled('date_of_birth_start_date') && $request->filled('date_of_birth_end_date')) {
-                    $start = Carbon::parse($request->date_of_birth_start_date)->startOfDay();
-                    $end = Carbon::parse($request->date_of_birth_end_date)->endOfDay();
-                    $query->whereBetween('passport_tracking.date_of_birth', [$start, $end]);
-                }
-                if ($request->filled('passport_issue_date_start_date') && $request->filled('passport_issue_date_end_date')) {
-                    $start = Carbon::parse($request->passport_issue_date_start_date)->startOfDay();
-                    $end = Carbon::parse($request->passport_issue_date_end_date)->endOfDay();
-                    $query->whereBetween('passport_tracking.passport_issue_date', [$start, $end]);
-                }
-                if ($request->filled('passport_expiry_date_start_date') && $request->filled('passport_expiry_date_end_date')) {
-                    $start = Carbon::parse($request->passport_expiry_date_start_date)->startOfDay();
-                    $end = Carbon::parse($request->passport_expiry_date_end_date)->endOfDay();
-                    $query->whereBetween('passport_tracking.passport_expiry_date', [$start, $end]);
-                }
-            })
-            ->order(function ($query) use ($request) {
-                if ($order = $request->get('order')[0] ?? null) {
-                    $columns = $request->get('columns');
-                    $colName = $columns[$order['column']]['data'];
-                    $dir = $order['dir'];
-                    $query->orderBy($colName, $dir);
-                }
-            })
+            $initial = strtoupper(substr($row->name, 0, 1));
 
-            // ✅ Format date columns safely
-            ->editColumn('date_of_birth', fn($row) => $row->date_of_birth ? Carbon::parse($row->date_of_birth)->format('d-M-Y') : '')
-            ->editColumn('created_at', fn($row) => $row->created_at ? Carbon::parse($row->created_at)->format('d-M-Y') : '')
-            ->editColumn('passport_issue_date', fn($row) => $row->passport_issue_date ? Carbon::parse($row->passport_issue_date)->format('d-M-Y') : '')
-            ->editColumn('passport_expiry_date', fn($row) => $row->passport_expiry_date ? Carbon::parse($row->passport_expiry_date)->format('d-M-Y') : '')
+            $role = $row->roles->first()?->name ?? 'User';
 
-            // ✅ Badge styling
-            ->editColumn('status', function ($row) {
-                if (empty($row->status)) {
-                    return '<span class="mb-1 badge rounded-pill text-bg-danger">Not Uploaded</span>';
-                }
-                return '<span class="mb-1 badge rounded-pill text-bg-success">' . e($row->status) . '</span>';
-            })
+            return '
+                <div class="d-flex align-items-center">
 
-            // ✅ Action buttons
-            ->addColumn('action', function ($row) {
-                $buttons = [];
-                if(auth()->user()->can('passport_tracking_scan')){
-                // Scan Passport
-                $buttons[] = "<a href='javascript:void(0);' title='Scan Passport' class='btn btn-primary btn-sm scan_passport'
-                data-item='{$row->id}' data-name='" . e($row->emp_name) . "'
-                data-bs-toggle='modal' data-bs-target='#update-scaneid-modal'>
-                <i class='ti ti-pencil'></i>&nbsp;Scan Passport</a>";
+                    <div class="avatar avatar-md rounded-circle bg-gradient-primary text-white me-3 d-flex align-items-center justify-content-center fw-bold shadow-sm">
+                        ' . $initial . '
+                    </div>
 
-                // Conditional buttons
-                if (in_array($row->status, ['Passport Uploaded', 'Employee'])) {
-                    $buttons[] = "<a href='javascript:void(0);' title='Update Returned' class='btn btn-primary btn-sm update_returned'
-                    data-item='{$row->id}' data-name='" . e($row->emp_name) . "'
-                    data-bs-toggle='modal' data-bs-target='#update-returned-modal'>
-                    <i class='ti ti-pencil'></i>&nbsp;Update Returned</a>";
-                } elseif ($row->status === 'PR Team') {
-                    $buttons[] = "<a href='javascript:void(0);' title='Update Given Back' class='btn btn-primary btn-sm update_givenback'
-                    data-item='{$row->id}' data-name='" . e($row->emp_name) . "'
-                    data-bs-toggle='modal' data-bs-target='#update-givenback-modal'>
-                    <i class='ti ti-pencil'></i>&nbsp;Update Given Back</a>";
-                }
-                }
+                    <div>
+                        <h6 class="mb-0 text-sm fw-semibold text-dark">
+                            ' . e($row->name) . '
+                        </h6>
 
-                // View button
-                $buttons[] = "<a href='" . route('passport_tracking.show', $row->slug) . "' class='btn btn-sm btn-info'>
-                <i class='ti ti-eye'></i>&nbsp;View</a>";
+                        <small class="text-muted">
+                            ' . ucfirst($role) . '
+                        </small>
+                    </div>
 
-                return '<div class="btn-group" role="group">' . implode('&nbsp;', $buttons) . '</div>';
-            })
+                </div>
+            ';
+        })
 
-            ->rawColumns(['status', 'action'])
-            ->make(true);
+        /*
+        |--------------------------------------------------------------------------
+        | Email Column
+        |--------------------------------------------------------------------------
+        */
+        ->editColumn('email', function ($row) {
+
+            return '
+                <div>
+                    <span class="text-sm text-dark fw-medium">
+                        ' . e($row->email) . '
+                    </span>
+                </div>
+            ';
+        })
+
+        /*
+        |--------------------------------------------------------------------------
+        | Status Column
+        |--------------------------------------------------------------------------
+        */
+        ->editColumn('status', function ($row) {
+
+            if ($row->status == 'Active') {
+
+                return '
+                    <span class="badge rounded-pill bg-success-subtle text-success px-3 py-2">
+                        Active
+                    </span>
+                ';
+            }
+
+            return '
+                <span class="badge rounded-pill bg-danger-subtle text-danger px-3 py-2">
+                    Inactive
+                </span>
+            ';
+        })
+
+        /*
+        |--------------------------------------------------------------------------
+        | Created Date
+        |--------------------------------------------------------------------------
+        */
+        ->editColumn('created_at', function ($row) {
+
+            return '
+                <div class="text-sm text-muted fw-medium">
+                    ' . Carbon::parse($row->created_at)->format('d M Y') . '
+                    <br>
+
+                    <small class="text-xs">
+                        ' . Carbon::parse($row->created_at)->diffForHumans() . '
+                    </small>
+                </div>
+            ';
+        })
+
+        /*
+        |--------------------------------------------------------------------------
+        | Action Column
+        |--------------------------------------------------------------------------
+        */
+        ->addColumn('action', function ($row) {
+
+            return '
+                <div class="dropdown">
+
+                    <button class="btn btn-light btn-sm shadow-none border mb-0"
+                            type="button"
+                            data-bs-toggle="dropdown">
+
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+
+                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-4 p-2">
+
+                        <li>
+                            <a class="dropdown-item rounded-3 py-2"
+                               href="' . route('users.show', $row->id) . '">
+
+                                <i class="fas fa-eye me-2 text-info"></i>
+                                View
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item rounded-3 py-2"
+                               href="' . route('users.edit', $row->id) . '">
+
+                                <i class="fas fa-pen me-2 text-warning"></i>
+                                Edit
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item rounded-3 py-2 text-danger delete-btn"
+                               href="javascript:void(0)"
+                               data-id="' . $row->id . '">
+
+                                <i class="fas fa-trash me-2"></i>
+                                Delete
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </div>
+            ';
+        })
+
+        /*
+        |--------------------------------------------------------------------------
+        | Raw HTML Columns
+        |--------------------------------------------------------------------------
+        */
+        ->rawColumns([
+            'name',
+            'email',
+            'status',
+            'created_at',
+            'action'
+        ])
+
+        ->make(true);
     }
 
     public function show($param)
     {
         $title = 'Paasport Tracking Details';
         $data = Employee::where('slug', $param)->first();
-        return view('passport_tracking.show', compact('data', 'title'));
+        return view('users.show', compact('data', 'title'));
     }
     public function save_returned(Request $request)
     {

@@ -100,7 +100,7 @@
             <div class="col-lg-6">
               <div class="d-flex flex-column h-100">
                 <p class="mb-1 pt-2 text-bold">Built by developers</p>
-                <h5 class="font-weight-bolder">Soft UI Dashboard</h5>
+                <h5 class="font-weight-bolder">DealsHood Dashboard</h5>
                 <p class="mb-5">From colors, cards, typography to complex elements, you will find the full documentation.</p>
                 <a class="text-body text-sm font-weight-bold mb-0 icon-move-right mt-auto" href="javascript:;">
                   Read More
@@ -315,7 +315,7 @@
                         <img src="../assets/img/small-logos/logo-xd.svg" class="avatar avatar-sm me-3" alt="xd">
                       </div>
                       <div class="d-flex flex-column justify-content-center">
-                        <h6 class="mb-0 text-sm">Soft UI XD Version</h6>
+                        <h6 class="mb-0 text-sm">DealsHood XD Version</h6>
                       </div>
                     </div>
                   </td>

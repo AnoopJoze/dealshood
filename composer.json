@@ -20,7 +20,8 @@
         "spatie/laravel-medialibrary": "^11.22",
         "spatie/laravel-permission": "^7.4",
         "yajra/laravel-datatables-buttons": "^12.3",
-        "yajra/laravel-datatables-oracle": "^12.7"
+        "yajra/laravel-datatables-oracle": "^12.7",
+        "spatie/laravel-sluggable": "^3.5"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^4.2",

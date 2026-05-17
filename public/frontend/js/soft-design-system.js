@@ -1,13 +1,13 @@
 /*!
 
 =========================================================
-* Soft UI Design 3 System - v1.1.0
+* DealsHood  System - v1.1.0
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/soft-ui-design-system
-* Copyright 2021 Creative Tim (https://www.creative-tim.com)
+* Copyright 2021 DealsHood (https://www.creative-tim.com)
 
-* Coded by Creative Tim
+* Coded by DealsHood
 
 =========================================================
 
