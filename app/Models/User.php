@@ -25,6 +25,12 @@ class User extends Authenticatable
         'phone',
         'location',
         'about_me',
+        'company_name',
+        'whatsapp_number',
+        'address',
+        'website',
+        'latitude',
+        'longitude',
     ];
 
     /**
@@ -45,5 +51,5 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-    
+
 }

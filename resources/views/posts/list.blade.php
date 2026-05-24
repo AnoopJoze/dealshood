@@ -93,11 +93,23 @@
                                 </th>
 
                                 <th class="text-uppercase text-secondary text-xxs fw-bolder">
+                                    Title
+                                </th>
+
+                                <th class="text-uppercase text-secondary text-xxs fw-bolder">
                                     Category
                                 </th>
 
                                 <th class="text-uppercase text-secondary text-xxs fw-bolder">
                                     Sub Category
+                                </th>
+
+                                <th class="text-uppercase text-secondary text-xxs fw-bolder">
+                                    Locality
+                                </th>
+
+                                <th class="text-uppercase text-secondary text-xxs fw-bolder">
+                                    Image
                                 </th>
 
                                 <th class="text-uppercase text-secondary text-xxs fw-bolder">
@@ -116,6 +128,12 @@
                                 <th>
                                     <input type="text"
                                            class="form-control form-control-sm border"
+                                           placeholder="Search Title">
+                                </th>
+
+                                <th>
+                                    <input type="text"
+                                           class="form-control form-control-sm border"
                                            placeholder="Search Category">
                                 </th>
 
@@ -124,6 +142,14 @@
                                            class="form-control form-control-sm border"
                                            placeholder="Search Subcategory">
                                 </th>
+
+                                <th>
+                                    <input type="text"
+                                           class="form-control form-control-sm border"
+                                           placeholder="Search Locality">
+                                </th>
+
+                                <th></th>
 
                                 <th>
                                     <select class="form-select form-select-sm border">
@@ -247,6 +273,29 @@
                         </form>
 
                     </div>
+                    <div class="row">
+
+                {{-- VIDEO UPLOAD --}}
+                <div class="col-md-6 mb-3">
+                    <label>Upload Video</label>
+
+                    <input type="file"
+                        name="video"
+                        class="form-control"
+                        accept="video/*">
+                </div>
+
+                {{-- VIDEO URL --}}
+                <div class="col-md-6 mb-3">
+                    <label>Video URL</label>
+
+                    <input type="text"
+                        name="video_url"
+                        class="form-control"
+                        placeholder="https://youtube.com/...">
+                </div>
+
+            </div>
 
                 </div>
 
@@ -471,8 +520,11 @@ $(document).on('change', '.inline-edit', function () {
                         },
                         columns: [
                             { data: 'action', name: 'action', orderable: false, searchable: false },
+                            { data: 'title', name: 'title' },
                             { data: 'category', name: 'category' },
-                            { data: 'name', name: 'name' },
+                            { data: 'subcategory', name: 'subcategory' },
+                            { data: 'locality', name: 'locality' },
+                            { data: 'images', name: 'images' },
                             { data: 'status', name: 'status', searchable: false },
                             { data: 'created_at', name: 'created_at', searchable: false },
                         ],
@@ -599,5 +651,18 @@ $(document).on('change', '.inline-edit', function () {
                     // Requery the server with the new one-time export settings
                     dt.ajax.reload();
                 }
+$('.likeBtn').click(function () {
+
+    let id = $(this).data('id');
+
+    $.post('/posts/' + id + '/like', {
+        _token: csrf_token
+    }, function (res) {
+
+        $('#likes-count-' + id).text(res.likes);
+
+    });
+
+});
 </script>
                 @endpush

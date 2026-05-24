@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use App\Models\Subcategory;
 use App\Models\Category;
 use App\Models\Locality;
+use Carbon\Carbon;
 use DataTables;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
@@ -45,12 +46,25 @@ public function data(Request $request)
     }
 
     return DataTables::of($query)
+->editColumn('created_at', function ($row) {
 
+            return '
+                <div class="text-sm text-muted fw-medium">
+                    ' . Carbon::parse($row->created_at)->format('d M Y') . '
+                    <br>
+
+                    <small class="text-xs">
+                        ' . Carbon::parse($row->created_at)->diffForHumans() . '
+                    </small>
+                </div>
+            ';
+        })
         ->addColumn('title', function ($row) {
             return '<strong>'.$row->title.'</strong>';
         })
 
         ->addColumn('category', fn($row) => $row->category?->name ?? '-')
+        ->addColumn('subcategory', fn($row) => $row->subcategory?->name ?? '-')
 
         ->addColumn('locality', fn($row) => $row->locality?->name ?? '-')
 
@@ -97,23 +111,23 @@ public function data(Request $request)
                 </button>
             ';
         })
-->addColumn('images', function ($row) {
+// ->addColumn('images', function ($row) {
 
-    $media = $row->getMedia('posts');
+//     $media = $row->getMedia('posts');
 
-    if ($media->isEmpty()) return '-';
+//     if ($media->isEmpty()) return '-';
 
-    $html = '';
+//     $html = '';
 
-    foreach ($media as $m) {
-        $html .= '<img src="'.$m->getUrl().'"
-                    width="40"
-                    class="rounded me-1">';
-    }
+//     foreach ($media as $m) {
+//         $html .= '<img src="'.$m->getUrl().'"
+//                     width="40"
+//                     class="rounded me-1">';
+//     }
 
-    return $html;
-})
-        ->rawColumns(['title', 'status', 'expires_at', 'map', 'action','images'])
+//     return $html;
+// })
+        ->rawColumns(['title', 'status', 'expires_at', 'map', 'action','images','created_at'])
         ->make(true);
 }
 public function uploadImage(Request $request)
@@ -159,10 +173,13 @@ public function ajaxStore(Request $request)
         'expiry_date' => 'nullable|date',
         'map_location' => 'nullable|string',
     ]);
+    $slug = Str::slug($request->title);
+
+    $count = Post::where('slug', 'LIKE', "{$slug}%")->count();
 
     $post = Post::create([
         'title' => $request->title,
-        'slug' => Str::slug($request->title),
+        'slug' => $count ? "{$slug}-".($count + 1) : $slug,
         'description' => $request->description,
         'category_id' => $request->category_id,
         'subcategory_id' => $request->subcategory_id,
@@ -171,6 +188,12 @@ public function ajaxStore(Request $request)
         'map_location' => $request->map_location,
         'is_active' => 1,
     ]);
+    if ($request->hasFile('video')) {
+
+        $post->addMediaFromRequest('video')
+            ->toMediaCollection('videos');
+
+    }
 
     return response()->json([
         'success' => true,

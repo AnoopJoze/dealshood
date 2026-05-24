@@ -94,127 +94,26 @@
     <!-- -------- START HEADER 7 w/ text and video ------- -->
     <header class="position-relative overflow-hidden bg-light">
 
-    @php
-        $images = $post->getMedia('posts');
-        $video = $post->getFirstMediaUrl('videos');
-
-        $bgImage = $images->count()
-            ? $images->first()->getUrl()
-            : asset('frontend/img/default.jpg');
-    @endphp
-
-    <!-- =========================================
-        BACKGROUND IMAGE SLIDER
-    ========================================== -->
-
-    <div id="heroBgCarousel"
-         class="carousel slide carousel-fade position-absolute top-0 end-0 w-50 h-100 d-none d-md-block"
-         data-bs-ride="carousel">
-
-        <!-- INDICATORS -->
-        <div class="carousel-indicators">
-
-            @foreach($images as $key => $media)
-
-                <button type="button"
-                        data-bs-target="#heroBgCarousel"
-                        data-bs-slide-to="{{ $key }}"
-                        class="{{ $key == 0 ? 'active' : '' }}">
-                </button>
-
-            @endforeach
-
-        </div>
-
-        <div class="carousel-inner h-100">
-
-            {{-- MULTIPLE IMAGES --}}
-            @if($images->count())
-
-                @foreach($images as $key => $media)
-
-                    <div class="carousel-item h-100 {{ $key == 0 ? 'active' : '' }}">
-
-                        <div class="w-100 h-100 openImagePopup"
-                            data-image="{{ $media->getUrl() }}"
-                            style="
-                                background-image:url('{{ $media->getUrl() }}');
-                                background-size:cover;
-                                background-position:center;
-                                cursor:pointer;
-                            ">
-                        </div>
-
-                    </div>
-
-                @endforeach
-
-            {{-- FALLBACK --}}
-            @else
-
-                <div class="carousel-item active h-100">
-
-                    <div class="w-100 h-100"
-                         style="
-                            background-image:url('{{ asset('frontend/img/default.jpg') }}');
-                            background-size:cover;
-                            background-position:center;
-                         ">
-                    </div>
-
-                </div>
-
-            @endif
-
-        </div>
-
-        <!-- PREV -->
-        <button class="carousel-control-prev"
-                type="button"
-                data-bs-target="#heroBgCarousel"
-                data-bs-slide="prev">
-
-            <span class="carousel-control-prev-icon"></span>
-
-        </button>
-
-        <!-- NEXT -->
-        <button class="carousel-control-next"
-                type="button"
-                data-bs-target="#heroBgCarousel"
-                data-bs-slide="next">
-
-            <span class="carousel-control-next-icon"></span>
-
-        </button>
-
+    <!-- Background Image (Right Side) -->
+    <div class="position-absolute top-0 end-0 w-50 h-100 d-none d-md-block"
+         style="">
     </div>
 
-    <!-- =========================================
-        OVERLAY
-    ========================================== -->
-
+    <!-- Overlay -->
     <div class="position-absolute top-0 start-0 w-100 h-100"
-         style="
-            background:linear-gradient(
-                90deg,
-                #ffffff 38%,
-                rgba(255,255,255,0.88) 58%,
-                rgba(255,255,255,0.15) 100%
-            );
-         ">
+         style="background: linear-gradient(90deg, #ffffff 40%, rgba(255,255,255,0.85) 60%, transparent);">
     </div>
 
-    <!-- =========================================
-        CONTENT
-    ========================================== -->
-
-    <div class="container position-relative py-6"
-         style="margin-top:90px; z-index:2;">
+    <div class="container position-relative py-6" style="margin-top:90px;">
 
         <div class="row align-items-center">
 
-            <div class="col-lg-8">
+            <div class="col-lg-12">
+
+                @php
+                    $images = $post->getMedia('posts');
+                    $video = $post->getFirstMediaUrl('videos');
+                @endphp
 
                 <!-- HERO CARD -->
                 <div class="p-4 p-md-5 rounded-4 shadow-lg bg-white"
@@ -222,7 +121,7 @@
 
                     <!-- CATEGORY -->
                     <span class="badge bg-primary px-3 py-2 mb-3">
-                        {{ optional($post->category)->name ?? 'General' }}
+                        {{ $post->category?->name ?? 'General' }}
                     </span>
 
                     <!-- TITLE -->
@@ -231,83 +130,97 @@
                     </h1>
 
                     <!-- META -->
-                    <div class="d-flex flex-wrap gap-2 mb-4 text-muted small">
+                    <div class="text-muted small mb-3">
+                        📍 {{ $post->locality?->name }} |
+                        🕒 {{ $post->created_at->diffForHumans() }} |
+                        👁 {{ number_format($post->views) }} views
+                    </div>
 
-                        @if($post->locality)
-                            <span>📍 {{ $post->locality->name }}</span>
-                            <span>•</span>
+                    <!-- ================= MEDIA ================= -->
+                    <div class="mb-4">
+
+                        {{-- VIDEO --}}
+                        @if($video)
+
+                            <video controls class="w-100 rounded-4 shadow-sm"
+                                   style="max-height:420px; object-fit:cover;">
+                                <source src="{{ $video }}">
+                            </video>
+
+                        {{-- MULTIPLE IMAGES CAROUSEL --}}
+                        @elseif($images->count() > 1)
+
+                            <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+
+                                <div class="carousel-inner rounded-4 overflow-hidden">
+
+                                    @foreach($images as $key => $media)
+
+                                        <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
+
+                                            <img src="{{ $media->getUrl() }}"
+                                                 class="d-block w-100"
+                                                 style="height:420px; object-fit:cover;"
+                                                 alt="post image">
+
+                                        </div>
+
+                                    @endforeach
+
+                                </div>
+
+                                <!-- Controls -->
+                                <button class="carousel-control-prev" type="button"
+                                        data-bs-target="#heroCarousel" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon"></span>
+                                </button>
+
+                                <button class="carousel-control-next" type="button"
+                                        data-bs-target="#heroCarousel" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon"></span>
+                                </button>
+
+                            </div>
+
+                        {{-- SINGLE IMAGE --}}
+                        @elseif($images->count() == 1)
+
+                            <img src="{{ $images->first()->getUrl() }}"
+                                 class="w-100 rounded-4 shadow-sm"
+                                 style="max-height:420px; object-fit:cover;">
+
+                        {{-- FALLBACK --}}
+                        @else
+
+                            <img src="{{ asset('frontend/img/default.jpg') }}"
+                                 class="w-100 rounded-4 shadow-sm"
+                                 style="max-height:420px; object-fit:cover;">
+
                         @endif
-
-                        <span>
-                            🕒 {{ $post->created_at->diffForHumans() }}
-                        </span>
-
-                        <span>•</span>
-
-                        <span>
-                            👁 {{ number_format($post->viewsData->count()) }} views
-                        </span>
 
                     </div>
 
-                    <!-- VIDEO -->
-                    @if($video)
-
-                        <div class="mb-4">
-
-                            <video controls
-                                   class="w-100 rounded-4 shadow-sm"
-                                   style="height:320px; object-fit:cover;">
-
-                                <source src="{{ $video }}">
-
-                            </video>
-
-                        </div>
-
-                    @elseif($post->video_url)
-
-                        <div class="ratio ratio-16x9 rounded-4 overflow-hidden shadow-sm mb-4">
-
-                            <iframe
-                                src="{{ str_replace('watch?v=', 'embed/', $post->video_url) }}"
-                                allowfullscreen>
-                            </iframe>
-
-                        </div>
-
-                    @endif
-
-
-                    <!-- DESCRIPTION -->
+                    <!-- DESCRIPTION PREVIEW -->
                     <p class="lead text-muted mb-4">
-
-                        {{ \Illuminate\Support\Str::limit(strip_tags($post->description), 120) }}
-
+                        {{ \Illuminate\Support\Str::limit(strip_tags($post->description), 80) }}
                     </p>
 
-                    <!-- BUTTONS -->
+                    <!-- CTA BUTTONS -->
                     <div class="d-flex flex-wrap gap-2">
 
-                        <a href="#content"
-                           class="btn btn-dark px-4">
+                        <a href="#content" class="btn btn-dark px-4">
                             Read More
                         </a>
 
                         <button class="btn btn-outline-danger likeBtn"
                                 data-id="{{ $post->id }}">
-
-                            ❤️ Like
-                            ({{ number_format($post->likesData->count()) }})
-
+                            ❤️ Like ({{ number_format($post->likesData->count()) }})
                         </button>
 
                         <button class="btn btn-outline-dark shareBtn"
                                 data-id="{{ $post->id }}"
                                 data-url="{{ $post->url }}">
-
                             🔄 Share
-
                         </button>
 
                     </div>
@@ -319,7 +232,6 @@
         </div>
 
     </div>
-
 </header>
 
     <!-- CONTENT SECTION -->
@@ -588,74 +500,7 @@
                 </div>
             </div>
         </div>
-    </footer><!-- =========================================
-    PREMIUM GALLERY LIGHTBOX
-========================================== -->
-
-<div class="modal fade"
-     id="galleryLightbox"
-     tabindex="-1">
-
-    <div class="modal-dialog modal-dialog-centered modal-fullscreen">
-
-        <div class="modal-content bg-black border-0 position-relative overflow-hidden">
-
-            <!-- CLOSE -->
-            <button type="button"
-                    class="btn-close btn-close-white position-absolute top-0 end-0 m-4"
-                    data-bs-dismiss="modal"
-                    style="z-index:999;">
-            </button>
-
-            <!-- IMAGE -->
-            <div class="d-flex align-items-center justify-content-center h-100">
-
-                <img id="lightboxImage"
-                     src=""
-                     class="img-fluid rounded-4 shadow-lg"
-                     style="
-                        max-height:90vh;
-                        max-width:95vw;
-                        object-fit:contain;
-                        transition:0.3s ease;
-                     ">
-
-            </div>
-
-            <!-- PREV -->
-            <button type="button"
-                    id="prevImage"
-                    class="btn btn-dark position-absolute top-50 start-0 translate-middle-y ms-3 rounded-circle"
-                    style="width:50px;height:50px;z-index:999;">
-
-                ‹
-
-            </button>
-
-            <!-- NEXT -->
-            <button type="button"
-                    id="nextImage"
-                    class="btn btn-dark position-absolute top-50 end-0 translate-middle-y me-3 rounded-circle"
-                    style="width:50px;height:50px;z-index:999;">
-
-                ›
-
-            </button>
-
-            <!-- COUNTER -->
-            <div class="position-absolute bottom-0 start-50 translate-middle-x mb-4 text-white">
-
-                <span id="currentImageIndex">1</span>
-                /
-                <span id="totalImages">1</span>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
+    </footer>
     <!--   Core JS Files   -->
     <script src="/frontend/js/core/popper.min.js" type="text/javascript"></script>
     <script src="/frontend/js/core/bootstrap.min.js" type="text/javascript"></script>
@@ -828,159 +673,6 @@
             });
 
         });
-
-document.addEventListener('DOMContentLoaded', function () {
-
-    const popupImage = document.getElementById('popupImage');
-
-    // CLICK ON CAROUSEL IMAGE
-    document.querySelectorAll('.openImagePopup').forEach(item => {
-
-        item.addEventListener('click', function () {
-
-            let image = this.getAttribute('data-image');
-
-            popupImage.src = image;
-
-            let modal = new bootstrap.Modal(
-                document.getElementById('imageModal')
-            );
-
-            modal.show();
-
-        });
-
-    });
-
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-
-    let galleryImages = [];
-    let currentIndex = 0;
-
-    // GET ALL IMAGES
-    document.querySelectorAll('.openGallery').forEach((item, index) => {
-
-        galleryImages.push(item.dataset.image);
-
-        item.addEventListener('click', function () {
-
-            currentIndex = parseInt(this.dataset.index);
-
-            openLightbox(currentIndex);
-
-        });
-
-    });
-
-    // ELEMENTS
-    const modalElement = document.getElementById('galleryLightbox');
-
-    const modal = new bootstrap.Modal(modalElement);
-
-    const lightboxImage = document.getElementById('lightboxImage');
-
-    const currentImageIndex = document.getElementById('currentImageIndex');
-
-    const totalImages = document.getElementById('totalImages');
-
-    totalImages.innerText = galleryImages.length;
-
-    // OPEN
-    function openLightbox(index) {
-
-        lightboxImage.src = galleryImages[index];
-
-        currentImageIndex.innerText = index + 1;
-
-        modal.show();
-
-    }
-
-    // NEXT
-    document.getElementById('nextImage').addEventListener('click', function () {
-
-        currentIndex++;
-
-        if (currentIndex >= galleryImages.length) {
-            currentIndex = 0;
-        }
-
-        openLightbox(currentIndex);
-
-    });
-
-    // PREV
-    document.getElementById('prevImage').addEventListener('click', function () {
-
-        currentIndex--;
-
-        if (currentIndex < 0) {
-            currentIndex = galleryImages.length - 1;
-        }
-
-        openLightbox(currentIndex);
-
-    });
-
-    // KEYBOARD SUPPORT
-    document.addEventListener('keydown', function (e) {
-
-        if (!modalElement.classList.contains('show')) return;
-
-        // RIGHT
-        if (e.key === 'ArrowRight') {
-
-            document.getElementById('nextImage').click();
-
-        }
-
-        // LEFT
-        if (e.key === 'ArrowLeft') {
-
-            document.getElementById('prevImage').click();
-
-        }
-
-    });
-
-    // MOBILE SWIPE
-    let touchStartX = 0;
-    let touchEndX = 0;
-
-    modalElement.addEventListener('touchstart', function (e) {
-
-        touchStartX = e.changedTouches[0].screenX;
-
-    });
-
-    modalElement.addEventListener('touchend', function (e) {
-
-        touchEndX = e.changedTouches[0].screenX;
-
-        handleSwipe();
-
-    });
-
-    function handleSwipe() {
-
-        if (touchEndX < touchStartX - 50) {
-
-            document.getElementById('nextImage').click();
-
-        }
-
-        if (touchEndX > touchStartX + 50) {
-
-            document.getElementById('prevImage').click();
-
-        }
-
-    }
-
-});
-
     </script>
     <script type="application/ld+json">
 </script>

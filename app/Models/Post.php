@@ -36,6 +36,8 @@ class Post extends Model implements HasMedia
         'published_at',
         'expiry_date',
         'views',
+        'video',
+        'video_url',
     ];
 
     // Relationships (important for your earlier error style issues)
@@ -57,5 +59,34 @@ class Post extends Model implements HasMedia
     public function locality()
 {
     return $this->belongsTo(Locality::class);
+}
+public function likesData()
+{
+    return $this->hasMany(PostLike::class);
+}
+
+public function viewsData()
+{
+    return $this->hasMany(PostView::class);
+}
+
+public function sharesData()
+{
+    return $this->hasMany(PostShare::class);
+}
+
+public function getUrlAttribute()
+{
+    return route('post-details', [
+
+        'locality' => $this->locality?->slug,
+
+        'category' => $this->category?->slug,
+
+        'subcategory' => $this->subcategory?->slug,
+
+        'slug' => $this->slug,
+
+    ]);
 }
 }

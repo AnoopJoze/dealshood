@@ -1,0 +1,42 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::table('users', function (Blueprint $table) {
+
+            $table->text('address')->nullable()->after('phone');
+
+            // OPTIONAL (recommended for business system)
+            $table->string('whatsapp_number')->nullable()->after('phone');
+
+            $table->string('website')->nullable()->after('address');
+
+            $table->decimal('latitude', 10, 7)->nullable();
+            $table->decimal('longitude', 10, 7)->nullable();
+
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('users', function (Blueprint $table) {
+
+            $table->dropColumn([
+                'company_name',
+                'phone',
+                'address',
+                'whatsapp_number',
+                'website',
+                'latitude',
+                'longitude'
+            ]);
+
+        });
+    }
+};

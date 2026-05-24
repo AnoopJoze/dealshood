@@ -140,4 +140,5 @@ Route::post('posts/inline-update', [PostController::class, 'inlineUpdate'])
 )->name('posts.ajaxStore');
     Route::post('posts/data', [PostController::class, 'data'])->name('posts.data');
     Route::resource('posts', PostController::class);
+
 });

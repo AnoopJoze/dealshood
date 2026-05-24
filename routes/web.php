@@ -20,7 +20,27 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+use Spatie\Sitemap\Sitemap;
+use Spatie\Sitemap\Tags\Url;
 
+Route::get('/generate-sitemap', function () {
+
+    $sitemap = Sitemap::create();
+
+    Post::where('status', 'published')
+        ->get()
+        ->each(function ($post) use ($sitemap) {
+
+            $sitemap->add(
+                Url::create("/post/{$post->slug}")
+                    ->setLastModificationDate($post->updated_at)
+            );
+        });
+
+    $sitemap->writeToFile(public_path('sitemap.xml'));
+
+    return 'Sitemap generated';
+});
 
 Route::group(['middleware' => 'guest'], function () {
     Route::get('/register', [RegisterController::class, 'create']);
