@@ -879,7 +879,6 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                     <div class="dh-filter-grid">
 
                         <div class="dh-field-group">
-                            <label class="dh-field-label" for="locality_id">Locality</label>
                             <select class="dh-field" name="locality_id" id="locality_id">
                                 <option value="">All Localities</option>
                                 @foreach ($localities as $locality)
@@ -892,7 +891,6 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                         </div>
 
                         <div class="dh-field-group">
-                            <label class="dh-field-label" for="category_id">Category</label>
                             <select class="dh-field" name="category_id" id="category_id">
                                 <option value="">All Categories</option>
                                 @foreach ($categories as $category)
@@ -905,7 +903,6 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                         </div>
 
                         <div class="dh-field-group">
-                            <label class="dh-field-label" for="subcategory_id">Sub Category</label>
                             <select class="dh-field" name="subcategory_id" id="subcategory_id">
                                 <option value="">All Sub Categories</option>
                                 @foreach ($subcategories as $subcategory)
@@ -918,7 +915,6 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                         </div>
 
                         <div class="dh-field-group">
-                            <label class="dh-field-label" for="keyword">Keyword</label>
                             <input class="dh-field"
                                    name="keyword" id="keyword"
                                    placeholder="Search deals…"
