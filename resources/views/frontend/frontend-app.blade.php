@@ -4,9 +4,59 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="apple-touch-icon" sizes="76x76" href="../frontend/img/apple-icon.png">
-    <link rel="icon" type="image/png" href="../frontend/img/favicon.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/frontend/img/apple-icon.png">
+    <link rel="icon" type="image/png" href="/frontend/img/favicon.png">
     <title>DealsHood — Discover the Best Deals Near You</title>
+
+    {{-- ═══════════════════════════════════════════════
+         SEO & SOCIAL META
+         WhatsApp, Telegram, Facebook all read og:image.
+         Rules:
+           • Must be absolute HTTPS URL
+           • Min 300×300px  (1200×630 recommended)
+           • Must be publicly accessible (no auth)
+           • og:image:width / height must be present
+    ═══════════════════════════════════════════════ --}}
+    @php
+        /* --- OG image ---------------------------------------------------- */
+        $ogImage = '/frontend/img/favicon.png';
+        if (!$ogImage) { $ogImage = asset('frontend/img/default.jpg'); }
+        // Force absolute + HTTPS
+        if (!str_starts_with($ogImage, 'http')) { $ogImage = url($ogImage); }
+        $ogImage = str_replace('http://', 'https://', $ogImage);
+        $post = ['meta_title'=>'DealsHood','title'=>'DealsHood','meta_description'=>'DealsHood','keywords'=>'DealsHood'];
+        /* --- Other OG fields --------------------------------------------- */
+        $ogTitle       = @$post->meta_title       ?: @$post->title;
+        $ogDescription = @$post->meta_description ?: Str::limit(strip_tags(@$post->description), 160);
+        $ogUrl         = url()->current();
+    @endphp
+
+    <meta name="description"  content="{{ $ogDescription }}">
+    <meta name="keywords"     content="{{ @$post->keywords }}">
+    <link rel="canonical"     href="{{ $ogUrl }}">
+
+    {{-- Open Graph (WhatsApp / Facebook / Telegram / LinkedIn) --}}
+    <meta property="og:site_name"        content="DealsHood">
+    <meta property="og:type"             content="article">
+    <meta property="og:title"            content="{{ $ogTitle }}">
+    <meta property="og:description"      content="{{ $ogDescription }}">
+    <meta property="og:url"              content="{{ $ogUrl }}">
+    <meta property="og:image"            content="{{ $ogImage }}">
+    <meta property="og:image:secure_url" content="{{ $ogImage }}">
+    <meta property="og:image:type"       content="image/jpeg">
+    <meta property="og:image:width"      content="1200">
+    <meta property="og:image:height"     content="630">
+    <meta property="og:image:alt"        content="{{ $ogTitle }}">
+    <meta property="og:locale"           content="en_US">
+
+    {{-- Article meta --}}
+
+    {{-- Twitter Card (iMessage / Slack / Discord also use these) --}}
+    <meta name="twitter:card"        content="summary_large_image">
+    <meta name="twitter:title"       content="{{ $ogTitle }}">
+    <meta name="twitter:description" content="{{ $ogDescription }}">
+    <meta name="twitter:image"       content="{{ $ogImage }}">
+    <meta name="twitter:image:alt"   content="{{ $ogTitle }}">
 
     <!-- Fonts -->   <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -71,7 +121,7 @@
         margin: 0 auto;
         padding: 0 24px;
     }
-    .dh-nav-logo img { height: 38px; width: auto; display: block; }
+    .dh-nav-logo img { height: 45px; width: auto; display: block; }
     .dh-nav-actions { display: flex; align-items: center; gap: 10px; }
 
     .dh-btn-nav {
@@ -185,7 +235,7 @@
         border-radius: 2px;
     }
     .dh-hero-title {
-        
+
         font-size: clamp(2.2rem, 5vw, 3.8rem);
         font-weight: 700;
         color: #fff;
@@ -340,7 +390,7 @@
         margin-bottom: 28px;
     }
     .dh-section-title {
-        
+
         font-size: 1.6rem;
         font-weight: 700;
         color: var(--ink);
@@ -448,7 +498,7 @@
     .dh-badge-sub   { background: rgba(59,130,246,.08); color: #1d4ed8; }
 
     .dh-card-title {
-        
+
         font-size: 1.05rem;
         font-weight: 700;
         color: var(--ink);
@@ -601,7 +651,7 @@
         .dh-footer-grid { grid-template-columns: 1fr; }
     }
     .dh-footer-brand-name {
-        
+
         font-size: 1.15rem;
         color: #fff;
         margin: 12px 0 6px;

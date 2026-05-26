@@ -71,7 +71,7 @@
         margin: 0 auto;
         padding: 0 24px;
     }
-    .dh-nav-logo img { height: 38px; width: auto; display: block; }
+    .dh-nav-logo img { height: 45px; width: auto; display: block; }
     .dh-nav-actions  { display: flex; align-items: center; gap: 10px; }
 
     .dh-btn-nav {
