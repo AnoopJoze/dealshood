@@ -4,14 +4,10 @@
 
 @empty
 
-    <div class="col-12 text-center py-5">
-
-        <h4>No Posts Found</h4>
-
-        <p class="text-muted">
-            Try changing filters or search keywords.
-        </p>
-
+    <div class="dh-empty" style="grid-column: 1 / -1;">
+        <div class="dh-empty-icon">🔍</div>
+        <p class="dh-empty-title">No Deals Found</p>
+        <p class="dh-empty-text">Try adjusting your filters or search keywords.</p>
     </div>
 
 @endforelse

@@ -16,81 +16,72 @@ class FrontEndController extends Controller
 {
     public function home(Request $request)
     {
-        $localities = Locality::where('parent_id',3)->get();
-        $categories = Category::all();
-        $subcategories = SubCategory::all();
-        $query = Post::with([
-            'category',
-            'subcategory',
-            'locality'
-        ])
+    $localities = Locality::where('parent_id', 3)->get();
+    if($request->category_id){
+    $category = Category::where('slug', $request->category_id)->first();
+    $subcategories = SubCategory::where('category_id',$category->id)->get();
+    }else{
+    $subcategories = SubCategory::all();
+    }
+    $categories = Category::all();
+
+    $query = Post::with(['category','subcategory','locality'])
         ->withCount(['likesData as likes','viewsData as views','sharesData as shares'])
         ->where('status', 'published');
 
-        /*
-        |--------------------------------------------------------------------------
-        | FILTERS (SEO FRIENDLY READY)
-        |--------------------------------------------------------------------------
-        */
+    if ($request->filled('category_id')) {
+    $query->whereHas('category', fn($q) =>
+        $q->where('slug', $request->category_id));
+}
 
-        if ($request->filled('category')) {
-            $query->whereHas('category', function ($q) use ($request) {
-                $q->where('slug', $request->category);
-            });
-        }
+if ($request->filled('subcategory_id')) {
+    $query->whereHas('subcategory', fn($q) =>
+        $q->where('slug', $request->subcategory_id));
+}
 
-        if ($request->filled('subcategory')) {
-            $query->whereHas('subcategory', function ($q) use ($request) {
-                $q->where('slug', $request->subcategory);
-            });
-        }
+if ($request->filled('locality_id')) {
+    $query->whereHas('locality', fn($q) =>
+        $q->where('slug', $request->locality_id));
+}
 
-        if ($request->filled('locality')) {
-            $query->whereHas('locality', function ($q) use ($request) {
-                $q->where('slug', $request->locality);
-            });
-        }
+    if ($request->filled('keyword')) {
+        $query->where(function ($q) use ($request) {
+            $q->where('title','like',"%{$request->keyword}%")
+              ->orWhere('description','like',"%{$request->keyword}%");
+        });
+    }
 
-        if ($request->filled('search')) {
-            $query->where(function ($q) use ($request) {
-                $q->where('title', 'like', "%{$request->search}%")
-                  ->orWhere('description', 'like', "%{$request->search}%");
-            });
-        }
+    // SORT
+    if ($request->sort === 'old') {
+        $query->orderBy('created_at','asc');
+    } elseif ($request->sort === 'popular') {
+        $query->orderBy('views','desc');
+    } elseif ($request->sort === 'trending') {
+        $query->orderByRaw('(views + likes + shares) DESC');
+    } else {
+        $query->latest();
+    }
 
-        /*
-        |--------------------------------------------------------------------------
-        | SORTING (TRENDING / NEW / POPULAR)
-        |--------------------------------------------------------------------------
-        */
+    $posts = $query->paginate(12)->withQueryString();
 
-        if ($request->sort === 'old') {
-            $query->orderBy('created_at', 'asc');
-        }
+    // 🔥 AJAX RESPONSE (IMPORTANT)
+   if ($request->ajax()) {
 
-        if ($request->sort === 'popular') {
-            $query->orderBy('views', 'desc');
-        }
+    $html = view('frontend.post-cards', compact('posts'))->render();
 
-        if ($request->sort === 'trending') {
-            $query->orderByRaw('(views + likes + shares) DESC');
-        }
+    return response()->json([
+        'success' => true,
+        'html' => $html,
+        'next_page' => $posts->nextPageUrl(),
+    ]);
+}
 
-        if (!$request->sort) {
-            $query->latest();
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | PAGINATION
-        |--------------------------------------------------------------------------
-        */
-
-        $posts = $query->take(6)->get();
-
-        return view('frontend.frontend-app', compact('posts','localities',
+    return view('frontend.frontend-app', compact(
+        'posts',
+        'localities',
         'categories',
-        'subcategories'));
+        'subcategories'
+    ));
     }
     public function listing(Request $request)
     {

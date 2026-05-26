@@ -6,1192 +6,1029 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="apple-touch-icon" sizes="76x76" href="../frontend/img/apple-icon.png">
     <link rel="icon" type="image/png" href="../frontend/img/favicon.png">
-    <title>
-        DealsHood
-    </title>
-    <!--     Fonts and icons     -->
-    <link href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700,800" rel="stylesheet" />
-    <!-- Nucleo Icons -->
-    <link href="../assets/css/nucleo-icons.css" rel="stylesheet" />
-    <link href="../assets/css/nucleo-svg.css" rel="stylesheet" />
-    <!-- Font Awesome Icons -->
+    <title>DealsHood — Discover the Best Deals Near You</title>
+
+    <!-- Fonts -->   <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Font Awesome -->
     <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
     <!-- CSS Files -->
     <link id="pagestyle" href="../frontend/css/soft-design-system.css?v=1.1.0" rel="stylesheet" />
-    <!-- Nepcha Analytics (nepcha.com) -->
-    <!-- Nepcha is a easy-to-use web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. -->
-    <script defer data-site="YOUR_DOMAIN_HERE" src="https://api.nepcha.com/js/nepcha-analytics.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
     <style>
-        .nav-link {
-            color: #000 !important;
+    /* ═══════════════════════════════════════════════
+       VARIABLES & RESET
+    ═══════════════════════════════════════════════ */
+    :root {
+        --ink:         #0d0d0d;
+        --ink-mid:     #3a3a3a;
+        --ink-muted:   #6b6b6b;
+        --surface:     #faf9f7;
+        --surface-2:   #f2f1ef;
+        --white:       #ffffff;
+        --accent:      #c8102e;
+        --accent-dim:  rgba(200,16,46,.08);
+        --accent-soft: rgba(200,16,46,.2);
+        --radius-sm:   8px;
+        --radius:      14px;
+        --radius-lg:   20px;
+        --shadow-sm:   0 2px 12px rgba(0,0,0,.07);
+        --shadow-md:   0 6px 32px rgba(0,0,0,.10), 0 2px 8px rgba(0,0,0,.05);
+        --shadow-lg:   0 16px 56px rgba(0,0,0,.13), 0 4px 16px rgba(0,0,0,.06);
+        --font-serif:  'Playfair Display', Georgia, serif;
+        --font-sans:   'DM Sans', system-ui, sans-serif;
+        --nav-h:       64px;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+        font-family: var(--font-sans);
+        background: var(--surface);
+        color: var(--ink);
+        margin: 0;
+    }
+
+    /* ═══════════════════════════════════════════════
+       NAVBAR
+    ═══════════════════════════════════════════════ */
+    .dh-nav {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        height: var(--nav-h);
+        background: #fff;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(0,0,0,.07);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+    }
+    .dh-nav .dh-nav-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 0 24px;
+    }
+    .dh-nav-logo img { height: 38px; width: auto; display: block; }
+    .dh-nav-actions { display: flex; align-items: center; gap: 10px; }
+
+    .dh-btn-nav {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: var(--font-sans);
+        font-size: .75rem;
+        font-weight: 500;
+        letter-spacing: .04em;
+        border: none;
+        cursor: pointer;
+        border-radius: 100px;
+        padding: 9px 18px;
+        text-decoration: none;
+        transition: transform .15s, box-shadow .15s;
+    }
+    .dh-btn-nav:hover { transform: translateY(-1px); }
+    .dh-btn-ig { background: #e1306c; color: #fff; }
+    .dh-btn-wa { background: #25d366; color: #fff; }
+
+    .dh-nav-toggle {
+        display: none;
+        background: none;
+        border: none;
+        cursor: pointer;
+        flex-direction: column;
+        gap: 5px;
+        padding: 6px;
+    }
+    .dh-nav-toggle span {
+        display: block;
+        width: 22px; height: 2px;
+        background: var(--ink);
+        border-radius: 2px;
+        transition: .2s;
+    }
+    @media (max-width: 640px) {
+        .dh-nav-toggle { display: flex; }
+        .dh-nav-actions {
+            display: none;
+            position: absolute;
+            top: var(--nav-h);
+            left: 0; right: 0;
+            background: var(--white);
+            border-bottom: 1px solid rgba(0,0,0,.08);
+            padding: 16px 24px;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
         }
+        .dh-nav-actions.open { display: flex; }
+    }
 
-        .likeBtn.liked {
-            color: red;
+    /* ═══════════════════════════════════════════════
+       HERO BANNER
+    ═══════════════════════════════════════════════ */
+    .dh-hero-banner {
+        padding-top: var(--nav-h);
+        position: relative;
+        overflow: hidden;
+        min-height: 480px;
+        display: flex;
+        align-items: center;
+        background: var(--ink);
+    }
+    .dh-hero-bg {
+        position: absolute;
+        inset: 0;
+        background-image: url('../frontend/img/office-dark.jpg');
+        background-size: cover;
+        background-position: center;
+        opacity: .45;
+    }
+    .dh-hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            160deg,
+            rgba(13,13,13,.7) 0%,
+            rgba(13,13,13,.3) 60%,
+            rgba(200,16,46,.15) 100%
+        );
+    }
+    .dh-hero-content {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 64px 24px 80px;
+        text-align: center;
+    }
+    .dh-hero-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        font-size: .68rem;
+        font-weight: 500;
+        letter-spacing: .16em;
+        text-transform: uppercase;
+        color: #0f3f7e;
+        margin-bottom: 18px;
+        animation: fadeUp .5s .05s both;
+    }
+    .dh-hero-eyebrow::before, .dh-hero-eyebrow::after {
+        content: '';
+        display: inline-block;
+        width: 20px; height: 1.5px;
+        background: #0f3f7e;
+        border-radius: 2px;
+    }
+    .dh-hero-title {
+        
+        font-size: clamp(2.2rem, 5vw, 3.8rem);
+        font-weight: 700;
+        color: #fff;
+        line-height: 1.14;
+        letter-spacing: -.02em;
+        margin: 0 0 16px;
+        animation: fadeUp .55s .12s both;
+    }
+    .dh-hero-sub {
+        font-size: 1.05rem;
+        color: rgba(255,255,255,.65);
+        font-weight: 300;
+        margin-bottom: 32px;
+        animation: fadeUp .55s .18s both;
+    }
+    .dh-hero-socials {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+        animation: fadeUp .55s .24s both;
+    }
+    .dh-hero-socials a {
+        width: 38px; height: 38px;
+        border-radius: 50%;
+        border: 1px solid rgba(255,255,255,.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255,255,255,.7);
+        font-size: .95rem;
+        text-decoration: none;
+        transition: border-color .15s, color .15s, background .15s;
+    }
+    .dh-hero-socials a:hover {
+        border-color: #fff;
+        color: #fff;
+        background: rgba(255,255,255,.08);
+    }
+
+    /* Wave transition */
+    .dh-hero-wave {
+        position: absolute;
+        bottom: -1px; left: 0; right: 0;
+        z-index: 3;
+        line-height: 0;
+    }
+    .dh-hero-wave svg { display: block; width: 100%; }
+
+    /* ═══════════════════════════════════════════════
+       SEARCH BAR
+    ═══════════════════════════════════════════════ */
+    .dh-search-section {
+        background: var(--surface);
+        padding: 0 0 48px;
+    }
+    .dh-search-card {
+        max-width: 1180px;
+        margin: -36px auto 0;
+        padding: 0 24px;
+        position: relative;
+        z-index: 10;
+    }
+    .dh-search-inner {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(0,0,0,.05);
+        padding: 28px 28px 24px;
+    }
+    .dh-search-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr) auto;
+        gap: 14px;
+        align-items: end;
+    }
+    @media (max-width: 860px) {
+        .dh-search-grid {
+            grid-template-columns: 1fr 1fr;
         }
-
-        .likeBtn.liked {
-
-            background: #ffebee;
-            color: red;
-            border-color: red;
-
+        .dh-search-grid .dh-search-submit {
+            grid-column: 1 / -1;
         }
+    }
+    @media (max-width: 480px) {
+        .dh-search-grid { grid-template-columns: 1fr; }
+    }
 
-        .card-blog {
+    .dh-field-group { display: flex; flex-direction: column; gap: 5px; }
+    .dh-field-label {
+        font-size: .68rem;
+        font-weight: 500;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        color: var(--ink-muted);
+    }
+    .dh-field {
+        font-family: var(--font-sans);
+        font-size: .88rem;
+        color: var(--ink);
+        background: var(--surface);
+        border: 1.5px solid rgba(0,0,0,.1);
+        border-radius: var(--radius-sm);
+        padding: 10px 14px;
+        outline: none;
+        transition: border-color .15s, box-shadow .15s;
+        width: 100%;
+        appearance: none;
+    }
+    .dh-field:focus {
+        border-color: #0f3f7e;
+        box-shadow: 0 0 0 3px var(--accent-dim);
+    }
+    .dh-search-btn {
+        font-family: var(--font-sans);
+        font-size: .82rem;
+        font-weight: 500;
+        letter-spacing: .04em;
+        background: var(--ink);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius-sm);
+        padding: 11px 28px;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background .15s, transform .15s, box-shadow .15s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .dh-search-btn:hover {
+        background: #0f3f7e;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 16px var(--accent-soft);
+    }
 
-            transition: 0.3s;
+    /* ═══════════════════════════════════════════════
+       POSTS GRID
+    ═══════════════════════════════════════════════ */
+    .dh-posts-section {
+        padding: 0 0 80px;
+        background: var(--surface);
+    }
+    .dh-posts-section .dh-container {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 0 24px;
+    }
+    .dh-section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 28px;
+    }
+    .dh-section-title {
+        
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin: 0;
+    }
+    .dh-section-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        font-size: .67rem;
+        font-weight: 500;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+        color: #0f3f7e;
+        margin-bottom: 8px;
+    }
+    .dh-section-eyebrow::before {
+        content: '';
+        display: inline-block;
+        width: 20px; height: 2px;
+        background: #0f3f7e;
+        border-radius: 2px;
+    }
 
-        }
+    /* Post cards grid */
+    .dh-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+    }
+    @media (max-width: 900px) { .dh-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px) { .dh-grid { grid-template-columns: 1fr; } }
 
-        .card-blog:hover {
+    /* Post card */
+    .dh-card {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid rgba(0,0,0,.05);
+        display: flex;
+        flex-direction: column;
+        transition: transform .22s, box-shadow .22s;
+    }
+    .dh-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-md);
+    }
 
-            transform: translateY(-5px);
+    /* Card media */
+    .dh-card-media {
+        position: relative;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+    .dh-card-media img,
+    .dh-card-media video {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+        display: block;
+        transition: transform .35s;
+    }
+    .dh-card:hover .dh-card-media img { transform: scale(1.04); }
+    .dh-card-media .ratio { height: 220px; }
+    .dh-card-media .ratio iframe { height: 100%; }
 
-        }
+    /* Featured badge */
+    .dh-badge-featured {
+        position: absolute;
+        top: 12px; right: 12px;
+        background: #f59e0b;
+        color: #fff;
+        font-size: .62rem;
+        font-weight: 600;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border-radius: 100px;
+    }
+
+    /* Card body */
+    .dh-card-body {
+        padding: 18px 20px 20px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+    .dh-card-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-bottom: 10px;
+    }
+    .dh-badge {
+        font-size: .62rem;
+        font-weight: 500;
+        letter-spacing: .07em;
+        text-transform: uppercase;
+        padding: 3px 9px;
+        border-radius: 100px;
+    }
+    .dh-badge-loc   { background: var(--surface-2); color: var(--ink-muted); }
+    .dh-badge-cat   { background: var(--accent-dim); color: #0f3f7e; }
+    .dh-badge-sub   { background: rgba(59,130,246,.08); color: #1d4ed8; }
+
+    .dh-card-title {
+        
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--ink);
+        line-height: 1.35;
+        margin: 0 0 8px;
+        text-decoration: none;
+        display: block;
+        transition: color .15s;
+    }
+    .dh-card-title:hover { color: #0f3f7e; }
+
+    .dh-card-desc {
+        font-size: .82rem;
+        line-height: 1.65;
+        color: var(--ink-muted);
+        font-weight: 300;
+        flex: 1;
+        margin-bottom: 16px;
+    }
+
+    /* Card stats row */
+    .dh-card-meta {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-size: .75rem;
+        color: var(--ink-muted);
+        margin-bottom: 14px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid rgba(0,0,0,.06);
+    }
+    .dh-card-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .dh-stat-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-family: var(--font-sans);
+        font-size: .72rem;
+        font-weight: 500;
+        background: none;
+        border: 1px solid rgba(0,0,0,.1);
+        border-radius: 100px;
+        padding: 4px 10px;
+        cursor: pointer;
+        color: var(--ink-muted);
+        transition: all .15s;
+    }
+    .dh-stat-btn.likeBtn:hover    { border-color: #0f3f7e; color: #0f3f7e; background: var(--accent-dim); }
+    .dh-stat-btn.likeBtn.liked    { border-color: #0f3f7e; color: #0f3f7e; background: var(--accent-dim); }
+
+    /* Card actions */
+    .dh-card-actions { display: flex; gap: 8px; }
+    .dh-card-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        font-family: var(--font-sans);
+        font-size: .76rem;
+        font-weight: 500;
+        letter-spacing: .03em;
+        border-radius: 100px;
+        padding: 9px 18px;
+        text-decoration: none;
+        border: 1.5px solid;
+        cursor: pointer;
+        transition: all .15s;
+        flex: 1;
+    }
+    .dh-card-btn-primary {
+        background: var(--ink);
+        color: #fff;
+        border-color: var(--ink);
+    }
+    .dh-card-btn-primary:hover { background: #0f3f7e; border-color: #0f3f7e; color: #fff; }
+    .dh-card-btn-ghost {
+        background: transparent;
+        color: var(--ink-muted);
+        border-color: rgba(0,0,0,.12);
+        flex: 0 0 auto;
+        padding: 9px 16px;
+    }
+    .dh-card-btn-ghost:hover { background: var(--surface-2); color: var(--ink); }
+
+    /* Empty state */
+    .dh-empty {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 64px 24px;
+        color: var(--ink-muted);
+    }
+    .dh-empty-icon { font-size: 2.5rem; margin-bottom: 16px; opacity: .4; }
+    .dh-empty-text { font-size: .95rem; font-weight: 300; }
+
+    /* Show more */
+    .dh-show-more {
+        text-align: center;
+        margin-top: 40px;
+    }
+    .dh-btn-more {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: var(--font-sans);
+        font-size: .8rem;
+        font-weight: 500;
+        letter-spacing: .05em;
+        text-decoration: none;
+        color: var(--ink);
+        border: 1.5px solid rgba(0,0,0,.15);
+        border-radius: 100px;
+        padding: 12px 28px;
+        transition: all .18s;
+    }
+    .dh-btn-more:hover {
+        background: var(--ink);
+        color: #fff;
+        border-color: var(--ink);
+        transform: translateY(-2px);
+    }
+
+    /* ═══════════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════════ */
+    .dh-footer {
+        background: var(--ink);
+        color: rgba(255,255,255,.7);
+        padding: 64px 0 0;
+        font-size: .85rem;
+    }
+    .dh-footer .dh-container {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 0 24px;
+    }
+    .dh-footer-grid {
+        display: grid;
+        grid-template-columns: 1.6fr 1fr 1fr;
+        gap: 48px;
+        padding-bottom: 48px;
+    }
+    @media (max-width: 720px) {
+        .dh-footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 440px) {
+        .dh-footer-grid { grid-template-columns: 1fr; }
+    }
+    .dh-footer-brand-name {
+        
+        font-size: 1.15rem;
+        color: #fff;
+        margin: 12px 0 6px;
+    }
+    .dh-footer-tagline { font-size: .78rem; color: rgba(255,255,255,.4); margin: 0; }
+    .dh-footer-social {
+        display: flex;
+        gap: 8px;
+        margin-top: 20px;
+    }
+    .dh-footer-social a {
+        width: 34px; height: 34px;
+        border-radius: 50%;
+        border: 1px solid rgba(255,255,255,.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255,255,255,.6);
+        font-size: .9rem;
+        text-decoration: none;
+        transition: border-color .15s, color .15s;
+    }
+    .dh-footer-social a:hover { border-color: rgba(255,255,255,.5); color: #fff; }
+    .dh-footer-col-title {
+        font-size: .65rem;
+        font-weight: 600;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+        color: #0f3f7e;
+        margin-bottom: 16px;
+    }
+    .dh-footer-links { list-style: none; padding: 0; margin: 0; }
+    .dh-footer-links li { margin-bottom: 10px; }
+    .dh-footer-links a {
+        color: rgba(255,255,255,.55);
+        text-decoration: none;
+        transition: color .15s;
+    }
+    .dh-footer-links a:hover { color: #fff; }
+    .dh-footer-bottom {
+        border-top: 1px solid rgba(255,255,255,.08);
+        text-align: center;
+        padding: 22px 0;
+        font-size: .75rem;
+        color: rgba(255,255,255,.3);
+    }
+    .dh-footer-bottom a { color: rgba(255,255,255,.5); text-decoration: none; }
+    .dh-footer-bottom a:hover { color: #fff; }
+
+    /* ═══════════════════════════════════════════════
+       ANIMATIONS
+    ═══════════════════════════════════════════════ */
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(22px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    .dh-search-inner { animation: fadeUp .55s .3s both; }
     </style>
 </head>
 
-<body class="about-us">
-    <!-- Navbar Transparent -->
-    <nav class="navbar navbar-expand-lg fixed-top z-index-3 w-100 bg-white shadow-sm p-0">
-        <div class="container">
-            <a class="navbar-brand text-dark" href="{{ route('home') }}">
-                <img src="../frontend/img/dealshood.png" class="img-fluid" alt="Logo" width="80">
+<body>
+
+    <!-- ═══════════════════════════════════════════════
+         NAVBAR
+    ═══════════════════════════════════════════════ -->
+    <nav class="dh-nav">
+        <div class="dh-nav-inner">
+            <a class="dh-nav-logo" href="{{ route('home') }}">
+                <img src="../frontend/img/dealshood.png" alt="DealsHood">
             </a>
 
-            <button class="navbar-toggler shadow-none ms-2" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navigation" aria-controls="navigation" aria-expanded="false"
-                aria-label="Toggle navigation">
-
-                <span class="navbar-toggler-icon mt-2">
-                    <span class="navbar-toggler-bar bar1"></span>
-                    <span class="navbar-toggler-bar bar2"></span>
-                    <span class="navbar-toggler-bar bar3"></span>
-                </span>
+            <button class="dh-nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
             </button>
 
-            <div class="collapse navbar-collapse justify-content-end pt-3 pb-2 py-lg-0" id="navigation">
-
-                <ul class="navbar-nav navbar-nav-hover ms-auto">
-
-                    <li class="nav-item dropdown dropdown-hover mx-2">
-                        <a href="https://www.instagram.com/dealshood?igsh=NHJpdDhkYmJ2dTlj" target="_blank"
-                            class="btn btn-danger m-0 p-1 mt-1">
-                            <i class="bi bi-instagram" style="font-size:14px;"></i> Follow Us
-                        </a>
-                    </li>
-
-                    <li class="nav-item dropdown dropdown-hover mx-2">
-                        <a href="https://wa.me/918086087050?text=Hello%20I%20am%20interested%20in%20your%20listing"
-                            target="_blank" class="btn btn-sm btn-success m-0 p-1 mt-1">
-                            <i class="bi bi-whatsapp" style="font-size:14px;"></i> Contact Us
-                        </a>
-                    </li>
-
-                </ul>
+            <div class="dh-nav-actions" id="navActions">
+                <a href="https://www.instagram.com/dealshood?igsh=NHJpdDhkYmJ2dTlj"
+                   target="_blank" class="dh-btn-nav dh-btn-ig">
+                    <i class="bi bi-instagram"></i> Follow Us
+                </a>
+                <a href="https://wa.me/918086087050?text=Hello%20I%20am%20interested%20in%20your%20listing"
+                   target="_blank" class="dh-btn-nav dh-btn-wa">
+                    <i class="bi bi-whatsapp"></i> Contact Us
+                </a>
             </div>
         </div>
     </nav>
-    <!-- End Navbar -->
-    <!-- -------- START HEADER 7 w/ text and video ------- -->
-    <header class="bg-gradient-white">
-        <div class="page-header min-vh-75" style="background-image: url('../frontend/img/office-dark.jpg');">
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-lg-8 text-center mx-auto my-auto">
-                        <h1 class="text-white">Discover best deals !...</h1>
-                        <p class="lead mb-4 text-white opacity-8">Find the best deals from your neighbourhood.</p>
-                        <div class="d-flex justify-content-center">
-                            <a href="javascript:;"><i class="fab fa-facebook text-lg text-white me-4"></i></a>
-                            <a href="javascript:;"><i class="fab fa-instagram text-lg text-white me-4"></i></a>
-                            <a href="javascript:;"><i class="fab fa-twitter text-lg text-white me-4"></i></a>
-                            <a href="javascript:;"><i class="fab fa-google-plus text-lg text-white"></i></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="position-absolute w-100 bottom-0">
-                <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                    viewBox="0 24 150 40" preserveAspectRatio="none" shape-rendering="auto">
-                    <defs>
-                        <path id="gentle-wave"
-                            d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
-                    </defs>
-                    <g class="moving-waves">
-                        <use xlink:href="#gentle-wave" x="48" y="-1" fill="rgba(255,255,255,0.40" />
-                        <use xlink:href="#gentle-wave" x="48" y="3" fill="rgba(255,255,255,0.35)" />
-                        <use xlink:href="#gentle-wave" x="48" y="5" fill="rgba(255,255,255,0.25)" />
-                        <use xlink:href="#gentle-wave" x="48" y="8" fill="rgba(255,255,255,0.20)" />
-                        <use xlink:href="#gentle-wave" x="48" y="13" fill="rgba(255,255,255,0.15)" />
-                        <use xlink:href="#gentle-wave" x="48" y="16" fill="rgba(255,255,255,1" />
-                    </g>
-                </svg>
+
+    <!-- ═══════════════════════════════════════════════
+         HERO BANNER
+    ═══════════════════════════════════════════════ -->
+    <header class="dh-hero-banner">
+        <div class="dh-hero-bg" id="heroBg"></div>
+        <div class="dh-hero-overlay"></div>
+
+        <div class="dh-hero-content">
+            <span class="dh-hero-eyebrow">DealsHood</span>
+            <h1 class="dh-hero-title">Discover the Best<br>Deals Near You</h1>
+            <p class="dh-hero-sub">Find great offers from your neighbourhood, every day.</p>
+            <div class="dh-hero-socials">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                <a href="https://www.instagram.com/dealshood" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" aria-label="Google Plus"><i class="fab fa-google-plus"></i></a>
             </div>
         </div>
-        <div class="position-relative overflow-hidden" style="height:36px;margin-top:30px;">
-            <div class="w-full absolute bottom-0 start-0 end-0"
-                style="transform: scale(2);transform-origin: top center;color: #fff;">
-                <svg viewBox="0 0 2880 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M0 48H1437.5H2880V0H2160C1442.5 52 720 0 720 0H0V48Z" fill="currentColor"></path>
-                </svg>
-            </div>
+
+        <!-- Wave bottom -->
+        <div class="dh-hero-wave">
+            <svg viewBox="0 0 1440 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 56H1440V28C1200 56 960 8 720 8C480 8 240 56 0 28V56Z" fill="#faf9f7"/>
+            </svg>
         </div>
-        <form action="{{ route('posts.listing') }}" method="GET">
-            <div class="container">
-                <div class="row bg-white shadow-lg mt-n6 border-radius-md pb-4 p-3 mx-sm-0 mx-1 position-relative">
-                    {{-- Locality --}}
-                    <div class="col-lg-2 mt-lg-n2 mt-2">
-                        <label>Localities</label>
-                        <select class="form-control" name="locality_id" id="locality_id">
-                            <option value="">Select Locality</option>
-                            @foreach ($localities as $locality)
-                                <option value="{{ $locality->slug }}"
-                                    {{ request('locality_id') == $locality->slug ? 'selected' : '' }}>
-                                    {{ $locality->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    {{-- Category --}}
-                    <div class="col-lg-2 mt-lg-n2 mt-2">
-                        <label>Category</label>
-                        <select class="form-control" name="category_id" id="category_id">
-                            <option value="">Select Category</option>
-                            @foreach ($categories as $category)
-                                <option value="{{ $category->slug }}"
-                                    {{ request('category_id') == $category->slug ? 'selected' : '' }}>
-                                    {{ $category->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    {{-- Sub Category --}}
-                    <div class="col-lg-2 mt-lg-n2 mt-2">
-                        <label>Sub Category</label>
-                        <select class="form-control" name="subcategory_id" id="subcategory_id">
-                            <option value="">Select Sub Category</option>
-
-                            @foreach ($subcategories as $subcategory)
-                                <option value="{{ $subcategory->slug }}"
-                                    {{ request('subcategory_id') == $subcategory->slug ? 'selected' : '' }}>
-
-                                    {{ $subcategory->name }}
-
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="col-lg-4 mt-lg-n2 mt-2">
-                        <label>Search By Keyword</label>
-                        <input class="form-control" name="keyword" id="keyword" value="{{ request('keyword') }}">
-                    </div>
-
-                    {{-- Search Button --}}
-                    <div class="col-lg-2 mt-lg-n2 mt-2">
-                        <label>&nbsp;</label>
-                        <button type="submit" class="btn bg-gradient-dark w-100 mb-0">
-                            Search
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </form>
     </header>
-    <section class="pt-7 pb-0">
-        <div class="container">
-            <div class="row">
+
+    <!-- ═══════════════════════════════════════════════
+         SEARCH BAR
+    ═══════════════════════════════════════════════ -->
+    <section class="dh-search-section">
+        <div class="dh-search-card">
+            <div class="dh-search-inner">
+                <form action="{{ route('posts.listing') }}" method="GET">
+                    <div class="dh-search-grid">
+
+                        <div class="dh-field-group">
+                            <label class="dh-field-label">Locality</label>
+                            <select class="dh-field" name="locality_id" id="locality_id">
+                                <option value="">All Localities</option>
+                                @foreach ($localities as $locality)
+                                    <option value="{{ $locality->slug }}"
+                                        {{ request('locality_id') == $locality->slug ? 'selected' : '' }}>
+                                        {{ $locality->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="dh-field-group">
+                            <label class="dh-field-label">Category</label>
+                            <select class="dh-field" name="category_id" id="category_id">
+                                <option value="">All Categories</option>
+                                @foreach ($categories as $category)
+                                    <option value="{{ $category->slug }}"
+                                        {{ request('category_id') == $category->slug ? 'selected' : '' }}>
+                                        {{ $category->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="dh-field-group">
+                            <label class="dh-field-label">Sub Category</label>
+                            <select class="dh-field" name="subcategory_id" id="subcategory_id">
+                                <option value="">All Sub Categories</option>
+                                @foreach ($subcategories as $subcategory)
+                                    <option value="{{ $subcategory->slug }}"
+                                        {{ request('subcategory_id') == $subcategory->slug ? 'selected' : '' }}>
+                                        {{ $subcategory->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="dh-field-group">
+                            <label class="dh-field-label">Keyword</label>
+                            <input class="dh-field" name="keyword" id="keyword"
+                                   placeholder="Search deals..."
+                                   value="{{ request('keyword') }}">
+                        </div>
+
+                        <div class="dh-search-submit">
+                            <button type="submit" class="dh-search-btn" style="height:42px;">
+                                <i class="bi bi-search"></i> Search
+                            </button>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════
+         POSTS GRID
+    ═══════════════════════════════════════════════ -->
+    <section class="dh-posts-section">
+        <div class="dh-container">
+
+            <div class="dh-section-header">
+                <div>
+                    <div class="dh-section-eyebrow">Latest</div>
+                    <h2 class="dh-section-title">Fresh Deals</h2>
+                </div>
+            </div>
+
+            <div class="dh-grid">
                 @forelse($posts as $post)
                     @php
-
-                        /*
-        |--------------------------------------------------------------------------
-        | IMAGE
-        |--------------------------------------------------------------------------
-        */
-
-                        $image = $post->getFirstMediaUrl('posts');
-
-                        if (!$image) {
-                            $image = asset('frontend/img/default.jpg');
-                        }
-
-                        /*
-        |--------------------------------------------------------------------------
-        | LIKE STATUS (guest support)
-        |--------------------------------------------------------------------------
-        */
-
+                        $image = $post->getFirstMediaUrl('posts') ?: asset('frontend/img/default.jpg');
                         $liked = \App\Models\PostLike::where('post_id', $post->id)
-
                             ->where(function ($q) {
-                                $q->where('ip_address', request()->ip())->orWhere('session_id', session()->getId());
-                            })
-
-                            ->exists();
-
-                        /*
-        |--------------------------------------------------------------------------
-        | VIDEO
-        |--------------------------------------------------------------------------
-        */
-
+                                $q->where('ip_address', request()->ip())
+                                  ->orWhere('session_id', session()->getId());
+                            })->exists();
                         $video = $post->getFirstMediaUrl('videos');
-
                     @endphp
 
-                    <div class="col-xl-4 col-lg-4 col-md-6 mb-4">
+                    <div class="dh-card">
 
-                        <div class="card card-blog card-plain h-100 shadow-sm border-0">
-
-                            {{-- =========================================
-                IMAGE / VIDEO
-            ========================================== --}}
-                            <div class="position-relative">
-
-                                <a href="{{ $post->url }}" class="d-block blur-shadow-image">
-
-                                    {{-- VIDEO --}}
-                                    @if ($video)
-                                        <video class="img-fluid shadow border-radius-lg" controls preload="metadata"
-                                            style="height:250px;width:100%;object-fit:cover;">
-
-                                            <source src="{{ $video }}">
-
-                                        </video>
-
-                                        {{-- EXTERNAL VIDEO URL --}}
-                                    @elseif($post->video_url)
-                                        <div class="ratio ratio-16x9">
-
-                                            <iframe src="{{ str_replace('watch?v=', 'embed/', $post->video_url) }}"
-                                                allowfullscreen>
-                                            </iframe>
-
-                                        </div>
-
-                                        {{-- IMAGE --}}
-                                    @else
-                                        <img src="{{ $image }}" alt="{{ $post->title }}" loading="lazy"
-                                            class="img-fluid shadow border-radius-lg"
-                                            style="height:250px;width:100%;object-fit:cover;">
-                                    @endif
-
-                                </a>
-
-                                {{-- FEATURED BADGE --}}
-                                @if ($post->is_featured)
-                                    <span class="badge bg-warning position-absolute top-0 end-0 m-2">
-                                        Featured
-                                    </span>
+                        <!-- Media -->
+                        <div class="dh-card-media">
+                            <a href="{{ $post->url }}">
+                                @if($video)
+                                    <video preload="metadata" muted>
+                                        <source src="{{ $video }}">
+                                    </video>
+                                @elseif($post->video_url)
+                                    <div class="ratio ratio-16x9">
+                                        <iframe src="{{ str_replace('watch?v=', 'embed/', $post->video_url) }}"
+                                                allowfullscreen loading="lazy"></iframe>
+                                    </div>
+                                @else
+                                    <img src="{{ $image }}" alt="{{ $post->title }}" loading="lazy">
                                 @endif
+                            </a>
 
+                            @if($post->is_featured)
+                                <span class="dh-badge-featured">⭐ Featured</span>
+                            @endif
+                        </div>
+
+                        <!-- Body -->
+                        <div class="dh-card-body">
+
+                            <div class="dh-card-badges">
+                                @if($post->locality)
+                                    <span class="dh-badge dh-badge-loc">📍 {{ $post->locality->name }}</span>
+                                @endif
+                                @if($post->category)
+                                    <span class="dh-badge dh-badge-cat">{{ $post->category->name }}</span>
+                                @endif
+                                @if($post->subcategory)
+                                    <span class="dh-badge dh-badge-sub">{{ $post->subcategory->name }}</span>
+                                @endif
                             </div>
 
-                            {{-- =========================================
-                BODY
-            ========================================== --}}
-                            <div class="card-body px-1 pt-3 d-flex flex-column">
+                            <a href="{{ $post->url }}" class="dh-card-title">
+                                {{ \Illuminate\Support\Str::limit($post->title, 60) }}
+                            </a>
 
-                                {{-- CATEGORY + LOCATION --}}
+                            <p class="dh-card-desc">
+                                {{ \Illuminate\Support\Str::limit(strip_tags($post->description), 90) }}
+                            </p>
 
-                                {{-- TITLE --}}
-                                <a href="{{ $post->url }}" class="text-decoration-none text-dark">
+                            <!-- Stats + date -->
+                            <div class="dh-card-meta">
+                                <button class="dh-stat-btn likeBtn {{ $liked ? 'liked' : '' }}"
+                                        data-id="{{ $post->id }}">
+                                    ❤️ <span id="like-count-{{ $post->id }}">{{ number_format($post->likes) }}</span>
+                                </button>
+                                <span class="dh-card-meta-item">👁 {{ number_format($post->views) }}</span>
+                                <span class="dh-card-meta-item">🔄 {{ number_format($post->shares) }}</span>
+                                <span class="dh-card-meta-item" style="margin-left:auto;">
+                                    🕒 {{ $post->created_at->diffForHumans() }}
+                                </span>
+                            </div>
 
-                                    <h5 class="mb-2">
-
-                                        {{ \Illuminate\Support\Str::limit($post->title, 60) }}
-
-                                    </h5>
-
+                            <!-- Buttons -->
+                            <div class="dh-card-actions">
+                                <a href="{{ $post->url }}" class="dh-card-btn dh-card-btn-primary">
+                                    View Details
                                 </a>
-                                <div class="mb-2">
-
-                                    @if ($post->locality)
-                                        <span class="badge bg-light text-dark">
-                                            📍 {{ $post->locality?->name }}
-                                        </span>
-                                    @endif
-
-                                    @if ($post->category)
-                                        <span class="badge bg-primary">
-                                            {{ $post->category?->name }}
-                                        </span>
-                                    @endif
-
-                                    @if ($post->subcategory)
-                                        <span class="badge bg-info">
-                                            {{ $post->subcategory?->name }}
-                                        </span>
-                                    @endif
-
-                                </div>
-
-                                {{-- DESCRIPTION --}}
-                                <p class="text-sm text-muted flex-grow-1">
-
-                                    {{ \Illuminate\Support\Str::limit(strip_tags($post->description), 80) }}
-
-                                </p>
-
-                                {{-- =========================================
-                    META
-                ========================================== --}}
-                                <div class="d-flex align-items-center justify-content-between mb-3">
-
-                                    {{-- DATE --}}
-                                    <small class="text-muted">
-
-                                        <i class="fas fa-clock"></i>
-
-                                        {{ $post->created_at->diffForHumans() }}
-
-                                    </small>
-
-
-                                </div>
-
-                                {{-- =========================================
-                    STATS
-                ========================================== --}}
-                                <div class="d-flex align-items-center gap-3 mb-3">
-
-                                    {{-- LIKE --}}
-                                    <button class="btn btn-sm likeBtn {{ $liked ? 'liked' : '' }}"
-                                        data-id="{{ $post->id }}">
-
-                                        ❤️
-
-                                        <span id="like-count-{{ $post->id }}">
-                                            {{ number_format($post->likes) }}
-                                        </span>
-
-                                    </button>
-                                    <button class="btn btn-sm {{ $liked ? 'liked' : '' }}"
-                                        data-id="{{ $post->id }}">
-
-                                        👁
-
-                                        <span>
-                                            {{ number_format($post->views) }}
-                                        </span>
-
-                                    </button>
-                                    <button class="btn btn-sm {{ $liked ? 'liked' : '' }}"
-                                        data-id="{{ $post->id }}">
-
-                                        🔄
-
-                                        <span>
-                                            {{ number_format($post->shares) }}
-                                        </span>
-
-                                    </button>
-
-
-                                </div>
-
-                                {{-- =========================================
-                    BUTTONS
-                ========================================== --}}
-                                <div class="d-flex gap-2">
-
-                                    {{-- DETAILS --}}
-                                    <a href="{{ $post->url }}" class="btn btn-outline-primary btn-sm w-100">
-
-                                        View Details
-
-                                    </a>
-
-                                    {{-- SHARE --}}
-                                    <button class="btn btn-outline-dark btn-sm shareBtn"
-                                        data-id="{{ $post->id }}" data-url="{{ $post->url }}">
-
-                                        Share
-
-                                    </button>
-
-                                </div>
-
+                                <button class="dh-card-btn dh-card-btn-ghost shareBtn"
+                                        data-id="{{ $post->id }}"
+                                        data-url="{{ $post->url }}">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                                </button>
                             </div>
 
                         </div>
-
                     </div>
 
                 @empty
-
-                    <div class="col-12">
-
-                        <div class="alert alert-info">
-
-                            No posts found.
-
-                        </div>
-
+                    <div class="dh-empty">
+                        <div class="dh-empty-icon">🔍</div>
+                        <p class="dh-empty-text">No deals found. Try adjusting your filters.</p>
                     </div>
                 @endforelse
-                {{-- PAGINATION --}}
-                <div class="mt-4">
+            </div>
 
-                    <a class="btn btn-outline-dark btn-sm" style="float:right;" href="{{ route('posts.listing') }}">
+            <!-- Show more -->
+            <div class="dh-show-more">
+                <a href="{{ route('posts.listing') }}" class="dh-btn-more">
+                    Show All Deals
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+            </div>
 
-                        Show More Ads
+        </div>
+    </section>
 
-                    </a>
+    <!-- ═══════════════════════════════════════════════
+         FOOTER
+    ═══════════════════════════════════════════════ -->
+    <footer class="dh-footer">
+        <div class="dh-container">
+            <div class="dh-footer-grid">
 
+                <!-- Brand -->
+                <div>
+                    <img src="../frontend/img/dealshood.png" alt="DealsHood"
+                         style="height:34px;filter:brightness(0) invert(1);opacity:.8;">
+                    <p class="dh-footer-brand-name">DealsHood</p>
+                    <p class="dh-footer-tagline">Discover the best deals around you.</p>
+                    <div class="dh-footer-social">
+                        <a href="https://www.facebook.com/CreativeTim/" target="_blank"><i class="fab fa-facebook"></i></a>
+                        <a href="https://twitter.com/creativetim" target="_blank"><i class="fab fa-twitter"></i></a>
+                        <a href="https://dribbble.com/creativetim" target="_blank"><i class="fab fa-dribbble"></i></a>
+                        <a href="https://github.com/creativetimofficial" target="_blank"><i class="fab fa-github"></i></a>
+                        <a href="https://www.youtube.com/channel/UCVyTG4sCw-rOvB9oHkzZD1w" target="_blank"><i class="fab fa-youtube"></i></a>
+                    </div>
                 </div>
+
+                <!-- Company -->
+                <div>
+                    <p class="dh-footer-col-title">Company</p>
+                    <ul class="dh-footer-links">
+                        <li><a href="https://www.creative-tim.com/presentation" target="_blank">About Us</a></li>
+                        <li><a href="https://www.creative-tim.com/blog" target="_blank">Ads</a></li>
+                    </ul>
+                </div>
+
+                <!-- Help -->
+                <div>
+                    <p class="dh-footer-col-title">Help & Support</p>
+                    <ul class="dh-footer-links">
+                        <li><a href="https://www.creative-tim.com/contact-us" target="_blank">Contact Us</a></li>
+                    </ul>
+                </div>
+
             </div>
-        </div>
-    </section>
-    <!-- -------- END HEADER 7 w/ text and video ------- -->
-    <!-- Section with four info areas left & one card right with image and waves -->
-    <section class="py-7">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6">
-                    <div class="row justify-content-start">
-                        <div class="col-md-6">
-                            <div class="info">
-                                <div class="icon icon-shape text-center">
-                                    <svg class="text-info" width="25px" height="25px" viewBox="0 0 40 40"
-                                        version="1.1" xmlns="http://www.w3.org/2000/svg"
-                                        xmlns:xlink="http://www.w3.org/1999/xlink">
-                                        <title>spaceship</title>
-                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                            <g transform="translate(-1720.000000, -592.000000)" fill="#FFFFFF"
-                                                fill-rule="nonzero">
-                                                <g transform="translate(1716.000000, 291.000000)">
-                                                    <g transform="translate(4.000000, 301.000000)">
-                                                        <path class="color-foreground"
-                                                            d="M39.3,0.706666667 C38.9660984,0.370464027 38.5048767,0.192278529 38.0316667,0.216666667 C14.6516667,1.43666667 6.015,22.2633333 5.93166667,22.4733333 C5.68236407,23.0926189 5.82664679,23.8009159 6.29833333,24.2733333 L15.7266667,33.7016667 C16.2013871,34.1756798 16.9140329,34.3188658 17.535,34.065 C17.7433333,33.98 38.4583333,25.2466667 39.7816667,1.97666667 C39.8087196,1.50414529 39.6335979,1.04240574 39.3,0.706666667 Z M25.69,19.0233333 C24.7367525,19.9768687 23.3029475,20.2622391 22.0572426,19.7463614 C20.8115377,19.2304837 19.9992882,18.0149658 19.9992882,16.6666667 C19.9992882,15.3183676 20.8115377,14.1028496 22.0572426,13.5869719 C23.3029475,13.0710943 24.7367525,13.3564646 25.69,14.31 C26.9912731,15.6116662 26.9912731,17.7216672 25.69,19.0233333 L25.69,19.0233333 Z">
-                                                        </path>
-                                                        <path class="color-foreground"
-                                                            d="M1.855,31.4066667 C3.05106558,30.2024182 4.79973884,29.7296005 6.43969145,30.1670277 C8.07964407,30.6044549 9.36054508,31.8853559 9.7979723,33.5253085 C10.2353995,35.1652612 9.76258177,36.9139344 8.55833333,38.11 C6.70666667,39.9616667 0,40 0,40 C0,40 0,33.2566667 1.855,31.4066667 Z">
-                                                        </path>
-                                                        <path class="color-background"
-                                                            d="M17.2616667,3.90166667 C12.4943643,3.07192755 7.62174065,4.61673894 4.20333333,8.04166667 C3.31200265,8.94126033 2.53706177,9.94913142 1.89666667,11.0416667 C1.5109569,11.6966059 1.61721591,12.5295394 2.155,13.0666667 L5.47,16.3833333 C8.55036617,11.4946947 12.5559074,7.25476565 17.2616667,3.90166667 L17.2616667,3.90166667 Z"
-                                                            opacity="0.598539807"></path>
-                                                        <path class="color-background"
-                                                            d="M36.0983333,22.7383333 C36.9280725,27.5056357 35.3832611,32.3782594 31.9583333,35.7966667 C31.0587397,36.6879974 30.0508686,37.4629382 28.9583333,38.1033333 C28.3033941,38.4890431 27.4704606,38.3827841 26.9333333,37.845 L23.6166667,34.53 C28.5053053,31.4496338 32.7452344,27.4440926 36.0983333,22.7383333 L36.0983333,22.7383333 Z"
-                                                            id="color-3" opacity="0.598539807"></path>
-                                                    </g>
-                                                </g>
-                                            </g>
-                                        </g>
-                                    </svg>
-                                </div>
-                                <h5>Fully integrated</h5>
-                                <p>We get insulted by others, lose trust for those We get back freezes</p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="info">
-                                <div class="icon icon-shape text-center">
-                                    <svg class="text-info" width="43px" height="20px" viewBox="0 0 43 36"
-                                        version="1.1" xmlns="http://www.w3.org/2000/svg"
-                                        xmlns:xlink="http://www.w3.org/1999/xlink">
-                                        <title>credit-card</title>
-                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                            <g transform="translate(-2169.000000, -745.000000)" fill="#FFFFFF"
-                                                fill-rule="nonzero">
-                                                <g transform="translate(1716.000000, 291.000000)">
-                                                    <g id="credit-card" transform="translate(453.000000, 454.000000)">
-                                                        <path class="color-background"
-                                                            d="M43,10.7482083 L43,3.58333333 C43,1.60354167 41.3964583,0 39.4166667,0 L3.58333333,0 C1.60354167,0 0,1.60354167 0,3.58333333 L0,10.7482083 L43,10.7482083 Z"
-                                                            opacity="0.593633743">
-                                                        </path>
-                                                        <path class="color-foreground"
-                                                            d="M0,16.125 L0,32.25 C0,34.2297917 1.60354167,35.8333333 3.58333333,35.8333333 L39.4166667,35.8333333 C41.3964583,35.8333333 43,34.2297917 43,32.25 L43,16.125 L0,16.125 Z M19.7083333,26.875 L7.16666667,26.875 L7.16666667,23.2916667 L19.7083333,23.2916667 L19.7083333,26.875 Z M35.8333333,26.875 L28.6666667,26.875 L28.6666667,23.2916667 L35.8333333,23.2916667 L35.8333333,26.875 Z">
-                                                        </path>
-                                                    </g>
-                                                </g>
-                                            </g>
-                                        </g>
-                                    </svg>
-                                </div>
-                                <h5>Payments functionality</h5>
-                                <p>We get insulted by others, lose trust for those We get back freezes</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row justify-content-start">
-                        <div class="col-md-6">
-                            <div class="info">
-                                <div class="icon icon-shape text-center">
-                                    <svg class="text-info" width="25px" height="25px" viewBox="0 0 42 42"
-                                        version="1.1" xmlns="http://www.w3.org/2000/svg"
-                                        xmlns:xlink="http://www.w3.org/1999/xlink">
-                                        <title>box-3d-50</title>
-                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                            <g transform="translate(-2319.000000, -291.000000)" fill="#FFFFFF"
-                                                fill-rule="nonzero">
-                                                <g transform="translate(1716.000000, 291.000000)">
-                                                    <g id="box-3d-50" transform="translate(603.000000, 0.000000)">
-                                                        <path class="color-foreground"
-                                                            d="M22.7597136,19.3090182 L38.8987031,11.2395234 C39.3926816,10.9925342 39.592906,10.3918611 39.3459167,9.89788265 C39.249157,9.70436312 39.0922432,9.5474453 38.8987261,9.45068056 L20.2741875,0.1378125 L20.2741875,0.1378125 C19.905375,-0.04725 19.469625,-0.04725 19.0995,0.1378125 L3.1011696,8.13815822 C2.60720568,8.38517662 2.40701679,8.98586148 2.6540352,9.4798254 C2.75080129,9.67332903 2.90771305,9.83023153 3.10122239,9.9269862 L21.8652864,19.3090182 C22.1468139,19.4497819 22.4781861,19.4497819 22.7597136,19.3090182 Z">
-                                                        </path>
-                                                        <path class="color-background"
-                                                            d="M23.625,22.429159 L23.625,39.8805372 C23.625,40.4328219 24.0727153,40.8805372 24.625,40.8805372 C24.7802551,40.8805372 24.9333778,40.8443874 25.0722402,40.7749511 L41.2741875,32.673375 L41.2741875,32.673375 C41.719125,32.4515625 42,31.9974375 42,31.5 L42,14.241659 C42,13.6893742 41.5522847,13.241659 41,13.241659 C40.8447549,13.241659 40.6916418,13.2778041 40.5527864,13.3472318 L24.1777864,21.5347318 C23.8390024,21.7041238 23.625,22.0503869 23.625,22.429159 Z"
-                                                            opacity="0.7"></path>
-                                                        <path class="color-background"
-                                                            d="M20.4472136,21.5347318 L1.4472136,12.0347318 C0.953235098,11.7877425 0.352562058,11.9879669 0.105572809,12.4819454 C0.0361450918,12.6208008 6.47121774e-16,12.7739139 0,12.929159 L0,30.1875 L0,30.1875 C0,30.6849375 0.280875,31.1390625 0.7258125,31.3621875 L19.5528096,40.7750766 C20.0467945,41.0220531 20.6474623,40.8218132 20.8944388,40.3278283 C20.963859,40.1889789 21,40.0358742 21,39.8806379 L21,22.429159 C21,22.0503869 20.7859976,21.7041238 20.4472136,21.5347318 Z"
-                                                            opacity="0.7"></path>
-                                                    </g>
-                                                </g>
-                                            </g>
-                                        </g>
-                                    </svg>
-                                </div>
-                                <h5>Prebuilt components</h5>
-                                <p>We get insulted by others, lose trust for those We get back freezes</p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="info">
-                                <div class="icon icon-shape text-center">
-                                    <svg class="text-info" width="25px" height="25px" viewBox="0 0 46 42"
-                                        version="1.1" xmlns="http://www.w3.org/2000/svg"
-                                        xmlns:xlink="http://www.w3.org/1999/xlink">
-                                        <title>customer-support</title>
-                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                            <g transform="translate(-1717.000000, -291.000000)" fill="#FFFFFF"
-                                                fill-rule="nonzero">
-                                                <g transform="translate(1716.000000, 291.000000)">
-                                                    <g transform="translate(1.000000, 0.000000)">
-                                                        <path class="color-background"
-                                                            d="M45,0 L26,0 C25.447,0 25,0.447 25,1 L25,20 C25,20.379 25.214,20.725 25.553,20.895 C25.694,20.965 25.848,21 26,21 C26.212,21 26.424,20.933 26.6,20.8 L34.333,15 L45,15 C45.553,15 46,14.553 46,14 L46,1 C46,0.447 45.553,0 45,0 Z"
-                                                            opacity="0.59858631"></path>
-                                                        <path class="color-foreground"
-                                                            d="M22.883,32.86 C20.761,32.012 17.324,31 13,31 C8.676,31 5.239,32.012 3.116,32.86 C1.224,33.619 0,35.438 0,37.494 L0,41 C0,41.553 0.447,42 1,42 L25,42 C25.553,42 26,41.553 26,41 L26,37.494 C26,35.438 24.776,33.619 22.883,32.86 Z">
-                                                        </path>
-                                                        <path class="color-foreground"
-                                                            d="M13,28 C17.432,28 21,22.529 21,18 C21,13.589 17.411,10 13,10 C8.589,10 5,13.589 5,18 C5,22.529 8.568,28 13,28 Z">
-                                                        </path>
-                                                    </g>
-                                                </g>
-                                            </g>
-                                        </g>
-                                    </svg>
-                                </div>
-                                <h5>Improved platform</h5>
-                                <p>We get insulted by others, lose trust for those We get back freezes</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 ms-auto mt-lg-0 mt-4">
-                    <div class="card shadow-lg">
-                        <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1">
-                            <div class="d-block blur-shadow-image">
-                                <img src="https://raw.githubusercontent.com/creativetimofficial/public-assets/master/soft-ui-design-system/assets/img/funny.jpg"
-                                    alt="img-blur-shadow" class="img-fluid shadow rounded-3">
-                            </div>
-                            <div class="colored-shadow"
-                                style="background-image: url(&quot;https://raw.githubusercontent.com/creativetimofficial/public-assets/master/soft-ui-design-system/assets/img/funny.jpg&quot;);">
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <a href="javascript:;">
-                                <h5 class="mt-3">
-                                    Get insights on Search
-                                </h5>
-                            </a>
-                            <p>
-                                Website visitors today demand a frictionless user expericence — especially when using
-                                search. Because of the hight standards.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- END Section with four info areas left & one card right with image and waves -->
-    <!-- -------- START Features w/ pattern background & stats & rocket -------- -->
-    <section class="pt-sm-8 pb-5 position-relative bg-gradient-dark">
-        <div class="position-absolute w-100 z-inde-1 top-0 mt-n3">
-            <svg width="100%" viewBox="0 -2 1920 157" version="1.1" xmlns="http://www.w3.org/2000/svg"
-                xmlns:xlink="http://www.w3.org/1999/xlink">
-                <title>wave-down</title>
-                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                    <g fill="#FFFFFF" fill-rule="nonzero">
-                        <g id="wave-down">
-                            <path
-                                d="M0,60.8320331 C299.333333,115.127115 618.333333,111.165365 959,47.8320321 C1299.66667,-15.5013009 1620.66667,-15.2062179 1920,47.8320331 L1920,156.389409 L0,156.389409 L0,60.8320331 Z"
-                                id="Path-Copy-2"
-                                transform="translate(960.000000, 78.416017) rotate(180.000000) translate(-960.000000, -78.416017) ">
-                            </path>
-                        </g>
-                    </g>
-                </g>
-            </svg>
-        </div>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-8 text-start mb-5 mt-5">
-                    <h3 class="text-white z-index-1 position-relative">The Executive Team</h3>
-                    <p class="text-white opacity-8 mb-0">There’s nothing I really wanted to do in life that I wasn’t
-                        able to get good at. That’s my skill.</p>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-6 col-12">
-                    <div class="card card-profile overflow-hidden">
-                        <div class="row">
-                            <div class="col-lg-4 col-md-6 col-12 pe-lg-0">
-                                <a href="javascript:;">
-                                    <div class="p-3 pe-md-0">
-                                        <img class="w-100 border-radius-md"
-                                            src="../frontend/img/kal-visuals-square.jpg" alt="image">
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-lg-8 col-md-6 col-12 ps-lg-0 my-auto">
-                                <div class="card-body">
-                                    <h5 class="mb-0">Emma Roberts</h5>
-                                    <h6 class="text-info">UI Designer</h6>
-                                    <p class="mb-0">Artist is a term applied to a person who engages in an activity
-                                        deemed to be an art.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6 col-12">
-                    <div class="card card-profile mt-lg-0 mt-5 overflow-hidden">
-                        <div class="row">
-                            <div class="col-lg-4 col-md-6 col-12 pe-lg-0">
-                                <a href="javascript:;">
-                                    <div class="p-3 pe-md-0">
-                                        <img class="w-100 border-radius-md" src="../frontend/img/bruce-mars.jpg"
-                                            alt="image">
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-lg-8 col-md-6 col-12 ps-lg-0 my-auto">
-                                <div class="card-body">
-                                    <h5 class="mb-0">William Pearce</h5>
-                                    <h6 class="text-info">Boss</h6>
-                                    <p>Artist is a term applied to a person who engages in an activity deemed to be an
-                                        art.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row mt-4">
-                <div class="col-lg-6 col-12">
-                    <div class="card card-profile overflow-hidden z-index-2">
-                        <div class="row">
-                            <div class="col-lg-4 col-md-6 col-12 pe-lg-0">
-                                <a href="javascript:;">
-                                    <div class="p-3 pe-md-0">
-                                        <img class="w-100 border-radius-md" src="../frontend/img/team-4.jpg"
-                                            alt="image">
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-lg-8 col-md-6 col-12 ps-lg-0 my-auto">
-                                <div class="card-body">
-                                    <h5 class="mb-0">Ivana Flow</h5>
-                                    <h6 class="text-info">Athlete</h6>
-                                    <p>Artist is a term applied to a person who engages in an activity deemed to be an
-                                        art.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6 col-12">
-                    <div class="card card-profile mt-lg-0 mt-5 overflow-hidden z-index-2">
-                        <div class="row">
-                            <div class="col-lg-4 col-md-6 col-12 pe-lg-0">
-                                <a href="javascript:;">
-                                    <div class="p-3 pe-md-0">
-                                        <img class="w-100 border-radius-md" src="../frontend/img/ivana-square.jpg"
-                                            alt="image">
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-lg-8 col-md-6 col-12 ps-lg-0 my-auto">
-                                <div class="card-body">
-                                    <h5 class="mb-0">Sophia Garcia</h5>
-                                    <h6 class="text-info">JS Developer</h6>
-                                    <p>Artist is a term applied to a person who engages in an activity deemed to be an
-                                        art.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="position-absolute w-100 bottom-0 mn-n1">
-            <svg width="100%" viewBox="0 -1 1920 166" version="1.1" xmlns="http://www.w3.org/2000/svg"
-                xmlns:xlink="http://www.w3.org/1999/xlink">
-                <title>wave-up</title>
-                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                    <g transform="translate(0.000000, 5.000000)" fill="#FFFFFF" fill-rule="nonzero">
-                        <g id="wave-up" transform="translate(0.000000, -5.000000)">
-                            <path
-                                d="M0,70 C298.666667,105.333333 618.666667,95 960,39 C1301.33333,-17 1621.33333,-11.3333333 1920,56 L1920,165 L0,165 L0,70 Z"
-                                fill="#f8f9fa"></path>
-                        </g>
-                    </g>
-                </g>
-            </svg>
-        </div>
-    </section>
-    <!-- -------- END Features w/ pattern background & stats & rocket -------- -->
-    <section class="pt-2 pb-6 bg-gray-100" id="count-stats">
-        <div class="container">
-            <div class="row mb-7">
-                <div class="col-lg-2 col-md-4 col-6 mb-4">
-                    <img class="w-100 opacity-7" src="../frontend/img/logos/gray-logos/logo-coinbase.svg"
-                        alt="logo">
-                </div>
-                <div class="col-lg-2 col-md-4 col-6 mb-4">
-                    <img class="w-100 opacity-7" src="../frontend/img/logos/gray-logos/logo-nasa.svg" alt="logo">
-                </div>
-                <div class="col-lg-2 col-md-4 col-6 mb-4">
-                    <img class="w-100 opacity-7" src="../frontend/img/logos/gray-logos/logo-netflix.svg"
-                        alt="logo">
-                </div>
-                <div class="col-lg-2 col-md-4 col-6 mb-4">
-                    <img class="w-100 opacity-7" src="../frontend/img/logos/gray-logos/logo-pinterest.svg"
-                        alt="logo">
-                </div>
-                <div class="col-lg-2 col-md-4 col-6 mb-4">
-                    <img class="w-100 opacity-7" src="../frontend/img/logos/gray-logos/logo-spotify.svg"
-                        alt="logo">
-                </div>
-                <div class="col-lg-2 col-md-4 col-6 mb-4">
-                    <img class="w-100 opacity-7" src="../frontend/img/logos/gray-logos/logo-vodafone.svg"
-                        alt="logo">
-                </div>
-            </div>
-            <div class="row justify-content-center text-center">
-                <div class="col-md-3">
-                    <h1 class="text-gradient text-info" id="state1" countTo="5234">0</h1>
-                    <h5>Projects</h5>
-                    <p>Of “high-performing” level are led by a certified project manager</p>
-                </div>
-                <div class="col-md-3">
-                    <h1 class="text-gradient text-info"><span id="state2" countTo="3400">0</span>+</h1>
-                    <h5>Hours</h5>
-                    <p>That meets quality standards required by our users</p>
-                </div>
-                <div class="col-md-3">
-                    <h1 class="text-gradient text-info"><span id="state3" countTo="24">0</span>/7</h1>
-                    <h5>Support</h5>
-                    <p>Actively engage team members that finishes on time</p>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- -------- START PRE-FOOTER 1 w/ SUBSCRIBE BUTTON AND IMAGE ------- -->
-    <section class="my-5 pt-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6 m-auto">
-                    <h4>Be the first to see the news</h4>
-                    <p class="mb-4">
-                        Your company may not be in the software business,
-                        but eventually, a software company will be in your business.
-                    </p>
-                    <div class="row">
-                        <div class="col-8">
-                            <div class="input-group">
-                                <input type="text" class="form-control mb-sm-0" placeholder="Email Here...">
-                            </div>
-                        </div>
-                        <div class="col-4 ps-0">
-                            <button type="button"
-                                class="btn bg-gradient-info mb-0 h-100 position-relative z-index-2">Subscribe</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-5 ms-auto">
-                    <div class="position-relative">
-                        <img class="max-width-50 w-100 position-relative z-index-2"
-                            src="../frontend/img/illustrations/sign-up.png" alt="image">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- -------- END PRE-FOOTER 1 w/ SUBSCRIBE BUTTON AND IMAGE ------- -->
-    <footer class="footer pt-5 mt-5">
-        <hr class="horizontal dark mb-5">
-        <div class="container">
-            <div class=" row">
-                <div class="col-md-3 mb-4 ms-auto">
-                    <div>
-                        <h6 class="text-gradient text-primary font-weight-bolder">DealsHood System</h6>
-                    </div>
-                    <div>
-                        <h6 class="mt-3 mb-2 opacity-8">Social</h6>
-                        <ul class="d-flex flex-row ms-n3 nav">
-                            <li class="nav-item">
-                                <a class="nav-link pe-1" href="https://www.facebook.com/CreativeTim/"
-                                    target="_blank">
-                                    <i class="fab fa-facebook text-lg opacity-8"></i>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link pe-1" href="https://twitter.com/creativetim" target="_blank">
-                                    <i class="fab fa-twitter text-lg opacity-8"></i>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link pe-1" href="https://dribbble.com/creativetim" target="_blank">
-                                    <i class="fab fa-dribbble text-lg opacity-8"></i>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link pe-1" href="https://github.com/creativetimofficial"
-                                    target="_blank">
-                                    <i class="fab fa-github text-lg opacity-8"></i>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link pe-1"
-                                    href="https://www.youtube.com/channel/UCVyTG4sCw-rOvB9oHkzZD1w" target="_blank">
-                                    <i class="fab fa-youtube text-lg opacity-8"></i>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-md-2 col-sm-6 col-6 mb-4">
-                    <div>
-                        <h6 class="text-gradient text-primary text-sm">Company</h6>
-                        <ul class="flex-column ms-n3 nav">
-                            <li class="nav-item">
-                                <a class="nav-link" href="https://www.creative-tim.com/presentation" target="_blank">
-                                    About Us
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="https://www.creative-tim.com/templates/free"
-                                    target="_blank">
-                                    Freebies
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="https://www.creative-tim.com/templates/premium"
-                                    target="_blank">
-                                    Premium Tools
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="https://www.creative-tim.com/blog" target="_blank">
-                                    Blog
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-md-2 col-sm-6 col-6 mb-4">
-                    <div>
-                        <h6 class="text-gradient text-primary text-sm">Resources</h6>
-                        <ul class="flex-column ms-n3 nav">
-                            <li class="nav-item">
-                                <a class="nav-link" href="https://iradesign.io/" target="_blank">
-                                    Illustrations
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="https://www.creative-tim.com/bits" target="_blank">
-                                    Bits & Snippets
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="https://www.creative-tim.com/affiliates/new"
-                                    target="_blank">
-                                    Affiliate Program
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-md-2 col-sm-6 col-6 mb-4">
-                    <div>
-                        <h6 class="text-gradient text-primary text-sm">Help & Support</h6>
-                        <ul class="flex-column ms-n3 nav">
-                            <li class="nav-item">
-                                <a class="nav-link" href="https://www.creative-tim.com/contact-us" target="_blank">
-                                    Contact Us
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="https://www.creative-tim.com/knowledge-center"
-                                    target="_blank">
-                                    Knowledge Center
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="https://services.creative-tim.com/?ref=ct-soft-ui-footer"
-                                    target="_blank">
-                                    Custom Development
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="https://www.creative-tim.com/sponsorships" target="_blank">
-                                    Sponsorships
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-md-2 col-sm-6 col-6 mb-4 me-auto">
-                    <div>
-                        <h6 class="text-gradient text-primary text-sm">Legal</h6>
-                        <ul class="flex-column ms-n3 nav">
-                            <li class="nav-item">
-                                <a class="nav-link" href="https://www.creative-tim.com/terms" target="_blank">
-                                    Terms &amp; Conditions
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="https://www.creative-tim.com/privacy" target="_blank">
-                                    Privacy Policy
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="https://www.creative-tim.com/license" target="_blank">
-                                    Licenses (EULA)
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-12">
-                    <div class="text-center">
-                        <p class="my-4 text-sm">
-                            All rights reserved. Copyright ©
-                            <script>
-                                document.write(new Date().getFullYear())
-                            </script> DealsHood Design System by <a href="https://www.creative-tim.com"
-                                target="_blank">DealsHood</a>.
-                        </p>
-                    </div>
-                </div>
+
+            <div class="dh-footer-bottom">
+                <p>All rights reserved. Copyright &copy; <span id="footerYear"></span>
+                    <a href="https://www.creative-tim.com" target="_blank">DealsHood</a>.
+                </p>
             </div>
         </div>
     </footer>
-    <!--   Core JS Files   -->
-    <script src="../frontend/js/core/popper.min.js" type="text/javascript"></script>
-    <script src="../frontend/js/core/bootstrap.min.js" type="text/javascript"></script>
-    <script src="../frontend/js/plugins/perfect-scrollbar.min.js"></script>
-    <!--  Plugin for TypedJS, full documentation here: https://github.com/inorganik/CountUp.js -->
-    <script src="../frontend/js/plugins/countup.min.js"></script>
-    <!--  Plugin for Parallax, full documentation here: https://github.com/wagerfield/parallax  -->
-    <script src="../frontend/js/plugins/parallax.min.js"></script>
-    <!-- Control Center for DealsHood Kit: parallax effects, scripts for the example pages etc -->
-    <!--  Google Maps Plugin    -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDTTfWur0PDbZWPr7Pmq8K3jiDp0_xUziI"></script>
-    <script src="../frontend/js/soft-design-system.min.js?v=1.1.0" type="text/javascript"></script>
+
+    <!-- ═══════════════════════════════════════════════
+         SCRIPTS
+    ═══════════════════════════════════════════════ -->
+    <script src="../frontend/js/core/popper.min.js"></script>
+    <script src="../frontend/js/core/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
     <script>
-        // get the element to animate
-        var element = document.getElementById('count-stats');
-        var elementHeight = element.clientHeight;
+    // ── Footer year ──
+    document.getElementById('footerYear').textContent = new Date().getFullYear();
 
-        // listen for scroll event and call animate function
+    // ── Nav toggle ──
+    document.getElementById('navToggle').addEventListener('click', function () {
+        document.getElementById('navActions').classList.toggle('open');
+    });
 
-        document.addEventListener('scroll', animate);
+    // ── Hero parallax ──
+    const heroBg = document.getElementById('heroBg');
+    window.addEventListener('scroll', function () {
+        if (heroBg) {
+            heroBg.style.transform = 'translateY(' + (window.scrollY * 0.3) + 'px)';
+        }
+    });
 
-        // check if element is in view
-        function inView() {
-            // get window height
-            var windowHeight = window.innerHeight;
-            // get number of pixels that the document is scrolled
-            var scrollY = window.scrollY || window.pageYOffset;
-            // get current scroll position (distance from the top of the page to the bottom of the current viewport)
-            var scrollPosition = scrollY + windowHeight;
-            // get element position (distance from the top of the page to the bottom of the element)
-            var elementPosition = element.getBoundingClientRect().top + scrollY + elementHeight;
-
-            // is scroll position greater than element position? (is element in view?)
-            if (scrollPosition > elementPosition) {
-                return true;
+    // ── Like ──
+    $(document).on('click', '.likeBtn', function () {
+        const btn = $(this);
+        const id  = btn.data('id');
+        $.ajax({
+            url: '/posts/' + id + '/toggle-like',
+            type: 'POST',
+            data: { _token: '{{ csrf_token() }}' },
+            success: function (res) {
+                $('#like-count-' + id).text(res.likes);
+                res.liked ? btn.addClass('liked') : btn.removeClass('liked');
             }
+        });
+    });
 
-            return false;
-        }
+    // ── Share ──
+    $(document).on('click', '.shareBtn', function () {
+        const id  = $(this).data('id');
+        const url = $(this).data('url');
+        navigator.share
+            ? navigator.share({ url: url })
+            : (navigator.clipboard.writeText(url), alert('Link copied!'));
+        $.ajax({
+            url: '/posts/' + id + '/share',
+            type: 'POST',
+            data: { _token: '{{ csrf_token() }}', platform: 'web' }
+        });
+    });
 
-        var animateComplete = true;
-        // animate element when it is in view
-        function animate() {
-
-            // is element in view?
-            if (inView()) {
-                if (animateComplete) {
-                    if (document.getElementById('state1')) {
-                        const countUp = new CountUp('state1', document.getElementById("state1").getAttribute("countTo"));
-                        if (!countUp.error) {
-                            countUp.start();
-                        } else {
-                            console.error(countUp.error);
-                        }
-                    }
-                    if (document.getElementById('state2')) {
-                        const countUp1 = new CountUp('state2', document.getElementById("state2").getAttribute("countTo"));
-                        if (!countUp1.error) {
-                            countUp1.start();
-                        } else {
-                            console.error(countUp1.error);
-                        }
-                    }
-                    if (document.getElementById('state3')) {
-                        const countUp2 = new CountUp('state3', document.getElementById("state3").getAttribute("countTo"));
-                        if (!countUp2.error) {
-                            countUp2.start();
-                        } else {
-                            console.error(countUp2.error);
-                        };
-                    }
-                    animateComplete = false;
-                }
-            }
-        }
-
-        if (document.getElementById('typed')) {
-            var typed = new Typed("#typed", {
-                stringsElement: '#typed-strings',
-                typeSpeed: 90,
-                backSpeed: 90,
-                backDelay: 200,
-                startDelay: 500,
-                loop: true
-            });
-        }
-        if (document.getElementsByClassName('page-header')) {
-            window.addEventListener('scroll', function() {
-                var scrollPosition = window.pageYOffset;
-                var bgParallax = document.querySelector('.page-header');
-                var limit = bgParallax.offsetTop + bgParallax.offsetHeight;
-                if (scrollPosition > bgParallax.offsetTop && scrollPosition <= limit) {
-                    bgParallax.style.backgroundPositionY = (50 - 10 * scrollPosition / limit * 3) + '%';
-                } else {
-                    bgParallax.style.backgroundPositionY = '50%';
-                }
-            });
-        }
-        $(document).on('click', '.likeBtn', function() {
-
-            let button = $(this);
-
-            let id = button.data('id');
-
+    // ── Dynamic subcategories ──
+    $('#category_id').on('change', function () {
+        const categoryId = $(this).val();
+        const sub = $('#subcategory_id');
+        sub.empty().append('<option value="">Loading...</option>');
+        if (categoryId) {
             $.ajax({
-                url: '/posts/' + id + '/toggle-like',
-                type: 'POST',
-                data: {
-                    _token: '{{ csrf_token() }}'
+                url: '/get-subcategories/' + categoryId,
+                type: 'GET',
+                success: function (data) {
+                    sub.empty().append('<option value="">All Sub Categories</option>');
+                    $.each(data, function (key, value) {
+                        sub.append('<option value="' + value.slug + '">' + value.name + '</option>');
+                    });
                 },
-
-                success: function(res) {
-
-                    $('#like-count-' + id).text(res.likes);
-
-                    if (res.liked) {
-                        button.addClass('liked');
-                    } else {
-                        button.removeClass('liked');
-                    }
+                error: function () {
+                    sub.empty().append('<option value="">Error loading</option>');
                 }
             });
-
-        });
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | SHARE
-        |--------------------------------------------------------------------------
-        */
-
-        $(document).on('click', '.shareBtn', function() {
-
-            let id = $(this).data('id');
-
-            let url = $(this).data('url');
-
-            // share api
-            if (navigator.share) {
-
-                navigator.share({
-                    url: url
-                });
-
-            } else {
-
-                navigator.clipboard.writeText(url);
-
-                alert('Link copied');
-
-            }
-
-            // increase share count
-            $.ajax({
-
-                url: '/posts/' + id + '/share',
-
-                type: 'POST',
-
-                data: {
-                    _token: '{{ csrf_token() }}',
-                    platform: 'web'
-                }
-
-            });
-
-        });
-        $('#category_id').on('change', function() {
-
-            let categoryId = $(this).val();
-            let subCategoryDropdown = $('#subcategory_id');
-
-            subCategoryDropdown.empty();
-            subCategoryDropdown.append('<option value="">Loading...</option>');
-
-            if (categoryId) {
-                $.ajax({
-                    url: '/get-subcategories/' + categoryId,
-                    type: 'GET',
-                    success: function(data) {
-
-                        subCategoryDropdown.empty();
-                        subCategoryDropdown.append('<option value="">Select Sub Category</option>');
-
-                        $.each(data, function(key, value) {
-                            subCategoryDropdown.append(
-                                '<option value="' + value.slug + '">' + value.name +
-                                '</option>'
-                            );
-                        });
-
-                    },
-                    error: function() {
-                        subCategoryDropdown.empty();
-                        subCategoryDropdown.append('<option value="">Error loading data</option>');
-                    }
-                });
-            } else {
-                subCategoryDropdown.empty();
-                subCategoryDropdown.append('<option value="">Select Sub Category</option>');
-            }
-
-        });
+        } else {
+            sub.empty().append('<option value="">All Sub Categories</option>');
+        }
+    });
     </script>
-</body>
 
+</body>
 </html>
