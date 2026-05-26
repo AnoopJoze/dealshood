@@ -25,7 +25,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
 
     // ── Core pages ────────────────────────────────────────────────────────────
     Route::get('/', [HomeController::class, 'home'])->name('admin.home');
-    Route::get('dashboard',        fn() => view('dashboard'))         ->name('admin.dashboard');
+    Route::get('dashboard', [HomeController::class, 'home'])->name('admin.dashboard');
     Route::get('billing',          fn() => view('billing'))           ->name('admin.billing');
     Route::get('profile',          fn() => view('profile'))           ->name('admin.profile');
     Route::get('rtl',              fn() => view('rtl'))               ->name('admin.rtl');
