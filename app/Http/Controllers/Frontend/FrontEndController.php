@@ -185,7 +185,7 @@ if ($request->filled('locality_id')) {
             $post->category?->slug !== $category ||
             $post->subcategory?->slug !== $subcategory
         ) {
-            return redirect()->route('post.show', [
+            return redirect()->route('post-details', [
                 'locality' => $post->locality?->slug,
                 'category' => $post->category?->slug,
                 'subcategory' => $post->subcategory?->slug,

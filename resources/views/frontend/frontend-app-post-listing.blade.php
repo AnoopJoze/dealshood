@@ -8,10 +8,61 @@
     <link rel="icon" type="image/png" href="../frontend/img/favicon.png">
     <title>DealsHood — Discover the Best Deals Near You</title>
 
+    {{-- ═══════════════════════════════════════════════
+         SEO & SOCIAL META
+         WhatsApp, Telegram, Facebook all read og:image.
+         Rules:
+           • Must be absolute HTTPS URL
+           • Min 300×300px  (1200×630 recommended)
+           • Must be publicly accessible (no auth)
+           • og:image:width / height must be present
+    ═══════════════════════════════════════════════ --}}
+    @php
+        /* --- OG image ---------------------------------------------------- */
+        $ogImage = '/frontend/img/favicon.png';
+        if (!$ogImage) { $ogImage = asset('frontend/img/default.jpg'); }
+        // Force absolute + HTTPS
+        if (!str_starts_with($ogImage, 'http')) { $ogImage = url($ogImage); }
+        $ogImage = str_replace('http://', 'https://', $ogImage);
+        $post = ['meta_title'=>'DealsHood','title'=>'DealsHood','meta_description'=>'DealsHood','keywords'=>'DealsHood'];
+        /* --- Other OG fields --------------------------------------------- */
+        $ogTitle       = @$post->meta_title       ?: @$post->title;
+        $ogDescription = @$post->meta_description ?: Str::limit(strip_tags(@$post->description), 160);
+        $ogUrl         = url()->current();
+    @endphp
+
+    <meta name="description"  content="{{ $ogDescription }}">
+    <meta name="keywords"     content="{{ @$post->keywords }}">
+    <link rel="canonical"     href="{{ $ogUrl }}">
+
+    {{-- Open Graph (WhatsApp / Facebook / Telegram / LinkedIn) --}}
+    <meta property="og:site_name"        content="DealsHood">
+    <meta property="og:type"             content="article">
+    <meta property="og:title"            content="{{ $ogTitle }}">
+    <meta property="og:description"      content="{{ $ogDescription }}">
+    <meta property="og:url"              content="{{ $ogUrl }}">
+    <meta property="og:image"            content="{{ $ogImage }}">
+    <meta property="og:image:secure_url" content="{{ $ogImage }}">
+    <meta property="og:image:type"       content="image/jpeg">
+    <meta property="og:image:width"      content="1200">
+    <meta property="og:image:height"     content="630">
+    <meta property="og:image:alt"        content="{{ $ogTitle }}">
+    <meta property="og:locale"           content="en_US">
+
+    {{-- Article meta --}}
+
+    {{-- Twitter Card (iMessage / Slack / Discord also use these) --}}
+    <meta name="twitter:card"        content="summary_large_image">
+    <meta name="twitter:title"       content="{{ $ogTitle }}">
+    <meta name="twitter:description" content="{{ $ogDescription }}">
+    <meta name="twitter:image"       content="{{ $ogImage }}">
+    <meta name="twitter:image:alt"   content="{{ $ogTitle }}">
+
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- Font Awesome -->
-    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <!-- CSS Files -->
     <link id="pagestyle" href="../frontend/css/soft-design-system.css?v=1.1.0" rel="stylesheet" />
 
@@ -668,6 +719,99 @@
         from { opacity: 0; transform: translateY(22px); }
         to   { opacity: 1; transform: translateY(0); }
     }
+
+    
+    .dh-card-meta{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+    padding-top:5px;
+    border-top:1px solid rgba(255,255,255,0.08);
+}
+
+.dh-meta-btn,
+.dh-meta-box{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:4px 10px;
+    border-radius:14px;
+    background:#fff;
+    border:1px solid #edf0f5;
+    transition:all .25s ease;
+    box-shadow:0 2px 8px rgba(0,0,0,0.04);
+}
+
+.dh-meta-btn{
+    cursor:pointer;
+    outline:none;
+}
+
+.dh-meta-btn:hover,
+.dh-meta-box:hover{
+    transform:translateY(-2px);
+    box-shadow:0 6px 18px rgba(0,0,0,0.08);
+}
+
+.dh-meta-icon{
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#f5f7fb;
+    font-size:13px;
+    color:#6b7280;
+}
+
+.dh-meta-count{
+    font-size:14px;
+    font-weight:600;
+    color:#1f2937;
+}
+
+.dh-meta-time{
+    margin-left:auto;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    font-size:13px;
+    color:#6b7280;
+}
+
+.likeBtn.liked{
+    background:rgba(255, 77, 109, 0.08);
+    border-color:rgba(255, 77, 109, 0.18);
+}
+
+.likeBtn.liked .dh-meta-icon{
+    background:rgba(255, 77, 109, 0.15);
+    color:#ff4d6d;
+}
+
+.likeBtn.liked .dh-meta-count{
+    color:#ff4d6d;
+}
+
+@media(max-width:576px){
+
+    .dh-card-meta{
+        gap:8px;
+    }
+
+    .dh-meta-btn,
+    .dh-meta-box{
+        padding:4px 10px;
+    }
+
+    .dh-meta-time{
+        width:100%;
+        margin-left:0;
+        margin-top:4px;
+    }
+}
     </style>
 </head>
 
@@ -1041,6 +1185,24 @@
         if (!nextPage) return;
         loadPosts(false, nextPage);
     }, { passive: true });
+    
+    </script>
+    <script type="application/ld+json">
+    {!! json_encode([
+        '@context'      => 'https://schema.org',
+        '@type'         => 'Article',
+        'headline'      => $ogTitle,
+        'description'   => $ogDescription,
+        'image'         => $ogImage,
+        'url'           => $ogUrl,
+        'datePublished' => '',
+        'dateModified'  => '',
+        'publisher'     => [
+            '@type' => 'Organization',
+            'name'  => 'DealsHood',
+            'url'   => url('/'),
+        ],
+    ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
     </script>
 
 </body>
