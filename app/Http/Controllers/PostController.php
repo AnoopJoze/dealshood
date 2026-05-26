@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Locality;
 use App\Models\Post;
-use App\Models\Subcategory;   // ← matches the model's belongsTo(Subcategory::class)
+use App\Models\Subcategory;
 use App\Models\User;
 use Carbon\Carbon;
 use DataTables;
@@ -16,9 +15,11 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class PostController extends Controller
 {
-    // ──────────────────────────────────────────────────────────────────────────
-    // INDEX  –  render the posts list blade
-    // ──────────────────────────────────────────────────────────────────────────
+    /*
+    |--------------------------------------------------------------------------
+    | INDEX
+    |--------------------------------------------------------------------------
+    */
     public function index()
     {
         $categories    = Category::orderBy('name')->get();
@@ -29,134 +30,158 @@ class PostController extends Controller
         return view('posts.list', compact('categories', 'subcategories', 'localities', 'users'));
     }
 
-    // ──────────────────────────────────────────────────────────────────────────
-    // DATA  –  server-side DataTables JSON
-    // ──────────────────────────────────────────────────────────────────────────
+    /*
+    |--------------------------------------------------------------------------
+    | DATATABLE FEED
+    |--------------------------------------------------------------------------
+    */
     public function data(Request $request)
     {
         $query = Post::with(['category', 'subcategory', 'locality', 'user']);
 
-        // ── Filters ───────────────────────────────────────────────────────────
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
-
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
         if ($request->filled('start_date')) {
             $query->whereDate('created_at', '>=', $request->start_date);
         }
-
         if ($request->filled('end_date')) {
             $query->whereDate('created_at', '<=', $request->end_date);
         }
 
-        // ── Stats (before pagination) ─────────────────────────────────────────
+        $totalCount     = (clone $query)->count();
         $publishedCount = (clone $query)->where('status', 'published')->count();
         $draftCount     = (clone $query)->where('status', 'draft')->count();
+        $archivedCount  = (clone $query)->where('status', 'archived')->count();
 
         return DataTables::of($query)
 
-            // Title + featured star
-            ->addColumn('title', fn($row) =>
-                '<strong>' . e($row->title) . '</strong>'
-                . ($row->is_featured
-                    ? ' <span class="badge bg-warning text-dark ms-1"><i class="fas fa-star"></i></span>'
-                    : '')
-            )
+            ->addColumn('title', function ($row) {
+                $thumb = $row->getMedia('posts')->first();
+                $img   = $thumb
+                    ? '<img src="' . $thumb->getUrl() . '" width="36" height="36"
+                           class="rounded me-2" style="object-fit:cover;flex-shrink:0;">'
+                    : '<div class="rounded me-2 bg-light d-flex align-items-center justify-content-center"
+                            style="width:36px;height:36px;flex-shrink:0;">
+                            <i class="fas fa-image text-muted" style="font-size:.7rem;"></i>
+                         </div>';
 
-            // Relations
-            ->addColumn('category',    fn($row) => e($row->category?->name    ?? '—'))
-            ->addColumn('subcategory', fn($row) => e($row->subcategory?->name ?? '—'))
-            ->addColumn('locality',    fn($row) => e($row->locality?->name    ?? '—'))
-
-            // User (name + email)
-            ->addColumn('user', fn($row) =>
-                $row->user
-                    ? '<span class="text-sm">' . e($row->user->name)
-                      . '<br><small class="text-muted">' . e($row->user->email) . '</small></span>'
-                    : '—'
-            )
-
-            // Images via Spatie Media Library
-            ->addColumn('images', function ($row) {
-                $media = $row->getMedia('posts');
-
-                if ($media->isEmpty()) {
-                    return '<span class="text-muted text-xs">—</span>';
-                }
-
-                $html = '<div class="d-flex flex-wrap gap-1">';
-                foreach ($media->take(4) as $m) {
-                    $html .= '<a href="' . $m->getUrl() . '" data-fancybox="gallery-' . $row->id . '">'
-                           . '<img src="' . $m->getUrl() . '" width="38" height="38"'
-                           . ' class="rounded" style="object-fit:cover">'
-                           . '</a>';
-                }
-                if ($media->count() > 4) {
-                    $html .= '<span class="badge bg-secondary">+' . ($media->count() - 4) . '</span>';
-                }
-
-                return $html . '</div>';
+                return '<div class="d-flex align-items-center">'
+                    . $img
+                    . '<div>'
+                    . '<div class="text-sm fw-semibold text-dark text-truncate" style="max-width:180px;">'
+                    . e($row->title)
+                    . ($row->is_featured ? ' <i class="fas fa-star text-warning ms-1" style="font-size:.65rem;" title="Featured"></i>' : '')
+                    . '</div>'
+                    . '<small class="text-muted">#' . $row->id . ' · ' . $row->slug . '</small>'
+                    . '</div></div>';
             })
 
-            // Inline status dropdown  ← model field: status
+            ->addColumn('category', fn($row) =>
+                $row->category
+                    ? '<span class="badge bg-primary-subtle text-primary rounded-pill px-2">'
+                      . e($row->category->name) . '</span>'
+                    : '<span class="text-muted">—</span>'
+            )
+
+            ->addColumn('subcategory', fn($row) =>
+                $row->subcategory
+                    ? '<span class="badge bg-light text-secondary border rounded-pill px-2">'
+                      . e($row->subcategory->name) . '</span>'
+                    : '<span class="text-muted">—</span>'
+            )
+
+            ->addColumn('locality', fn($row) =>
+                $row->locality
+                    ? '<span class="text-sm"><i class="fas fa-map-marker-alt me-1 text-muted" style="font-size:.65rem;"></i>'
+                      . e($row->locality->name) . '</span>'
+                    : '<span class="text-muted">—</span>'
+            )
+
+            ->addColumn('user', function ($row) {
+                if (!$row->user) return '<span class="text-muted">—</span>';
+                $initial = strtoupper(substr($row->user->name, 0, 1));
+                return '<div class="d-flex align-items-center gap-2">'
+                    . '<div class="rounded-circle bg-gradient-secondary text-white d-flex align-items-center
+                               justify-content-center fw-bold" style="width:28px;height:28px;font-size:.75rem;flex-shrink:0;">'
+                    . $initial . '</div>'
+                    . '<div><div class="text-sm fw-medium">' . e($row->user->name) . '</div>'
+                    . '<small class="text-muted">' . e($row->user->email) . '</small></div>'
+                    . '</div>';
+            })
+
             ->addColumn('status', function ($row) {
-                $options = [
-                    'draft'     => 'Draft',
-                    'published' => 'Published',
-                    'archived'  => 'Archived',
+                $map = [
+                    'published' => ['bg-success-subtle', 'text-success'],
+                    'draft'     => ['bg-secondary-subtle', 'text-secondary'],
+                    'archived'  => ['bg-warning-subtle', 'text-warning'],
                 ];
-                $select = '<select class="form-select form-select-sm inline-status"
+                [$bg, $tc] = $map[$row->status] ?? ['bg-light', 'text-muted'];
+                $select = '<select class="form-select form-select-sm inline-status border-0 ' . $bg . ' ' . $tc . ' fw-semibold"
                                    data-id="' . $row->id . '"
-                                   style="min-width:120px">';
-                foreach ($options as $val => $label) {
-                    $sel     = $row->status === $val ? 'selected' : '';
-                    $select .= "<option value=\"{$val}\" {$sel}>{$label}</option>";
+                                   style="min-width:115px;border-radius:.5rem;font-size:.75rem;">';
+                foreach (['draft' => 'Draft', 'published' => 'Published', 'archived' => 'Archived'] as $v => $l) {
+                    $select .= '<option value="' . $v . '"' . ($row->status === $v ? ' selected' : '') . '>' . $l . '</option>';
                 }
                 return $select . '</select>';
             })
 
-            // Expiry  ← model field: expiry_date  (NOT expires_at)
-            ->addColumn('expires_at', function ($row) {
-                if (!$row->expiry_date) {
-                    return '<span class="text-muted">—</span>';
-                }
+            ->addColumn('expiry', function ($row) {
+                if (!$row->expiry_date) return '<span class="text-muted text-xs">—</span>';
                 $date    = Carbon::parse($row->expiry_date);
                 $expired = now()->gt($date);
-
-                return $expired
-                    ? '<span class="badge bg-danger">Expired ' . $date->format('d M Y') . '</span>'
-                    : '<span class="text-sm">' . $date->format('d M Y') . '</span>';
+                if ($expired) {
+                    return '<span class="badge bg-danger-subtle text-danger rounded-pill px-2">
+                                <i class="fas fa-exclamation-circle me-1" style="font-size:.6rem;"></i>
+                                Expired ' . $date->format('d M Y') . '
+                            </span>';
+                }
+                $soon = now()->diffInDays($date, false) <= 7;
+                return '<span class="text-sm ' . ($soon ? 'text-warning fw-semibold' : 'text-muted') . '">'
+                     . $date->format('d M Y')
+                     . '<br><small>' . $date->diffForHumans() . '</small></span>';
             })
 
-            // Created date
             ->editColumn('created_at', fn($row) =>
-                '<div class="text-sm text-muted fw-medium">'
+                '<div class="text-sm text-muted">'
                 . Carbon::parse($row->created_at)->format('d M Y')
-                . '<br><small class="text-xs">'
-                . Carbon::parse($row->created_at)->diffForHumans()
-                . '</small></div>'
+                . '<br><small>' . Carbon::parse($row->created_at)->diffForHumans() . '</small></div>'
             )
 
-            // Action buttons
             ->addColumn('action', fn($row) =>
                 '<div class="d-flex gap-1">'
                 . '<a href="' . route('posts.show', $row->id) . '"
-                    class="btn btn-sm btn-outline-secondary" title="View">
-                    <i class="fas fa-eye"></i>View
-                </a>'
-                . '<button class="btn btn-sm btn-outline-primary editPost" data-id="' . $row->id . '" title="Edit">'
-                . '<i class="fas fa-pen"></i>Edit</button>'
+                    class="btn btn-sm btn-light border" title="View">
+                    <i class="fas fa-eye text-info"></i>
+                   </a>'
+                . '<button class="btn btn-sm btn-light border editPost" data-id="' . $row->id . '" title="Edit">
+                    <i class="fas fa-pen text-warning"></i>
+                   </button>'
+                // . '<button class="btn btn-sm btn-light border deletePost" data-id="' . $row->id . '"
+                //            data-title="' . e($row->title) . '" title="Delete">
+                //     <i class="fas fa-trash text-danger"></i>
+                //    </button>'
                 . '</div>'
             )
 
-            ->rawColumns(['title', 'user', 'images', 'status', 'expires_at', 'created_at', 'action'])
-            ->with(['publishedCount' => $publishedCount, 'draftCount' => $draftCount])
+            ->rawColumns(['title', 'category', 'subcategory', 'locality', 'user',  'status', 'expiry', 'created_at', 'action'])
+            ->with([
+                'totalCount'     => $totalCount,
+                'publishedCount' => $publishedCount,
+                'draftCount'     => $draftCount,
+                'archivedCount'  => $archivedCount,
+            ])
             ->make(true);
     }
 
-    // ──────────────────────────────────────────────────────────────────────────
-    // EDIT DATA  –  returns post JSON for the edit modal (GET)
-    // ──────────────────────────────────────────────────────────────────────────
+    /*
+    |--------------------------------------------------------------------------
+    | EDIT DATA – JSON for modal
+    |--------------------------------------------------------------------------
+    */
     public function editData(Post $post)
     {
         $images = $post->getMedia('posts')->map(fn($m) => [
@@ -165,31 +190,23 @@ class PostController extends Controller
             'name' => $m->name,
         ]);
 
+        $video = $post->getMedia('videos')->first();
+
         return response()->json([
             ...$post->toArray(),
-            'images' => $images,
+            'images'    => $images,
+            'video_url_media' => $video?->getUrl(),
         ]);
     }
 
-    // ──────────────────────────────────────────────────────────────────────────
-    // AJAX STORE  –  create a new post (POST ajax-store)
-    // ──────────────────────────────────────────────────────────────────────────
+    /*
+    |--------------------------------------------------------------------------
+    | AJAX STORE
+    |--------------------------------------------------------------------------
+    */
     public function ajaxStore(Request $request)
     {
-        $validated = $request->validate([
-            'title'          => 'required|string|max:255',
-            'category_id'    => 'required|exists:categories,id',
-            'status'         => 'required|in:draft,published,archived',
-            'description'    => 'nullable|string',
-            'subcategory_id' => 'nullable|exists:subcategories,id',
-            'locality_id'    => 'nullable|exists:localities,id',
-            'user_id'        => 'nullable|exists:users,id',
-            'expiry_date'    => 'nullable|date',
-            'google_map_url' => 'nullable|string|max:500',  // blade field: google_map_url
-           // 'video_url'      => 'nullable|string|max:500',
-            'is_featured'    => 'nullable|boolean',
-            'is_active'      => 'nullable|boolean',
-        ]);
+        $validated = $request->validate($this->rules());
 
         $validated['slug']         = $this->makeSlug($validated['title']);
         $validated['user_id']      = $validated['user_id'] ?? auth()->id();
@@ -197,7 +214,6 @@ class PostController extends Controller
 
         $post = Post::create($validated);
 
-        // Video file upload
         if ($request->hasFile('video')) {
             $post->addMediaFromRequest('video')->toMediaCollection('videos');
         }
@@ -205,34 +221,21 @@ class PostController extends Controller
         return response()->json(['success' => true, 'data' => $post]);
     }
 
-    // ──────────────────────────────────────────────────────────────────────────
-    // UPDATE  –  save edits (PUT /admin/posts/{post}  →  posts.update)
-    // ──────────────────────────────────────────────────────────────────────────
+    /*
+    |--------------------------------------------------------------------------
+    | UPDATE
+    |--------------------------------------------------------------------------
+    */
     public function update(Request $request, Post $post)
     {
-        $validated = $request->validate([
-            'title'          => 'required|string|max:255',
-            'category_id'    => 'required|exists:categories,id',
-            'status'         => 'required|in:draft,published,archived',
-            'description'    => 'nullable|string',
-            'subcategory_id' => 'nullable|exists:subcategories,id',
-            'locality_id'    => 'nullable|exists:localities,id',
-            'user_id'        => 'nullable|exists:users,id',
-            'expiry_date'    => 'nullable|date',
-            'google_map_url' => 'nullable|string|max:500',
-            //'video_url'      => 'nullable|string|max:500',
-            'is_featured'    => 'nullable|boolean',
-            'is_active'      => 'nullable|boolean',
-        ]);
+        $validated = $request->validate($this->rules($post->id));
 
-        // Set published_at only the first time it transitions to published
         if ($validated['status'] === 'published' && !$post->published_at) {
             $validated['published_at'] = now();
         }
 
         $post->update($validated);
 
-        // Replace video file if a new one was uploaded
         if ($request->hasFile('video')) {
             $post->clearMediaCollection('videos');
             $post->addMediaFromRequest('video')->toMediaCollection('videos');
@@ -241,35 +244,40 @@ class PostController extends Controller
         return response()->json(['success' => true, 'data' => $post->fresh()]);
     }
 
-    // ──────────────────────────────────────────────────────────────────────────
-    // INLINE UPDATE  –  quick field edit from the table dropdown
-    // ──────────────────────────────────────────────────────────────────────────
+    /*
+    |--------------------------------------------------------------------------
+    | INLINE UPDATE
+    |--------------------------------------------------------------------------
+    */
     public function inlineUpdate(Request $request)
     {
         $request->validate([
             'id'    => 'required|exists:posts,id',
-            'field' => 'required|in:status,is_featured,is_active',  // whitelist only
+            'field' => 'required|in:status,is_featured,is_active',
             'value' => 'required',
         ]);
 
-        $post = Post::findOrFail($request->id);
-        $post->update([$request->field => $request->value]);
+        Post::findOrFail($request->id)->update([$request->field => $request->value]);
 
         return response()->json(['success' => true]);
     }
 
-    // ──────────────────────────────────────────────────────────────────────────
-    // DESTROY  –  soft-delete (DELETE /admin/posts/{post}  →  posts.destroy)
-    // ──────────────────────────────────────────────────────────────────────────
+    /*
+    |--------------------------------------------------------------------------
+    | DESTROY
+    |--------------------------------------------------------------------------
+    */
     public function destroy(Post $post)
     {
         $post->delete();
         return response()->json(['success' => true]);
     }
 
-    // ──────────────────────────────────────────────────────────────────────────
-    // MEDIA UPLOAD  –  Dropzone single-file upload
-    // ──────────────────────────────────────────────────────────────────────────
+    /*
+    |--------------------------------------------------------------------------
+    | MEDIA UPLOAD
+    |--------------------------------------------------------------------------
+    */
     public function mediaUpload(Request $request)
     {
         $request->validate([
@@ -277,83 +285,75 @@ class PostController extends Controller
             'post_id' => 'required|exists:posts,id',
         ]);
 
-        $post  = Post::findOrFail($request->post_id);
-        $media = $post->addMediaFromRequest('file')->toMediaCollection('posts');
+        $media = Post::findOrFail($request->post_id)
+            ->addMediaFromRequest('file')
+            ->toMediaCollection('posts');
 
-        return response()->json([
-            'success' => true,
-            'id'      => $media->id,
-            'url'     => $media->getUrl(),
-        ]);
+        return response()->json(['success' => true, 'id' => $media->id, 'url' => $media->getUrl()]);
     }
 
-    // ──────────────────────────────────────────────────────────────────────────
-    // MEDIA DELETE  –  remove one Spatie media item
-    // ──────────────────────────────────────────────────────────────────────────
+    /*
+    |--------------------------------------------------------------------------
+    | MEDIA DELETE
+    |--------------------------------------------------------------------------
+    */
     public function mediaDelete($id)
     {
-        $media = Media::findOrFail($id);
-        $media->delete();
+        Media::findOrFail($id)->delete();
         return response()->json(['success' => true]);
     }
 
-    // ──────────────────────────────────────────────────────────────────────────
-    // Helpers
-    // ──────────────────────────────────────────────────────────────────────────
+    /*
+    |--------------------------------------------------------------------------
+    | SHOW
+    |--------------------------------------------------------------------------
+    */
+    public function show(Post $post)
+    {
+        $post->load(['category', 'subcategory', 'locality', 'user', 'likesData', 'sharesData', 'viewsData']);
+        $post->increment('views');
+        return view('posts.show', compact('post'));
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Helpers
+    |--------------------------------------------------------------------------
+    */
+    private function rules(?int $ignoreId = null): array
+    {
+        return [
+            'title'            => 'required|string|max:255',
+            'category_id'      => 'required|exists:categories,id',
+            'status'           => 'required|in:draft,published,archived',
+            'description'      => 'nullable|string',
+            'subcategory_id'   => 'nullable|exists:subcategories,id',
+            'locality_id'      => 'nullable|exists:localities,id',
+            'user_id'          => 'nullable|exists:users,id',
+            'expiry_date'      => 'nullable|date',
+            'google_map_url'   => 'nullable|string|max:500',
+            'is_featured'      => 'nullable|boolean',
+            'is_active'        => 'nullable|boolean',
+            // Location
+            'country'          => 'nullable|string|max:100',
+            'state'            => 'nullable|string|max:100',
+            'city'             => 'nullable|string|max:100',
+            'location'         => 'nullable|string|max:255',
+            'latitude'         => 'nullable|numeric|between:-90,90',
+            'longitude'        => 'nullable|numeric|between:-180,180',
+            // Media
+            //'video_url'        => 'nullable|string|max:500',
+            // SEO
+            'meta_title'       => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string|max:500',
+            'keywords'         => 'nullable|string|max:500',
+        ];
+    }
+
     private function makeSlug(string $title): string
     {
         $slug  = Str::slug($title);
         $count = Post::withTrashed()->where('slug', 'like', "{$slug}%")->count();
         return $count ? "{$slug}-{$count}" : $slug;
     }
-
-    // ── Legacy form-based methods (kept for backward compatibility) ───────────
-
-    public function create()
-    {
-        $categories = Category::orderBy('name')->get();
-        $localities = Locality::orderBy('name')->get();
-        $users      = User::orderBy('name')->get(['id', 'name', 'email']);
-        return view('admin.posts.create', compact('categories', 'localities', 'users'));
-    }
-
-    public function store(Request $request)
-    {
-        $request->validate(['title' => 'required', 'status' => 'required']);
-        Post::create(array_merge($request->all(), [
-            'slug'    => Str::slug($request->title),
-            'user_id' => auth()->id(),
-        ]));
-        return redirect()->route('posts.index')->with('success', 'Post created');
-    }
-
-    public function edit(Post $post)
-    {
-        $categories = Category::orderBy('name')->get();
-        $localities = Locality::orderBy('name')->get();
-        $users      = User::orderBy('name')->get(['id', 'name', 'email']);
-        return view('admin.posts.edit', compact('post', 'categories', 'localities', 'users'));
-    }
-    // ──────────────────────────────────────────────────────────────────────────────
-// Add this method to PostController  (replaces the empty resource show())
-// ──────────────────────────────────────────────────────────────────────────────
- 
-public function show(Post $post)
-{
-    // Eager-load everything the show page needs
-    $post->load([
-        'category',
-        'subcategory',
-        'locality',
-        'user',
-        'likesData',
-        'sharesData',
-        'viewsData',
-    ]);
- 
-    // Increment view counter (simple, non-unique)
-    $post->increment('views');
- 
-    return view('posts.show', compact('post'));
-}
 }
