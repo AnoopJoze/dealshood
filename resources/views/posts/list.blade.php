@@ -303,12 +303,21 @@
 @push('js')
 <script src="{{ asset('assets') }}/DataTables/datatables.min.js"></script>
 <script src="{{ asset('assets') }}/js/sweetalert2.all.min.js"></script>
-<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+<script src="https://cdn.ckeditor.com/ckeditor5/40.2.0/classic/ckeditor.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.umd.js"></script>
 <script>
 // ── CKEditor ──────────────────────────────────────────────────────────────────
-CKEDITOR.replace('description', { height: 200 });
+let editorInstance;
+
+ClassicEditor
+    .create(document.querySelector('#description'))
+    .then(editor => {
+        editorInstance = editor; // store instance globally
+    })
+    .catch(error => {
+        console.error(error);
+    });
 
 // ── Dropzone ──────────────────────────────────────────────────────────────────
 Dropzone.autoDiscover = false;
@@ -363,7 +372,7 @@ function resetModal() {
     $('#status').val('draft');
     $('#is_featured').prop('checked', false);
     $('#is_active').prop('checked', true);
-    CKEDITOR.instances.description.setData('');
+    editorInstance.setData('');
     $('#existingImages').empty();
     myDropzone.removeAllFiles(true);
 
@@ -418,7 +427,7 @@ $('#savePost').on('click', function () {
             video_url     : $('#video_url').val(),
             is_featured   : $('#is_featured').is(':checked') ? 1 : 0,
             is_active     : $('#is_active').is(':checked')   ? 1 : 0,
-            description   : CKEDITOR.instances.description.getData(),
+            description   : editorInstance.getData(),
         },
         success: function (res) {
             if (!res.success) { $btn.prop('disabled', false); return; }
@@ -475,7 +484,7 @@ $(document).on('click', '.editPost', function () {
         $('#video_url').val(res.video_url ?? '');
         $('#is_featured').prop('checked', !!res.is_featured);
         $('#is_active').prop('checked', !!res.is_active);
-        CKEDITOR.instances.description.setData(res.description ?? '');
+        editorInstance.setData(res.description ?? '');
 
         // Category cascade, then set subcategory after AJAX resolves
         if (res.category_id) {

@@ -167,8 +167,16 @@ if ($request->filled('locality_id')) {
     ->first();
         return view('frontend.frontend-app');
     }
-    public function postDetail($locality, $category, $subcategory, $slug)
+    public function postDetail(Request $request, $locality, $category, $subcategory, $slug)
     {
+    $localities = Locality::where('parent_id', 3)->get();
+    if($request->category_id){
+    $category = Category::where('slug', $request->category_id)->first();
+    $subcategories = SubCategory::where('category_id',$category->id)->get();
+    }else{
+    $subcategories = SubCategory::all();
+    }
+    $categories = Category::all();
         $post = Post::with([
                 'category',
                 'subcategory',
@@ -216,7 +224,10 @@ if ($request->filled('locality_id')) {
 
         return view('frontend.post-details', compact(
             'post',
-            'relatedPosts'
+            'relatedPosts',
+        'localities',
+        'categories',
+        'subcategories'
         ));
     }
 
