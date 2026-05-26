@@ -106,18 +106,18 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
     // Subcategories
 
     // Subcategories
-Route::post('subcategories/inline-update', [SubcategoryController::class, 'inlineUpdate'])
+Route::post('subcategories/inline-update', [SubCategoryController::class, 'inlineUpdate'])
     ->name('subcategories.inlineUpdate');
     Route::post(
     'subcategories/ajax-store',
-    [SubcategoryController::class, 'ajaxStore']
+    [SubCategoryController::class, 'ajaxStore']
 )->name('subcategories.ajaxStore');
-    Route::post('subcategories/data', [SubcategoryController::class, 'data'])->name('subcategories.data');
-    Route::resource('subcategories', SubcategoryController::class);
+    Route::post('subcategories/data', [SubCategoryController::class, 'data'])->name('subcategories.data');
+    Route::resource('subcategories', SubCategoryController::class);
 
 Route::get(
     'get-subcategories/{id}',
-    [SubcategoryController::class, 'getByCategory']
+    [SubCategoryController::class, 'getByCategory']
 )->name('subcategories.byCategory');
 Route::post(
     'posts/upload-image',
