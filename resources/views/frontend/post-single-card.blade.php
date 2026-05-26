@@ -110,28 +110,52 @@
         ============================================== --}}
         <div class="dh-card-meta">
 
-            {{-- LIKE BUTTON --}}
-            <button class="dh-stat-btn likeBtn {{ $liked ? 'liked' : '' }}"
-                    data-id="{{ $post->id }}">
-                ❤️ <span id="like-count-{{ $post->id }}">{{ number_format($post->likes) }}</span>
-            </button>
+    <!-- Like -->
+    <button class="dh-meta-btn likeBtn {{ $liked ? 'liked' : '' }}"
+            data-id="{{ $post->id }}">
 
-            {{-- VIEWS --}}
-            <span class="dh-card-meta-item">
-                👁 {{ number_format($post->views) }}
-            </span>
+        <span class="dh-meta-icon">
+            <i class="fas fa-heart"></i>
+        </span>
 
-            {{-- SHARES --}}
-            <span class="dh-card-meta-item">
-                🔄 {{ number_format($post->shares) }}
-            </span>
+        <span class="dh-meta-count"
+              id="like-count-{{ $post->id }}">
+            {{ number_format($post->likes) }}
+        </span>
+    </button>
 
-            {{-- DATE --}}
-            <span class="dh-card-meta-item" style="margin-left:auto;">
-                🕒 {{ $post->created_at->diffForHumans() }}
-            </span>
+    <!-- Views -->
+    <div class="dh-meta-box">
+        <span class="dh-meta-icon">
+            <i class="fas fa-eye"></i>
+        </span>
 
-        </div>
+        <span class="dh-meta-count">
+            {{ number_format($post->views) }}
+        </span>
+    </div>
+
+    <!-- Shares -->
+    <div class="dh-meta-box">
+        <span class="dh-meta-icon">
+            <i class="fas fa-share-nodes"></i>
+        </span>
+
+        <span class="dh-meta-count">
+            {{ number_format($post->shares) }}
+        </span>
+    </div>
+
+    <!-- Time -->
+    <div class="dh-meta-time">
+        <i class="fas fa-clock"></i>
+
+        <span>
+            {{ $post->created_at->diffForHumans() }}
+        </span>
+    </div>
+
+</div>
 
         {{-- =============================================
             ACTION BUTTONS
