@@ -81,7 +81,7 @@
         --surface:     #faf9f7;
         --surface-2:   #f2f1ef;
         --white:       #ffffff;
-        --accent:      #c8102e;
+        --accent:      #0f3f7e;
         --accent-dim:  rgba(200,16,46,.08);
         --accent-soft: rgba(200,16,46,.2);
         --radius-sm:   8px;
@@ -110,7 +110,7 @@
     .dh-nav {
         position: fixed; top: 0; left: 0; right: 0;
         height: var(--nav-h);
-        background: rgba(250,249,247,.94);
+        background: #fff;
         backdrop-filter: blur(14px);
         -webkit-backdrop-filter: blur(14px);
         border-bottom: 1px solid rgba(0,0,0,.07);
@@ -121,7 +121,7 @@
         display: flex; align-items: center; justify-content: space-between;
         width: 100%; max-width: 1180px; margin: 0 auto; padding: 0 24px;
     }
-    .dh-nav-logo img { height: 38px; width: auto; display: block; }
+    .dh-nav-logo img { height: 45px; width: auto; display: block; }
     .dh-nav-actions  { display: flex; align-items: center; gap: 10px; }
     .dh-btn-nav {
         display: inline-flex; align-items: center; gap: 6px;
@@ -479,7 +479,7 @@
                     <div class="dh-actions">
                         <a href="#content" class="dh-btn dh-btn-read">
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
-                            Read Article
+                            Show Details
                         </a>
                         <button class="dh-btn dh-btn-like likeBtn" data-id="{{ $post->id }}">
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>

@@ -19,126 +19,83 @@ use App\Http\Controllers\PostController;
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
 */
-
 
 Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
 
+    // ── Core pages ────────────────────────────────────────────────────────────
     Route::get('/', [HomeController::class, 'home'])->name('admin.home');
-	Route::get('dashboard', function () {
-		return view('dashboard');
-	})->name('admin.dashboard');
+    Route::get('dashboard',        fn() => view('dashboard'))         ->name('admin.dashboard');
+    Route::get('billing',          fn() => view('billing'))           ->name('admin.billing');
+    Route::get('profile',          fn() => view('profile'))           ->name('admin.profile');
+    Route::get('rtl',              fn() => view('rtl'))               ->name('admin.rtl');
+    Route::get('user-management',  fn() => view('laravel-examples/user-management'))->name('admin.user-management');
+    Route::get('tables',           fn() => view('tables'))            ->name('admin.tables');
+    Route::get('virtual-reality',  fn() => view('virtual-reality'))   ->name('admin.virtual-reality');
+    Route::get('static-sign-in',   fn() => view('static-sign-in'))    ->name('admin.sign-in');
+    Route::get('static-sign-up',   fn() => view('static-sign-up'))    ->name('admin.sign-up');
+    Route::get('/logout',          [SessionsController::class, 'destroy'])->name('logout');
+    Route::get('/user-profile',    [InfoUserController::class, 'create'])->name('admin.user-profile');
+    Route::post('/user-profile',   [InfoUserController::class, 'store'])->name('admin.user-profile-post');
+    Route::get('/login',           fn() => view('dashboard'))         ->name('sign-up');
 
-	Route::get('billing', function () {
-		return view('billing');
-	})->name('admin.billing');
+    // ── Users ─────────────────────────────────────────────────────────────────
+    Route::get('users/create',              [UserController::class, 'create']) ->name('users.create');
+    Route::get('users/{param}',             [UserController::class, 'show'])   ->name('users.show');
+    Route::get('users',                     [UserController::class, 'index'])  ->name('users.index');
+    Route::get('users/{param}/edit',        [UserController::class, 'edit'])   ->name('users.edit');
+    Route::get('users/{param}/destroy',     [UserController::class, 'destroy'])->name('users.destroy');
+    Route::post('users/store',              [UserController::class, 'store'])  ->name('users.store');
+    Route::patch('users/{param}/update',    [UserController::class, 'update']) ->name('users.update');
+    Route::post('users/getlist',            [UserController::class, 'getlist'])->name('users.getlist');
 
-	Route::get('profile', function () {
-		return view('profile');
-	})->name('admin.profile');
-
-	Route::get('rtl', function () {
-		return view('rtl');
-	})->name('admin.rtl');
-
-	Route::get('user-management', function () {
-		return view('laravel-examples/user-management');
-	})->name('admin.user-management');
-
-	Route::get('tables', function () {
-		return view('tables');
-	})->name('admin.tables');
-
-    Route::get('virtual-reality', function () {
-		return view('virtual-reality');
-	})->name('admin.virtual-reality');
-
-    Route::get('static-sign-in', function () {
-		return view('static-sign-in');
-	})->name('admin.sign-in');
-
-    Route::get('static-sign-up', function () {
-		return view('static-sign-up');
-	})->name('admin.sign-up');
-
-    Route::get('/logout', [SessionsController::class, 'destroy']);
-	Route::get('/user-profile', [InfoUserController::class, 'create'])->name('admin.user-profile');
-	Route::post('/user-profile', [InfoUserController::class, 'store'])->name('admin.user-profile-post');
-    Route::get('/login', function () {
-		return view('dashboard');
-	})->name('sign-up');
-
-
-	//Users
-
-    Route::get('users/create', [UserController::class, 'create'])->name('users.create');
-    Route::get('users/{param}', [UserController::class, 'show'])->name('users.show');
-    Route::get('users', [UserController::class, 'index'])->name('users.index');
-    Route::get('users/{param}/edit', [UserController::class, 'edit'])->name('users.edit');
-    Route::get('users/{param}/destroy', [UserController::class, 'destroy'])->name('users.destroy');
-    Route::post('users/store', [UserController::class, 'store'])->name('users.store');
-    Route::patch('users/{param}/update', [UserController::class, 'update'])->name('users.update');
-    Route::post('users/getlist', [UserController::class, 'getlist'])->name('users.getlist');
-
-
-    // Localities
-    Route::post('localities/inline-update', [LocalityController::class, 'inlineUpdate'])
-    ->name('localities.inlineUpdate');Route::post(
-    'localities/ajax-store',
-    [LocalityController::class, 'ajaxStore']
-)->name('localities.ajaxStore');
-    Route::post('localities/data', [LocalityController::class, 'data'])->name('localities.data');
+    // ── Localities ────────────────────────────────────────────────────────────
+    Route::post('localities/data',          [LocalityController::class, 'data'])        ->name('localities.data');
+    Route::post('localities/ajax-store',    [LocalityController::class, 'ajaxStore'])   ->name('localities.ajaxStore');
+    Route::post('localities/inline-update', [LocalityController::class, 'inlineUpdate'])->name('localities.inlineUpdate');
     Route::resource('localities', LocalityController::class);
 
-    // Categories
-    Route::post('categories/inline-update', [CategoryController::class, 'inlineUpdate'])
-    ->name('categories.inlineUpdate');
-    Route::post('categories/ajax-store', [CategoryController::class, 'ajaxStore'])
-    ->name('categories.ajaxStore');
-    Route::post('categories/data', [CategoryController::class, 'data'])->name('categories.data');
+    // ── Categories ────────────────────────────────────────────────────────────
+    Route::post('categories/data',          [CategoryController::class, 'data'])        ->name('categories.data');
+    Route::post('categories/ajax-store',    [CategoryController::class, 'ajaxStore'])   ->name('categories.ajaxStore');
+    Route::post('categories/inline-update', [CategoryController::class, 'inlineUpdate'])->name('categories.inlineUpdate');
     Route::resource('categories', CategoryController::class);
 
-    // Subcategories
-
-    // Subcategories
-Route::post('subcategories/inline-update', [SubCategoryController::class, 'inlineUpdate'])
-    ->name('subcategories.inlineUpdate');
-    Route::post(
-    'subcategories/ajax-store',
-    [SubCategoryController::class, 'ajaxStore']
-)->name('subcategories.ajaxStore');
-    Route::post('subcategories/data', [SubCategoryController::class, 'data'])->name('subcategories.data');
+    // ── Subcategories ─────────────────────────────────────────────────────────
+    Route::post('subcategories/data',          [SubCategoryController::class, 'data'])        ->name('subcategories.data');
+    Route::post('subcategories/ajax-store',    [SubCategoryController::class, 'ajaxStore'])   ->name('subcategories.ajaxStore');
+    Route::post('subcategories/inline-update', [SubCategoryController::class, 'inlineUpdate'])->name('subcategories.inlineUpdate');
     Route::resource('subcategories', SubCategoryController::class);
 
-Route::get(
-    'get-subcategories/{id}',
-    [SubCategoryController::class, 'getByCategory']
-)->name('subcategories.byCategory');
-Route::post(
-    'posts/upload-image',
-    [PostController::class, 'uploadImage']
-)->name('posts.uploadImage');
-Route::post(
-    'posts/media-upload',
-    [PostController::class, 'mediaUpload']
-)->name('posts.mediaUpload');
-Route::delete(
-    'posts/media-delete/{id}',
-    [PostController::class, 'mediaDelete']
-)->name('posts.mediaDelete');
-    // Subcategories
-Route::post('posts/inline-update', [PostController::class, 'inlineUpdate'])
-    ->name('posts.inlineUpdate');
-    Route::post(
-    'posts/ajax-store',
-    [PostController::class, 'ajaxStore']
-)->name('posts.ajaxStore');
-    Route::post('posts/data', [PostController::class, 'data'])->name('posts.data');
+    // Returns subcategories for a given category (used by the modal cascade)
+    Route::get('get-subcategories/{id}', [SubCategoryController::class, 'getByCategory'])
+         ->name('subcategories.byCategory');
+
+    // ── Posts – custom routes MUST come BEFORE Route::resource ───────────────
+
+    // DataTables feed
+    Route::post('posts/data',               [PostController::class, 'data'])        ->name('posts.data');
+
+    // AJAX create
+    Route::post('posts/ajax-store',         [PostController::class, 'ajaxStore'])   ->name('posts.ajaxStore');
+
+    // Inline field update (status / is_featured / is_active)
+    Route::post('posts/inline-update',      [PostController::class, 'inlineUpdate'])->name('posts.inlineUpdate');
+
+    // JSON data for the edit modal   GET admin/posts/{post}/edit-data
+    Route::get('posts/{post}/edit-data',    [PostController::class, 'editData'])    ->name('posts.editData');
+
+    // Spatie media upload (Dropzone)
+    Route::post('posts/media-upload',       [PostController::class, 'mediaUpload']) ->name('posts.mediaUpload');
+
+    // Delete a single Spatie media item   DELETE admin/posts/media/{id}
+    Route::delete('posts/media/{id}',       [PostController::class, 'mediaDelete']) ->name('posts.mediaDelete');
+
+    // Resource routes  (index, create, store, show, edit, update, destroy)
+    // update  → PUT  /admin/posts/{post}   (posts.update)
+    // destroy → DELETE /admin/posts/{post} (posts.destroy)
+    Route::post('posts/{post}',               [PostController::class, 'show'])        ->name('posts.show');
+
     Route::resource('posts', PostController::class);
 
 });
