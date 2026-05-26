@@ -35,8 +35,8 @@
         --shadow-sm:   0 2px 12px rgba(0,0,0,.07);
         --shadow-md:   0 6px 32px rgba(0,0,0,.10), 0 2px 8px rgba(0,0,0,.05);
         --shadow-lg:   0 16px 56px rgba(0,0,0,.13), 0 4px 16px rgba(0,0,0,.06);
-        --font-serif:  'Playfair Display', Georgia, serif;
-        --font-sans:   'DM Sans', system-ui, sans-serif;
+        --font-serif:  -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+        --font-sans:   -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
         --nav-h:       64px;
     }
     *, *::before, *::after { box-sizing: border-box; }
