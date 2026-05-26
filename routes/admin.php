@@ -39,6 +39,14 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
     Route::post('/user-profile',   [InfoUserController::class, 'store'])->name('admin.user-profile-post');
     Route::get('/login',           fn() => view('dashboard'))         ->name('sign-up');
 
+    // AJAX store (modal create)
+    Route::post('users/ajax-store',           [UserController::class, 'ajaxStore'])  ->name('users.ajaxStore');
+    
+    // AJAX update (modal edit)
+    Route::post('users/{id}/ajax-update',     [UserController::class, 'ajaxUpdate']) ->name('users.ajaxUpdate');
+    
+    // JSON data for edit modal   GET admin/users/{id}/edit-data
+    Route::get('users/{id}/edit-data',        [UserController::class, 'editData'])   ->name('users.editData');
     // ── Users ─────────────────────────────────────────────────────────────────
     Route::get('users/create',              [UserController::class, 'create']) ->name('users.create');
     Route::get('users/{param}',             [UserController::class, 'show'])   ->name('users.show');
