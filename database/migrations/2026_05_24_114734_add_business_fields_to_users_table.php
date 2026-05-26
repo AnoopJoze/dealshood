@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
 
             $table->text('address')->nullable()->after('phone');
+            $table->string('company_name')->nullable()->after('phone');
 
             // OPTIONAL (recommended for business system)
             $table->string('whatsapp_number')->nullable()->after('phone');

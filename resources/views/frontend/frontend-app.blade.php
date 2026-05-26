@@ -1102,8 +1102,8 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                 <div>
                     <p class="dh-footer-col-title">Company</p>
                     <ul class="dh-footer-links">
-                        <li><a href="https://www.creative-tim.com/presentation" target="_blank">About Us</a></li>
-                        <li><a href="https://www.creative-tim.com/blog" target="_blank">Ads</a></li>
+                        <li><a href="https://dealshood.com/" target="_blank">About Us</a></li>
+                        <li><a href="https://dealshood.com/" target="_blank">Ads</a></li>
                     </ul>
                 </div>
 
@@ -1111,7 +1111,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                 <div>
                     <p class="dh-footer-col-title">Help & Support</p>
                     <ul class="dh-footer-links">
-                        <li><a href="https://www.creative-tim.com/contact-us" target="_blank">Contact Us</a></li>
+                        <li><a href="https://dealshood.com/" target="_blank">Contact Us</a></li>
                     </ul>
                 </div>
 

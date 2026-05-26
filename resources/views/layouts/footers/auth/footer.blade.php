@@ -15,10 +15,10 @@
                         <a href="https://www.creative-tim.com" class="nav-link text-muted" target="_blank">DealsHood</a>
                     </li>
                     <li class="nav-item">
-                        <a href="https://www.creative-tim.com/presentation" class="nav-link text-muted" target="_blank">About Us</a>
+                        <a href="https://dealshood.com/" class="nav-link text-muted" target="_blank">About Us</a>
                     </li>
                     <li class="nav-item">
-                        <a href="https://creative-tim.com/blog" class="nav-link text-muted" target="_blank">Blog</a>
+                        <a href="https://dealshood.com/" class="nav-link text-muted" target="_blank">Blog</a>
                     </li>
                 </ul>
             </div>
