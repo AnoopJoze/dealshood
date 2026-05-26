@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 use DataTables;
 use Carbon\Carbon;
 
-class SubcategoryController extends Controller
+class SubCategoryController extends Controller
 {
     public function index()
     {
