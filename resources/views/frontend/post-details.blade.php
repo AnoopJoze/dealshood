@@ -156,7 +156,7 @@
     .dh-hero {
         padding-top: calc(var(--nav-h) + 48px);
         padding-bottom: 56px;
-        background: #fff;
+        background: var(--surface);
     }
     .dh-hero .container {
         max-width: 1180px;
