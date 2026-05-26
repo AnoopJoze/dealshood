@@ -3,9 +3,6 @@
 * DealsHood Dashboard - v1.0.3
 =========================================================
 
-* Product Page: https://www.creative-tim.com/product/soft-ui-dashboard
-* Copyright 2021 DealsHood (https://www.creative-tim.com)
-* Licensed under MIT (https://www.creative-tim.com/license)
 
 * Coded by DealsHood
 

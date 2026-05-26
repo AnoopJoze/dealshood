@@ -22,6 +22,85 @@ class PostController extends Controller
     */
     public function index()
     {
+        $posts = Post::with('media')->take(10)->get();
+    // take existing 10 posts and make 100 duplicates
+
+    $created = 0;
+
+    DB::beginTransaction();
+
+    try {
+
+        while ($created < 100) {
+
+            foreach ($posts as $post) {
+
+                if ($created >= 100) {
+                    break;
+                }
+
+                // Duplicate post
+                $newPost = $post->replicate();
+
+                $newPost->title = $post->title . ' Copy ' . ($created + 1);
+
+                $newPost->slug = Str::slug($newPost->title) . '-' . uniqid();
+
+                $newPost->views = rand(0, 500);
+
+                $newPost->published_at = now();
+
+                $newPost->created_at = now();
+                $newPost->updated_at = now();
+
+                $newPost->save();
+
+                /*
+                |--------------------------------------------------------------------------
+                | Copy Images
+                |--------------------------------------------------------------------------
+                */
+                foreach ($post->getMedia('posts') as $media) {
+
+                    $newPost
+                        ->addMedia($media->getPath())
+                        ->preservingOriginal()
+                        ->toMediaCollection('posts');
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | Copy Videos
+                |--------------------------------------------------------------------------
+                */
+                foreach ($post->getMedia('videos') as $media) {
+
+                    $newPost
+                        ->addMedia($media->getPath())
+                        ->preservingOriginal()
+                        ->toMediaCollection('videos');
+                }
+
+                $created++;
+            }
+        }
+
+        DB::commit();
+
+        return response()->json([
+            'success' => true,
+            'message' => "{$created} duplicate posts created successfully."
+        ]);
+
+    } catch (\Exception $e) {
+
+        DB::rollBack();
+
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], 500);
+    }
         $categories    = Category::orderBy('name')->get();
         $subcategories = Subcategory::orderBy('name')->get();
         $localities    = Locality::orderBy('name')->get();
