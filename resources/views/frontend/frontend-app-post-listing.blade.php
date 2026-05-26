@@ -185,7 +185,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         padding-top: var(--nav-h);
         position: relative;
         overflow: hidden;
-        min-height: 460px;
+        min-height: 350px;
         display: flex;
         align-items: center;
         background: var(--ink);
@@ -215,7 +215,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         width: 100%;
         max-width: 1180px;
         margin: 0 auto;
-        padding: 60px 24px 92px;
+        padding: 15px 24px 35px;
         text-align: center;
     }
     .dh-hero-eyebrow {
@@ -245,14 +245,14 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         color: #fff;
         line-height: 1.14;
         letter-spacing: -.02em;
-        margin: 0 0 16px;
+        /* margin: 0 0 16px; */
         animation: fadeUp .55s .12s both;
     }
     .dh-hero-sub {
         font-size: 1.02rem;
         color: rgba(255,255,255,.62);
         font-weight: 300;
-        margin-bottom: 30px;
+        /* margin-bottom: 30px; */
         animation: fadeUp .55s .18s both;
     }
     .dh-hero-socials {
@@ -292,7 +292,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     ═══════════════════════════════════════════════════════ */
     .dh-filter-section {
         background: var(--surface);
-        padding: 0 0 44px;
+        padding: 0 0 10px;
     }
     .dh-filter-wrap {
         max-width: 1180px;
@@ -851,9 +851,8 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         <div class="dh-hero-overlay"></div>
 
         <div class="dh-hero-content">
-            <span class="dh-hero-eyebrow">DealsHood</span>
-            <h1 class="dh-hero-title">Discover the Best<br>Deals Near You</h1>
-            <p class="dh-hero-sub">Find great offers from your neighbourhood, every day.</p>
+            <h1 class="dh-hero-title">DealsHood</h1>
+            <p class="dh-hero-sub">Discover the Best Deals Near You <br> Find great offers from your neighbourhood, every day.</p>
             <div class="dh-hero-socials">
                 <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
                 <a href="https://www.instagram.com/dealshood" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
