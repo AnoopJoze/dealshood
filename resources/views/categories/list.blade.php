@@ -2,430 +2,498 @@
 
 @section('content')
 
-    @push('css')
-        <link href="{{ asset('assets') }}/DataTables/datatables.min.css" rel="stylesheet">
-        <style type="text/css">
-        </style>
-    @endpush
+@push('css')
+    <link href="{{ asset('assets') }}/DataTables/datatables.min.css" rel="stylesheet">
+    <style>
+        /* ── Inline edit ─────────────────────────────────── */
+        .inline-edit {
+            transition: box-shadow .15s, background .15s;
+            border-radius: .4rem !important;
+        }
+        .inline-edit:focus {
+            background: #fff !important;
+            box-shadow: 0 0 0 2px #1a56db33 !important;
+        }
+        .inline-edit.saving { opacity: .5; pointer-events: none; }
+        .inline-edit.saved  { background: #ecfdf5 !important; transition: background .3s; }
+        .inline-edit.error  { background: #fef2f2 !important; }
+
+        /* ── Status select colour ─────────────────────────── */
+        .status-select option[value="1"] { color: #059669; }
+        .status-select option[value="0"] { color: #dc2626; }
+
+        /* ── Stat card ────────────────────────────────────── */
+        .stat-card { border-radius: 12px; padding: 14px 18px;
+                     display: flex; align-items: center; gap: 12px; }
+        .stat-card .sc-icon { width: 38px; height: 38px; border-radius: 10px;
+                               display: flex; align-items: center; justify-content: center;
+                               font-size: .9rem; flex-shrink: 0; }
+        .stat-card .sc-val  { font-size: 1.3rem; font-weight: 700; line-height: 1; }
+        .stat-card .sc-lbl  { font-size: .65rem; text-transform: uppercase;
+                               letter-spacing: .05em; color: #9ca3af; margin-top: 2px; }
+
+        /* ── Status filter pills ──────────────────────────── */
+        .status-filter span {
+            display: inline-flex; align-items: center; gap: .35rem;
+            padding: .28rem .85rem; border-radius: 2rem;
+            font-size: .72rem; font-weight: 600; cursor: pointer;
+            border: 1px solid #e5e7eb; background: #f9fafb;
+            transition: all .15s; user-select: none;
+        }
+        .status-filter span.active,
+        .status-filter span:hover {
+            background: linear-gradient(195deg, #42424a, #191919);
+            color: #fff; border-color: transparent;
+        }
+
+        #datatable thead th,
+        #datatable tbody td { vertical-align: middle; }
+    </style>
+@endpush
+
 <div>
 
-<div class="row">
-    <div class="col-12">
-        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    {{-- ── Stat cards ─────────────────────────────────────── --}}
+    <div class="row g-3 mb-4">
 
-            <!-- Header -->
-            <div class="card-header bg-white border-0 py-4 px-4">
-                <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm stat-card">
+                <div class="sc-icon" style="background:#dbeafe;color:#1d4ed8;">
+                    <i class="fas fa-tags"></i>
+                </div>
+                <div>
+                    <div class="sc-val text-dark">{{ $stats['total'] }}</div>
+                    <div class="sc-lbl">Total Categories</div>
+                </div>
+            </div>
+        </div>
 
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm stat-card">
+                <div class="sc-icon" style="background:#d1fae5;color:#059669;">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div>
+                    <div class="sc-val" style="color:#059669;">{{ $stats['active'] }}</div>
+                    <div class="sc-lbl">Active</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm stat-card">
+                <div class="sc-icon" style="background:#fef2f2;color:#dc2626;">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <div>
+                    <div class="sc-val" style="color:#dc2626;">{{ $stats['inactive'] }}</div>
+                    <div class="sc-lbl">Inactive</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    {{-- ── Main card ─────────────────────────────────────── --}}
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+
+        {{-- Header --}}
+        <div class="card-header bg-white border-0 py-4 px-4">
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                <div>
+                    <h4 class="mb-1 fw-bold text-dark">Categories Management</h4>
+                    <p class="text-sm text-muted mb-0">
+                        Manage all categories — click any cell to edit inline
+                    </p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-light border rounded-3 px-3" id="toggleFilters">
+                        <i class="fas fa-filter me-2"></i>Filter
+                    </button>
+                    <button class="btn bg-gradient-primary"
+                            data-bs-toggle="modal" data-bs-target="#categoryModal">
+                        <i class="fas fa-plus me-1"></i> Add Category
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        {{-- Body --}}
+        <div class="card-body pt-0 px-4 pb-4">
+
+            {{-- ── Collapsible filters ───────────────────── --}}
+            <div id="filterPanel" class="collapse mb-3 pt-3">
+                <div class="card card-body border rounded-4 bg-light shadow-none p-3">
+                    <div class="row g-3 align-items-end">
+
+                        <div class="col-md-4">
+                            <label class="form-label text-xs fw-semibold text-muted mb-1">Search</label>
+                            <input type="text" id="globalSearch"
+                                   class="form-control form-control-sm" placeholder="Category name…">
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label text-xs fw-semibold text-muted mb-1">From</label>
+                            <input type="date" id="filter_start" class="form-control form-control-sm">
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label text-xs fw-semibold text-muted mb-1">To</label>
+                            <input type="date" id="filter_end" class="form-control form-control-sm">
+                        </div>
+
+                        <div class="col-md-4 d-flex gap-2 align-items-end">
+                            <button id="applyFilter" class="btn btn-sm bg-gradient-primary px-3">
+                                <i class="fas fa-search me-1"></i> Apply
+                            </button>
+                            <button id="clearFilter" class="btn btn-sm btn-light border px-3">
+                                <i class="fas fa-times me-1"></i> Clear
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            {{-- ── Status filter pills ───────────────────── --}}
+            <div class="status-filter d-flex flex-wrap gap-2 mb-3">
+                <span class="active" data-status="">
+                    <i class="fas fa-th"></i> All
+                    <strong class="ms-1">{{ $stats['total'] }}</strong>
+                </span>
+                <span data-status="1" style="background:#d1fae5;color:#059669;border-color:#a7f3d0;">
+                    <i class="fas fa-check-circle"></i> Active
+                    <strong class="ms-1">{{ $stats['active'] }}</strong>
+                </span>
+                <span data-status="0" style="background:#fef2f2;color:#dc2626;border-color:#fecaca;">
+                    <i class="fas fa-times-circle"></i> Inactive
+                    <strong class="ms-1">{{ $stats['inactive'] }}</strong>
+                </span>
+            </div>
+
+            {{-- ── Table ──────────────────────────────────── --}}
+            <div class="table-responsive">
+                <table id="datatable" class="table align-middle table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="text-uppercase text-secondary text-xxs fw-bolder ps-3" style="width:50px">#</th>
+                            <th class="text-uppercase text-secondary text-xxs fw-bolder">Name</th>
+                            <th class="text-uppercase text-secondary text-xxs fw-bolder">Subcategories</th>
+                            <th class="text-uppercase text-secondary text-xxs fw-bolder">Status</th>
+                            <th class="text-uppercase text-secondary text-xxs fw-bolder">Created</th>
+                            <th class="text-uppercase text-secondary text-xxs fw-bolder text-center" style="width:60px">Del</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <p class="text-xs text-muted mt-3 mb-0">
+                <i class="fas fa-info-circle me-1 text-info"></i>
+                Click any <strong>Name</strong> or <strong>Status</strong> cell to edit it directly — changes save automatically.
+            </p>
+
+        </div>
+    </div>
+
+</div>
+
+{{-- ════════════════════════════════════════════════════
+     ADD CATEGORY MODAL
+════════════════════════════════════════════════════ --}}
+<div class="modal fade" id="categoryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+
+            <div class="modal-header border-0 px-4 pt-4 pb-2">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-3 bg-gradient-primary text-white d-flex align-items-center
+                                justify-content-center shadow-sm"
+                         style="width:44px;height:44px;flex-shrink:0;">
+                        <i class="fas fa-tag"></i>
+                    </div>
                     <div>
-                        <h4 class="mb-1 fw-bold text-dark">Catogory Management</h4>
-                        <p class="text-sm text-muted mb-0">
-                            Manage all registered categories from here
-                        </p>
+                        <h5 class="modal-title fw-bold text-dark mb-0">Add Category</h5>
+                        <p class="text-xs text-muted mb-0">Create a new category</p>
                     </div>
-
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-light border rounded-3 px-3">
-                            <i class="fas fa-filter me-2"></i>Filter
-                        </button>
-
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
-                            + Add Category
-                        </button>
-                    </div>
-
                 </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
-            <!-- Body -->
-            <div class="card-body pt-0 px-4 pb-4">
+            <div class="modal-body px-4 py-3">
 
-                <!-- Search & Stats -->
-                <div class="row g-3 mb-4">
+                <label class="form-label fw-semibold text-sm mb-1">
+                    Category Name <span class="text-danger">*</span>
+                </label>
+                <input type="text" id="category_name" class="form-control"
+                       placeholder="e.g. Electronics, Fashion, Food…">
+                <small class="text-danger d-none" id="err_category_name"></small>
 
-                    <div class="col-md-4">
-                        <div class="input-group input-group-outline">
-                            <span class="input-group-text bg-gray-100 border-0">
-                                <i class="fas fa-search text-muted"></i>
-                            </span>
-                            <input type="text"
-                                   class="form-control border-0 bg-gray-100"
-                                   placeholder="Search users...">
-                        </div>
-                    </div>
-
-                    <div class="col-md-8">
-                        <div class="d-flex flex-wrap justify-content-md-end gap-2">
-
-                            <div class="badge bg-light text-dark px-3 py-2 rounded-pill">
-                                Total Users : 245
-                            </div>
-
-                            <div class="badge bg-success-subtle text-success px-3 py-2 rounded-pill">
-                                Active : 210
-                            </div>
-
-                            <div class="badge bg-danger-subtle text-danger px-3 py-2 rounded-pill">
-                                Inactive : 35
-                            </div>
-
-                        </div>
-                    </div>
-
-                </div>
-
-                <!-- Table -->
-                <div class="table-responsive">
-
-                    <table id="datatable"
-                           class="table align-middle table-hover mb-0">
-
-                        <thead class="bg-light">
-                            <tr>
-
-                                <th class="text-uppercase text-secondary text-xxs fw-bolder ps-3">
-                                    Action
-                                </th>
-                                <th class="text-uppercase text-secondary text-xxs fw-bolder">
-                                    Name
-                                </th>
-
-                                <th class="text-uppercase text-secondary text-xxs fw-bolder">
-                                    Status
-                                </th>
-                                <th class="text-uppercase text-secondary text-xxs fw-bolder">
-                                    Created Date
-                                </th>
-
-                            </tr>
-
-                            <!-- Filters -->
-                            <tr>
-                                <th></th>
-
-                                <th>
-                                    <input type="text"
-                                           class="form-control form-control-sm border"
-                                           placeholder="Search name">
-                                </th>
-
-                                <th>
-                                    <select class="form-select form-select-sm border">
-                                        <option value="">All Status</option>
-                                        <option value="active">Active</option>
-                                        <option value="inactive">Inactive</option>
-                                    </select>
-                                </th>
-
-                                <th>
-                                    <div class="d-flex gap-2">
-                                        <input type="date"
-                                               class="form-control form-control-sm border">
-
-                                        <input type="date"
-                                               class="form-control form-control-sm border">
-                                    </div>
-                                </th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-
-                        </tbody>
-
-                    </table>
-
+                <div class="mt-3 bg-light rounded-3 p-3">
+                    <p class="text-xs text-muted mb-0">
+                        <i class="fas fa-info-circle me-1 text-info"></i>
+                        The slug is generated automatically from the name.
+                        You can manage subcategories from the Subcategories page.
+                    </p>
                 </div>
 
             </div>
+
+            <div class="modal-footer border-0 px-4 pb-4 pt-2">
+                <button class="btn btn-light border rounded-3 px-4" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i> Cancel
+                </button>
+                <button class="btn bg-gradient-primary px-4" id="saveCategory">
+                    <span id="saveCategoryText"><i class="fas fa-plus me-2"></i> Create Category</span>
+                    <span id="saveCategorySpinner" class="d-none">
+                        <span class="spinner-border spinner-border-sm me-2"></span> Saving…
+                    </span>
+                </button>
+            </div>
+
         </div>
     </div>
 </div>
-</div>
 
-<div class="modal fade" id="addCategoryModal">
-  <div class="modal-dialog">
-    <div class="modal-content p-3">
-
-      <h5>Add Category</h5>
-
-      <input type="text" id="category_name" class="form-control" placeholder="Category name">
-
-      <button class="btn btn-success mt-3" id="saveCategory">
-        Save
-      </button>
-
-    </div>
-  </div>
-</div>
 @endsection
 
-        @push('js')
+@push('js')
 <script src="{{ asset('assets') }}/DataTables/datatables.min.js"></script>
-<script src="{{ asset('assets') }}/js/jquery.blockUI.js"></script>
-<script src="{{ asset('assets') }}/vendor/moment.min.js"></script>
-<script src="{{ asset('assets') }}/jquery-validate/jquery.validate.js"></script>
-<script src="{{ asset('assets') }}/jquery-validate/additional-methods.min.js"></script>
 <script src="{{ asset('assets') }}/js/sweetalert2.all.min.js"></script>
-<script src="{{ asset('assets') }}/js/jquery.mousewheel.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.umd.js"></script>
 
-<script type="text/javascript">
-$('#saveCategory').click(function () {
+<script>
+$(function () {
 
-    $.ajax({
-        url: "{{ route('categories.ajaxStore') }}",
-        type: "POST",
-        data: {
-            _token: "{{ csrf_token() }}",
-            name: $('#category_name').val()
-        },
-        success: function (res) {
-            if (res.success) {
-                $('#addCategoryModal').modal('hide');
-                $('#categories-table').DataTable().ajax.reload();
+    var activeStatus = '';
+    var saveTimeout  = null;
+
+    /*
+    |--------------------------------------------------------------------------
+    | DataTable
+    |--------------------------------------------------------------------------
+    */
+    var table = $('#datatable').DataTable({
+        processing : true,
+        serverSide : true,
+        ajax: {
+            url  : '{{ route("categories.data") }}',
+            type : 'POST',
+            data : function (d) {
+                d._token     = '{{ csrf_token() }}';
+                d.status     = activeStatus;
+                d.start_date = $('#filter_start').val();
+                d.end_date   = $('#filter_end').val();
             }
+        },
+        columns: [
+            { data: 'DT_RowIndex',         orderable: false, searchable: false },
+            { data: 'name',                name: 'name' },
+            { data: 'subcategories_count', name: 'subcategories_count', orderable: false, searchable: false },
+            { data: 'status',              name: 'status', orderable: false, searchable: false },
+            { data: 'created_at',          name: 'created_at', searchable: false },
+            { data: 'action',              name: 'action', orderable: false, searchable: false, className: 'text-center' },
+        ],
+        order      : [[1, 'asc']],
+        pageLength : 25,
+        lengthMenu : [10, 25, 50, 100],
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Status filter pills
+    |--------------------------------------------------------------------------
+    */
+    $(document).on('click', '.status-filter span', function () {
+        $('.status-filter span').removeClass('active')
+            .css({ background: '', color: '', borderColor: '' });
+        $(this).addClass('active');
+        activeStatus = $(this).data('status');
+        table.ajax.reload();
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Collapsible filters
+    |--------------------------------------------------------------------------
+    */
+    $('#toggleFilters').on('click', function () { $('#filterPanel').collapse('toggle'); });
+
+    $('#applyFilter').on('click', function () { table.ajax.reload(); });
+
+    $('#clearFilter').on('click', function () {
+        $('#filter_start, #filter_end, #globalSearch').val('');
+        table.search('').ajax.reload();
+    });
+
+    $('#globalSearch').on('keyup', function () { table.search(this.value).draw(); });
+
+    $('#filter_start, #filter_end').on('change', function () { table.ajax.reload(); });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Inline edit — save on change
+    |--------------------------------------------------------------------------
+    */
+    function inlineSave($el) {
+        $el.addClass('saving');
+
+        $.ajax({
+            url  : '{{ route("categories.inlineUpdate") }}',
+            type : 'POST',
+            data : {
+                _token: '{{ csrf_token() }}',
+                id    : $el.data('id'),
+                field : $el.data('field'),
+                value : $el.val(),
+            },
+            success: function (res) {
+                if (res.success) {
+                    $el.removeClass('saving').addClass('saved');
+                    setTimeout(function () { $el.removeClass('saved'); }, 1200);
+                }
+            },
+            error: function (xhr) {
+                $el.removeClass('saving').addClass('error');
+                setTimeout(function () { $el.removeClass('error'); }, 2000);
+                var msg = xhr.responseJSON?.errors?.value?.[0] ?? 'Could not save change';
+                Swal.fire({
+                    toast: true, position: 'top-end', icon: 'error',
+                    title: msg, timer: 2500, showConfirmButton: false,
+                });
+            }
+        });
+    }
+
+    // Selects → save immediately on change
+    $(document).on('change', 'select.inline-edit', function () {
+        inlineSave($(this));
+    });
+
+    // Text inputs → debounce on keyup, save on blur
+    $(document).on('keyup', 'input.inline-edit', function () {
+        clearTimeout(saveTimeout);
+        var $el = $(this);
+        saveTimeout = setTimeout(function () { inlineSave($el); }, 600);
+    });
+
+    $(document).on('blur', 'input.inline-edit', function () {
+        clearTimeout(saveTimeout);
+        inlineSave($(this));
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Delete
+    |--------------------------------------------------------------------------
+    */
+    $(document).on('click', '.delete-btn', function () {
+        var id   = $(this).data('id');
+        var name = $(this).data('name');
+        var subs = parseInt($(this).data('subs') || 0);
+
+        var html = 'Delete <strong>' + name + '</strong>?';
+        if (subs > 0) {
+            html += '<br><small class="text-warning">'
+                  + '<i class="fas fa-exclamation-triangle me-1"></i>'
+                  + subs + ' subcategory/ies will be unlinked.</small>';
         }
+
+        Swal.fire({
+            title            : 'Delete Category?',
+            html             : html,
+            icon             : 'warning',
+            showCancelButton : true,
+            confirmButtonColor: '#d33', cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, delete',
+        }).then(function (r) {
+            if (!r.isConfirmed) return;
+
+            $.ajax({
+                url  : '/admin/categories/' + id,
+                type : 'POST',
+                data : { _token: '{{ csrf_token() }}', _method: 'DELETE' },
+
+                success: function (res) {
+                    if (res.success) {
+                        table.ajax.reload(null, false);
+                        Swal.fire({
+                            toast: true, position: 'top-end', icon: 'success',
+                            title: res.message, timer: 1800, showConfirmButton: false,
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire('Error', 'Could not delete category.', 'error');
+                }
+            });
+        });
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Add Category modal — reset on close
+    |--------------------------------------------------------------------------
+    */
+    $('#categoryModal').on('hidden.bs.modal', function () {
+        $('#category_name').val('').removeClass('is-invalid');
+        $('#err_category_name').addClass('d-none').text('');
+    });
+
+    // Allow pressing Enter in the input to submit
+    $('#category_name').on('keydown', function (e) {
+        if (e.key === 'Enter') $('#saveCategory').trigger('click');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Save new category
+    |--------------------------------------------------------------------------
+    */
+    $('#saveCategory').on('click', function () {
+        $('#err_category_name').addClass('d-none').text('');
+        $('#category_name').removeClass('is-invalid');
+
+        $('#saveCategoryText').addClass('d-none');
+        $('#saveCategorySpinner').removeClass('d-none');
+        $('#saveCategory').prop('disabled', true);
+
+        $.ajax({
+            url  : '{{ route("categories.ajaxStore") }}',
+            type : 'POST',
+            data : {
+                _token : '{{ csrf_token() }}',
+                name   : $('#category_name').val(),
+            },
+
+            success: function (res) {
+                if (res.success) {
+                    $('#categoryModal').modal('hide');
+                    table.ajax.reload(null, false);
+                    Swal.fire({
+                        toast: true, position: 'top-end', icon: 'success',
+                        title: res.message, timer: 2000, showConfirmButton: false,
+                    });
+                }
+            },
+
+            error: function (xhr) {
+                var errors = xhr.responseJSON?.errors ?? {};
+                if (errors.name) {
+                    $('#err_category_name').removeClass('d-none').text(errors.name[0]);
+                    $('#category_name').addClass('is-invalid');
+                } else {
+                    Swal.fire('Error', 'Something went wrong.', 'error');
+                }
+            },
+
+            complete: function () {
+                $('#saveCategoryText').removeClass('d-none');
+                $('#saveCategorySpinner').addClass('d-none');
+                $('#saveCategory').prop('disabled', false);
+            }
+        });
     });
 
 });
-$(document).on('change', '.inline-edit', function () {
-
-    let id = $(this).data('id');
-    let field = $(this).data('field');
-    let value = $(this).val();
-
-    $.ajax({
-        url: "{{ route('categories.inlineUpdate') }}",
-
-        type: "POST",
-        data: {
-            _token: "{{ csrf_token() }}",
-            id: id,
-            field: field,
-            value: value
-        },
-
-        success: function (res) {
-            if (res.success) {
-                console.log('Updated');
-            }
-        },
-
-        error: function () {
-            alert('Update failed');
-        }
-    });
-
-});
-scrollDatatable();
-
-                function scrollDatatable() {
-                    setTimeout(function() {
-                        $(".dataTables_scrollBody").mousewheel(function(event, delta) {
-                            this.scrollLeft -= (delta * 100);
-                            event.preventDefault();
-                        });
-                        $.unblockUI();
-                    }, 600);
-                }
-
-                $(document).on('click', '.exporttoexcel', function(e) {
-                    $.blockUI({
-                        css: {
-                            backgroundColor: 'transparent',
-                            border: 'none'
-                        },
-                        message: '',
-                        baseZ: 1500,
-                        overlayCSS: {
-                            backgroundColor: '#000',
-                            opacity: 0.7,
-                            cursor: 'wait'
-                        }
-                    });
-                    setTimeout(function() {
-                        $.unblockUI();
-                    }, 800);
-
-                });
-                $(document).on('click', '.refresh', function(e) {
-                    $.blockUI({
-                        css: {
-                            backgroundColor: 'transparent',
-                            border: 'none'
-                        },
-                        message: '',
-                        baseZ: 1500,
-                        overlayCSS: {
-                            backgroundColor: '#000',
-                            opacity: 0.7,
-                            cursor: 'wait'
-                        }
-                    });
-                    document.getElementById("search_tech").reset();
-                    $('#datatable').DataTable().state.clear();
-                    fetch_datatable_data();
-                });
-
-                getDatatable();
-
-                function getDatatable() {
-
-                    var table = $('#datatable').DataTable({
-                        processing: true,
-                        serverSide: true,
-                        ajax: {
-                            url: '{{ route('categories.data') }}',
-                            type: 'POST',
-                            data: function (d) {
-                                d._token = '{{ csrf_token() }}'; // 🔒 CSRF token
-
-                                $('#datatable thead tr:eq(1) th').each(function(index) {
-                                    const input = $(this).find('input.column_filter');
-                                    if (input.length > 0) {
-                                        d.columns[index] = d.columns[index] || {};
-                                        d.columns[index].data = input.data('column');
-                                        d.columns[index].search = { value: input.val() };
-                                    }
-                                });
-
-                                // send date range
-                                d.start_date = $('#start_date').val();
-                                d.end_date = $('#end_date').val();
-                                d.action_start_date = $('#action_start_date').val();
-                                d.action_end_date = $('#action_end_date').val();
-                                d.status = $('#status').val();
-                            }
-                        },
-                        columns: [
-                            { data: 'action', name: 'action', orderable: false, searchable: false },
-                            { data: 'name', name: 'name' },
-                            { data: 'status', name: 'status', searchable: false },
-                            { data: 'created_at', name: 'created_at', searchable: false },
-                        ],
-                        order: [[1, 'desc']],
-                        pageLength: 25,
-                        lengthMenu: [10, 25, 50, 100],
-                        orderCellsTop: true,
-                        fixedHeader: true,
-                    });
-
-                    // Apply column filters
-                    $('#datatable thead tr:eq(1) th').each(function (i) {
-                        $('input', this).on('keyup change', function () {
-                            table.column(i).search(this.value).draw();
-                        });
-                    });
-
-                   $('#exportForm').on('submit', function () {
-
-                        $.blockUI({
-                            css: {
-                                backgroundColor: 'transparent',
-                                border: 'none'
-                            },
-                            message: '',
-                            baseZ: 1500,
-                            overlayCSS: {
-                                backgroundColor: '#000',
-                                opacity: 0.7,
-                                cursor: 'wait'
-                            }
-                        });
-                        var filters = {};
-
-                        // Loop through each filter input in the header
-                        $('#datatable thead tr:eq(1) th').each(function (i) {
-                            var input = $(this).find('input');
-                            if (input.length > 0) {
-                                var columnName = table.column(i).dataSrc(); // get the real data name
-                                filters[columnName] = input.val();
-                            }
-                        });
-
-                        // Also include date filters
-                        filters['start_date'] = $('#start_date').val();
-                        filters['end_date'] = $('#end_date').val();
-                        filters['status'] = $('#status').val();
-
-                        // Store JSON in hidden input
-                        $('#filterInput').val(JSON.stringify(filters));
-                    });
-                }
-
-                $(document).ready(function() {
-
-                    $(document).on('click', '#clear_filter', function(e) {
-                        e.preventDefault();
-                        dropdownActive = true;
-
-                        $.blockUI({
-                            css: {
-                                backgroundColor: 'transparent',
-                                border: 'none'
-                            },
-                            message: '',
-                            baseZ: 1500,
-                            overlayCSS: {
-                                backgroundColor: '#000',
-                                opacity: 0.7,
-                                cursor: 'wait'
-                            }
-                        });
-
-                        $("#exportForm")[0].reset();
-                        $('#datatable thead tr:eq(1) th input').val('');
-                        $('.column-search').val('');
-                        let table = $('#datatable').DataTable();
-                        table.search('').columns().search('').draw();
-
-                        setTimeout($.unblockUI, 500);
-
-                        fetch_datatable_data();
-                    });
-                });
-
-                function newexportaction(e, dt, button, config) {
-                    var self = this;
-                    var oldStart = dt.settings()[0]._iDisplayStart;
-                    dt.one('preXhr', function(e, s, data) {
-                        // Just this once, load all data from the server...
-                        data.start = 0;
-                        data.length = 2147483647;
-                        dt.one('preDraw', function(e, settings) {
-                            // Call the original action function
-                            if (button[0].className.indexOf('buttons-copy') >= 0) {
-                                $.fn.dataTable.ext.buttons.copyHtml5.action.call(self, e, dt, button, config);
-                            } else if (button[0].className.indexOf('buttons-excel') >= 0) {
-                                $.fn.dataTable.ext.buttons.excelHtml5.available(dt, config) ?
-                                    $.fn.dataTable.ext.buttons.excelHtml5.action.call(self, e, dt, button, config) :
-                                    $.fn.dataTable.ext.buttons.excelFlash.action.call(self, e, dt, button, config);
-                            } else if (button[0].className.indexOf('buttons-csv') >= 0) {
-                                $.fn.dataTable.ext.buttons.csvHtml5.available(dt, config) ?
-                                    $.fn.dataTable.ext.buttons.csvHtml5.action.call(self, e, dt, button, config) :
-                                    $.fn.dataTable.ext.buttons.csvFlash.action.call(self, e, dt, button, config);
-                            } else if (button[0].className.indexOf('buttons-pdf') >= 0) {
-                                $.fn.dataTable.ext.buttons.pdfHtml5.available(dt, config) ?
-                                    $.fn.dataTable.ext.buttons.pdfHtml5.action.call(self, e, dt, button, config) :
-                                    $.fn.dataTable.ext.buttons.pdfFlash.action.call(self, e, dt, button, config);
-                            } else if (button[0].className.indexOf('buttons-print') >= 0) {
-                                $.fn.dataTable.ext.buttons.print.action(e, dt, button, config);
-                            }
-                            dt.one('preXhr', function(e, s, data) {
-                                // DataTables thinks the first item displayed is index 0, but we're not drawing that.
-                                // Set the property to what it was before exporting.
-                                settings._iDisplayStart = oldStart;
-                                data.start = oldStart;
-                            });
-                            // Reload the grid with the original page. Otherwise, API functions like table.cell(this) don't work properly.
-                            setTimeout(dt.ajax.reload, 0);
-                            // Prevent rendering of the full data to the DOM
-                            return false;
-                        });
-                    });
-                    // Requery the server with the new one-time export settings
-                    dt.ajax.reload();
-                }
 </script>
-                @endpush
+@endpush
