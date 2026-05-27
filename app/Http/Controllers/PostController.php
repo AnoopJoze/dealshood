@@ -113,6 +113,23 @@ class PostController extends Controller
                     . '</div>';
             })
 
+            ->addColumn('images', function ($row) {
+                $media = $row->getMedia('posts');
+                if ($media->isEmpty()) return '<span class="text-muted text-xs">—</span>';
+                $html = '<div class="d-flex gap-1 flex-wrap">';
+                foreach ($media->take(3) as $m) {
+                    $html .= '<a href="' . $m->getUrl() . '" data-fancybox="gallery-' . $row->id . '">'
+                           . '<img src="' . $m->getUrl() . '" width="32" height="32"
+                                  class="rounded" style="object-fit:cover;border:1px solid #dee2e6;">'
+                           . '</a>';
+                }
+                if ($media->count() > 3) {
+                    $html .= '<span class="badge bg-secondary rounded-pill align-self-center">+'
+                           . ($media->count() - 3) . '</span>';
+                }
+                return $html . '</div>';
+            })
+
             ->addColumn('status', function ($row) {
                 $map = [
                     'published' => ['bg-success-subtle', 'text-success'],
@@ -160,14 +177,14 @@ class PostController extends Controller
                 . '<button class="btn btn-sm btn-light border editPost" data-id="' . $row->id . '" title="Edit">
                     <i class="fas fa-pen text-warning"></i>
                    </button>'
-                // . '<button class="btn btn-sm btn-light border deletePost" data-id="' . $row->id . '"
-                //            data-title="' . e($row->title) . '" title="Delete">
-                //     <i class="fas fa-trash text-danger"></i>
-                //    </button>'
+                . '<button class="btn btn-sm btn-light border deletePost" data-id="' . $row->id . '"
+                           data-title="' . e($row->title) . '" title="Delete">
+                    <i class="fas fa-trash text-danger"></i>
+                   </button>'
                 . '</div>'
             )
 
-            ->rawColumns(['title', 'category', 'subcategory', 'locality', 'user',  'status', 'expiry', 'created_at', 'action'])
+            ->rawColumns(['title', 'category', 'subcategory', 'locality', 'user', 'images', 'status', 'expiry', 'created_at', 'action'])
             ->with([
                 'totalCount'     => $totalCount,
                 'publishedCount' => $publishedCount,
@@ -312,7 +329,12 @@ class PostController extends Controller
     {
         $post->load(['category', 'subcategory', 'locality', 'user', 'likesData', 'sharesData', 'viewsData']);
         $post->increment('views');
-        return view('posts.show', compact('post'));
+
+        $categories = Category::orderBy('name')->get();
+        $localities  = Locality::orderBy('name')->get();
+        $users       = User::orderBy('name')->get(['id', 'name', 'email']);
+
+        return view('posts.show', compact('post', 'categories', 'localities', 'users'));
     }
 
     /*
@@ -342,7 +364,7 @@ class PostController extends Controller
             'latitude'         => 'nullable|numeric|between:-90,90',
             'longitude'        => 'nullable|numeric|between:-180,180',
             // Media
-            //'video_url'        => 'nullable|string|max:500',
+            'video_url'        => 'nullable|string|max:500',
             // SEO
             'meta_title'       => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',

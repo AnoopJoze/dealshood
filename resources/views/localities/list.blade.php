@@ -2,609 +2,566 @@
 
 @section('content')
 
-    @push('css')
-        <link href="{{ asset('assets') }}/DataTables/datatables.min.css" rel="stylesheet">
-        <style type="text/css">
-        </style>
-    @endpush
+@push('css')
+    <link href="{{ asset('assets') }}/DataTables/datatables.min.css" rel="stylesheet">
+    <style>
+        /* ── Type badges ──────────────────────────────────── */
+        .type-badge-country { background:#dbeafe; color:#1d4ed8; }
+        .type-badge-state   { background:#d1fae5; color:#059669; }
+        .type-badge-city    { background:#fef3c7; color:#d97706; }
+        .type-badge-area    { background:#fce7f3; color:#db2777; }
+
+        /* ── Inline edit inputs/selects ───────────────────── */
+        .inline-edit {
+            transition: box-shadow .15s, background .15s;
+            border-radius: .4rem !important;
+        }
+        .inline-edit:focus {
+            background: #fff !important;
+            box-shadow: 0 0 0 2px #1a56db33 !important;
+        }
+        .inline-edit.saving { opacity: .5; pointer-events: none; }
+        .inline-edit.saved  { background: #ecfdf5 !important; }
+        .inline-edit.error  { background: #fef2f2 !important; }
+
+        /* ── Status colour ────────────────────────────────── */
+        .status-select option[value="1"] { color: #059669; }
+        .status-select option[value="0"] { color: #dc2626; }
+
+        /* ── Stat card ────────────────────────────────────── */
+        .stat-card { border-radius: 12px; padding: 14px 18px;
+                     display: flex; align-items: center; gap: 12px; }
+        .stat-card .sc-icon { width: 38px; height: 38px; border-radius: 10px;
+                               display: flex; align-items: center; justify-content: center;
+                               font-size: .9rem; flex-shrink: 0; }
+        .stat-card .sc-val  { font-size: 1.3rem; font-weight: 700; line-height: 1; }
+        .stat-card .sc-lbl  { font-size: .65rem; text-transform: uppercase;
+                               letter-spacing: .05em; color: #9ca3af; margin-top: 2px; }
+
+        /* ── Type filter pills ────────────────────────────── */
+        .type-filter span {
+            display: inline-flex; align-items: center; gap: .3rem;
+            padding: .28rem .85rem; border-radius: 2rem;
+            font-size: .72rem; font-weight: 600; cursor: pointer;
+            border: 1px solid #e5e7eb; background: #f9fafb;
+            transition: all .15s; user-select: none;
+        }
+        .type-filter span.active,
+        .type-filter span:hover {
+            background: linear-gradient(195deg,#42424a,#191919);
+            color: #fff; border-color: transparent;
+        }
+
+        #datatable thead th, #datatable tbody td { vertical-align: middle; }
+    </style>
+@endpush
+
 <div>
 
-<div class="row">
-    <div class="col-12">
-        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    {{-- ── Stat cards ─────────────────────────────────────── --}}
+    <div class="row g-3 mb-4">
 
-            <!-- Header -->
-            <div class="card-header bg-white border-0 py-4 px-4">
-                <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
-
-                    <div>
-                        <h4 class="mb-1 fw-bold text-dark">Users Management</h4>
-                        <p class="text-sm text-muted mb-0">
-                            Manage all registered users from here
-                        </p>
-                    </div>
-
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-light border rounded-3 px-3">
-                            <i class="fas fa-filter me-2"></i>Filter
-                        </button>
-
-
-            <button class="btn bg-gradient-primary"
-            data-bs-toggle="modal"
-            data-bs-target="#localityModal">
-
-        <i class="fas fa-plus"></i>
-        Add Locality
-    </button>
-                    </div>
-
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm stat-card">
+                <div class="sc-icon" style="background:#dbeafe;color:#1d4ed8;">
+                    <i class="fas fa-map-marker-alt"></i>
                 </div>
-            </div>
-
-            <!-- Body -->
-            <div class="card-body pt-0 px-4 pb-4">
-
-                <!-- Search & Stats -->
-                <div class="row g-3 mb-4">
-
-                    <div class="col-md-4">
-                        <div class="input-group input-group-outline">
-                            <span class="input-group-text bg-gray-100 border-0">
-                                <i class="fas fa-search text-muted"></i>
-                            </span>
-                            <input type="text"
-                                   class="form-control border-0 bg-gray-100"
-                                   placeholder="Search users...">
-                        </div>
-                    </div>
-
-                    <div class="col-md-8">
-                        <div class="d-flex flex-wrap justify-content-md-end gap-2">
-
-                            <div class="badge bg-light text-dark px-3 py-2 rounded-pill">
-                                Total Users : 245
-                            </div>
-
-                            <div class="badge bg-success-subtle text-success px-3 py-2 rounded-pill">
-                                Active : 210
-                            </div>
-
-                            <div class="badge bg-danger-subtle text-danger px-3 py-2 rounded-pill">
-                                Inactive : 35
-                            </div>
-
-                        </div>
-                    </div>
-
+                <div>
+                    <div class="sc-val text-dark">{{ $stats['total'] }}</div>
+                    <div class="sc-lbl">Total</div>
                 </div>
-
-                <!-- Table -->
-                <div class="table-responsive">
-
-                    <table id="datatable"
-                           class="table align-middle table-hover mb-0">
-
-                        <thead class="bg-light">
-                            <tr>
-                                <th class="text-uppercase text-secondary text-xxs fw-bolder ps-3">
-                                    Action
-                                </th>
-
-                                <th class="text-uppercase text-secondary text-xxs fw-bolder">
-                                    Parent
-                                </th>
-
-                                <th class="text-uppercase text-secondary text-xxs fw-bolder">
-                                    Name
-                                </th>
-
-                                <th class="text-uppercase text-secondary text-xxs fw-bolder">
-                                    Status
-                                </th>
-
-                                <th class="text-uppercase text-secondary text-xxs fw-bolder">
-                                    Created Date
-                                </th>
-                            </tr>
-
-                            <!-- Filters -->
-                            <tr>
-                                <th></th>
-
-                                <th>
-                                    <input type="text"
-                                           class="form-control form-control-sm border"
-                                           placeholder="Search Parent">
-                                </th>
-
-                                <th>
-                                    <input type="text"
-                                           class="form-control form-control-sm border"
-                                           placeholder="Search Locality">
-                                </th>
-
-                                <th>
-                                    <select class="form-select form-select-sm border">
-                                        <option value="">All Status</option>
-                                        <option value="active">Active</option>
-                                        <option value="inactive">Inactive</option>
-                                    </select>
-                                </th>
-
-                                <th>
-                                    <div class="d-flex gap-2">
-                                        <input type="date"
-                                               class="form-control form-control-sm border">
-
-                                        <input type="date"
-                                               class="form-control form-control-sm border">
-                                    </div>
-                                </th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
             </div>
         </div>
-    </div>
-</div>
-</div>
-<!-- MODAL -->
-<div class="modal fade" id="localityModal" tabindex="-1">
 
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm stat-card">
+                <div class="sc-icon" style="background:#d1fae5;color:#059669;">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div>
+                    <div class="sc-val" style="color:#059669;">{{ $stats['active'] }}</div>
+                    <div class="sc-lbl">Active</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm stat-card">
+                <div class="sc-icon" style="background:#fef2f2;color:#dc2626;">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <div>
+                    <div class="sc-val" style="color:#dc2626;">{{ $stats['inactive'] }}</div>
+                    <div class="sc-lbl">Inactive</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm stat-card">
+                <div class="sc-icon" style="background:#fce7f3;color:#db2777;">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <div>
+                    <div class="sc-val text-dark">
+                        {{ $stats['country'] }}/{{ $stats['state'] }}/{{ $stats['city'] }}/{{ $stats['area'] }}
+                    </div>
+                    <div class="sc-lbl">C / S / C / A</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    {{-- ── Main card ─────────────────────────────────────── --}}
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+
+        {{-- Header --}}
+        <div class="card-header bg-white border-0 py-4 px-4">
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                <div>
+                    <h4 class="mb-1 fw-bold text-dark">Localities Management</h4>
+                    <p class="text-sm text-muted mb-0">
+                        Manage countries, states, cities and areas — click any cell to edit inline
+                    </p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-light border rounded-3 px-3" id="toggleFilters">
+                        <i class="fas fa-filter me-2"></i>Filter
+                    </button>
+                    <button class="btn bg-gradient-primary"
+                            data-bs-toggle="modal" data-bs-target="#localityModal">
+                        <i class="fas fa-plus me-1"></i> Add Locality
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        {{-- Body --}}
+        <div class="card-body pt-0 px-4 pb-4">
+
+            {{-- ── Collapsible filters ─────────────────────── --}}
+            <div id="filterPanel" class="collapse mb-3 pt-3">
+                <div class="card card-body border rounded-4 bg-light shadow-none p-3">
+                    <div class="row g-3 align-items-end">
+
+                        <div class="col-md-3">
+                            <label class="form-label text-xs fw-semibold text-muted mb-1">Search</label>
+                            <input type="text" id="globalSearch" class="form-control form-control-sm"
+                                   placeholder="Name or parent…">
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label text-xs fw-semibold text-muted mb-1">Status</label>
+                            <select id="filter_status" class="form-select form-select-sm">
+                                <option value="">All</option>
+                                <option value="1">Active</option>
+                                <option value="0">Inactive</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label text-xs fw-semibold text-muted mb-1">From</label>
+                            <input type="date" id="filter_start" class="form-control form-control-sm">
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label text-xs fw-semibold text-muted mb-1">To</label>
+                            <input type="date" id="filter_end" class="form-control form-control-sm">
+                        </div>
+
+                        <div class="col-md-3 d-flex gap-2 align-items-end">
+                            <button id="applyFilter" class="btn btn-sm bg-gradient-primary px-3">
+                                <i class="fas fa-search me-1"></i> Apply
+                            </button>
+                            <button id="clearFilter" class="btn btn-sm btn-light border px-3">
+                                <i class="fas fa-times me-1"></i> Clear
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            {{-- ── Type filter pills ─────────────────────────── --}}
+            <div class="type-filter d-flex flex-wrap gap-2 mb-3">
+                <span class="active" data-type="">
+                    <i class="fas fa-globe"></i> All
+                </span>
+                <span data-type="country" style="background:#dbeafe;color:#1d4ed8;border-color:#bfdbfe;">
+                    <i class="fas fa-flag"></i> Country
+                    <strong class="ms-1">{{ $stats['country'] }}</strong>
+                </span>
+                <span data-type="state" style="background:#d1fae5;color:#059669;border-color:#a7f3d0;">
+                    <i class="fas fa-map"></i> State
+                    <strong class="ms-1">{{ $stats['state'] }}</strong>
+                </span>
+                <span data-type="city" style="background:#fef3c7;color:#d97706;border-color:#fde68a;">
+                    <i class="fas fa-city"></i> City
+                    <strong class="ms-1">{{ $stats['city'] }}</strong>
+                </span>
+                <span data-type="area" style="background:#fce7f3;color:#db2777;border-color:#fbcfe8;">
+                    <i class="fas fa-map-pin"></i> Area
+                    <strong class="ms-1">{{ $stats['area'] }}</strong>
+                </span>
+            </div>
+
+            {{-- ── Table ─────────────────────────────────────── --}}
+            <div class="table-responsive">
+                <table id="datatable" class="table align-middle table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="text-uppercase text-secondary text-xxs fw-bolder ps-3" style="width:50px">#</th>
+                            <th class="text-uppercase text-secondary text-xxs fw-bolder">Name</th>
+                            <th class="text-uppercase text-secondary text-xxs fw-bolder">Type</th>
+                            <th class="text-uppercase text-secondary text-xxs fw-bolder">Parent</th>
+                            <th class="text-uppercase text-secondary text-xxs fw-bolder">Status</th>
+                            <th class="text-uppercase text-secondary text-xxs fw-bolder">Created</th>
+                            <th class="text-uppercase text-secondary text-xxs fw-bolder text-center" style="width:60px">Del</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            {{-- Inline edit hint --}}
+            <p class="text-xs text-muted mt-3 mb-0">
+                <i class="fas fa-info-circle me-1 text-info"></i>
+                Click any <strong>Name</strong>, <strong>Type</strong>, <strong>Parent</strong> or <strong>Status</strong> cell to edit it directly — changes save automatically.
+            </p>
+
+        </div>
+    </div>
+
+</div>
+
+{{-- ════════════════════════════════════════════════════
+     ADD LOCALITY MODAL
+════════════════════════════════════════════════════ --}}
+<div class="modal fade" id="localityModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
 
-        <div class="modal-content border-0 shadow-lg">
-
-            <!-- HEADER -->
-            <div class="modal-header">
-
-                <h5 class="modal-title">
-                    Add Locality
-                </h5>
-
-                <button type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"></button>
-
+            <div class="modal-header border-0 px-4 pt-4 pb-2">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-3 bg-gradient-primary text-white d-flex align-items-center
+                                justify-content-center shadow-sm"
+                         style="width:44px;height:44px;flex-shrink:0;">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-bold text-dark mb-0">Add Locality</h5>
+                        <p class="text-xs text-muted mb-0">Create a new country, state, city or area</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
-            <!-- BODY -->
-            <div class="modal-body">
+            <div class="modal-body px-4 py-3">
 
-                <!-- NAME -->
+                {{-- Name --}}
                 <div class="mb-3">
-
-                    <label class="form-label">
-                        Name
+                    <label class="form-label fw-semibold text-sm mb-1">
+                        Name <span class="text-danger">*</span>
                     </label>
-
-                    <input type="text"
-                           class="form-control"
-                           id="locality_name"
-                           placeholder="Enter locality name">
-
-                    <small class="text-danger d-none"
-                           id="name_error"></small>
+                    <input type="text" id="locality_name" class="form-control"
+                           placeholder="e.g. Dubai, United Arab Emirates…">
+                    <small class="text-danger d-none" id="err_name"></small>
                 </div>
 
-                <!-- TYPE -->
+                {{-- Type --}}
                 <div class="mb-3">
-
-                    <label class="form-label">
-                        Type
+                    <label class="form-label fw-semibold text-sm mb-1">
+                        Type <span class="text-danger">*</span>
                     </label>
-
-                    <select class="form-select"
-                            id="locality_type">
-
-                        <option value="">
-                            Select Type
-                        </option>
-
-                        <option value="country">
-                            Country
-                        </option>
-
-                        <option value="state">
-                            State
-                        </option>
-
-                        <option value="city">
-                            City
-                        </option>
-
-                        <option value="area">
-                            Area
-                        </option>
-
-                    </select>
-
-                    <small class="text-danger d-none"
-                           id="type_error"></small>
-                </div>
-
-                <!-- PARENT -->
-                <div class="mb-3">
-
-                    <label class="form-label">
-                        Parent Locality
-                    </label>
-
-                    <select class="form-select"
-                            id="parent_id">
-
-                        <option value="">
-                            None
-                        </option>
-
-                        @foreach($localities as $locality)
-
-                            <option value="{{ $locality->id }}">
-
-                                {{ ucfirst($locality->type) }}
-                                →
-                                {{ $locality->name }}
-
-                            </option>
-
+                    <div class="d-flex gap-2">
+                        @foreach (['country','state','city','area'] as $t)
+                            @php
+                                $colors = ['country'=>'primary','state'=>'success','city'=>'warning','area'=>'danger'];
+                            @endphp
+                            <div class="form-check d-none">
+                                <input class="form-check-input" type="radio"
+                                       name="locality_type_radio" id="type_{{ $t }}"
+                                       value="{{ $t }}">
+                            </div>
+                            <label for="type_{{ $t }}"
+                                   class="type-pill-btn btn btn-sm btn-outline-{{ $colors[$t] }} rounded-pill px-3"
+                                   data-value="{{ $t }}">
+                                {{ ucfirst($t) }}
+                            </label>
                         @endforeach
+                    </div>
+                    <input type="hidden" id="locality_type">
+                    <small class="text-danger d-none" id="err_type"></small>
+                </div>
 
+                {{-- Parent --}}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold text-sm mb-1">Parent Locality</label>
+                    <select id="locality_parent_id" class="form-select">
+                        <option value="">— None —</option>
+                        @foreach ($localities->groupBy('type') as $type => $group)
+                            <optgroup label="{{ ucfirst($type) }}">
+                                @foreach ($group as $loc)
+                                    <option value="{{ $loc->id }}">{{ $loc->name }}</option>
+                                @endforeach
+                            </optgroup>
+                        @endforeach
                     </select>
-
-                    <small class="text-danger d-none"
-                           id="parent_error"></small>
+                    <small class="text-danger d-none" id="err_parent_id"></small>
                 </div>
 
             </div>
 
-            <!-- FOOTER -->
-            <div class="modal-footer">
-
-                <button class="btn bg-gradient-secondary"
-                        data-bs-dismiss="modal">
-
-                    Cancel
+            <div class="modal-footer border-0 px-4 pb-4 pt-2">
+                <button class="btn btn-light border rounded-3 px-4" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i> Cancel
                 </button>
-
-                <button class="btn bg-gradient-primary"
-                        id="saveLocality">
-
-                    Save Locality
+                <button class="btn bg-gradient-primary px-4" id="saveLocality">
+                    <span id="saveLocalityText"><i class="fas fa-plus me-2"></i> Add Locality</span>
+                    <span id="saveLocalitySpinner" class="d-none">
+                        <span class="spinner-border spinner-border-sm me-2"></span> Saving…
+                    </span>
                 </button>
-
             </div>
 
         </div>
-
     </div>
-
 </div>
+
 @endsection
 
-        @push('js')
+@push('js')
 <script src="{{ asset('assets') }}/DataTables/datatables.min.js"></script>
-<script src="{{ asset('assets') }}/js/jquery.blockUI.js"></script>
-<script src="{{ asset('assets') }}/vendor/moment.min.js"></script>
-<script src="{{ asset('assets') }}/jquery-validate/jquery.validate.js"></script>
-<script src="{{ asset('assets') }}/jquery-validate/additional-methods.min.js"></script>
 <script src="{{ asset('assets') }}/js/sweetalert2.all.min.js"></script>
-<script src="{{ asset('assets') }}/js/jquery.mousewheel.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.umd.js"></script>
 
-<script type="text/javascript">
-$('#saveLocality').click(function () {
+<script>
+$(function () {
 
-    $('.text-danger').addClass('d-none').text('');
+    var activeType  = '';
+    var saveTimeout = null;
 
-    $.ajax({
-
-        url: "{{ route('localities.ajaxStore') }}",
-
-        type: "POST",
-
-        data: {
-            _token: "{{ csrf_token() }}",
-
-            name: $('#locality_name').val(),
-
-            type: $('#locality_type').val(),
-
-            parent_id: $('#parent_id').val()
-        },
-
-        success: function (res) {
-
-            if (res.success) {
-
-                // close modal
-                $('#localityModal').modal('hide');
-
-                // reset form
-                $('#locality_name').val('');
-                $('#locality_type').val('');
-                $('#parent_id').val('');
-
-                // refresh datatable
-                $('#localities-table')
-                    .DataTable()
-                    .ajax.reload(null, false);
+    /*
+    |--------------------------------------------------------------------------
+    | DataTable
+    |--------------------------------------------------------------------------
+    */
+    var table = $('#datatable').DataTable({
+        processing : true,
+        serverSide : true,
+        ajax: {
+            url  : '{{ route("localities.data") }}',
+            type : 'POST',
+            data : function (d) {
+                d._token     = '{{ csrf_token() }}';
+                d.type       = activeType;
+                d.status     = $('#filter_status').val();
+                d.start_date = $('#filter_start').val();
+                d.end_date   = $('#filter_end').val();
             }
         },
+        columns: [
+            { data: 'DT_RowIndex', orderable: false, searchable: false },
+            { data: 'name',        name: 'name' },
+            { data: 'type',        name: 'type',    orderable: false },
+            { data: 'parent',      name: 'parent',  orderable: false },
+            { data: 'status',      name: 'status',  orderable: false, searchable: false },
+            { data: 'created_at',  name: 'created_at', searchable: false },
+            { data: 'action',      name: 'action',  orderable: false, searchable: false, className: 'text-center' },
+        ],
+        order      : [[1, 'asc']],
+        pageLength : 25,
+        lengthMenu : [10, 25, 50, 100],
+    });
 
-        error: function (xhr) {
+    /*
+    |--------------------------------------------------------------------------
+    | Type filter pills
+    |--------------------------------------------------------------------------
+    */
+    $(document).on('click', '.type-filter span', function () {
+        $('.type-filter span').removeClass('active')
+            .css({ background: '', color: '', borderColor: '' });
+        $(this).addClass('active');
+        activeType = $(this).data('type');
+        table.ajax.reload();
+    });
 
-            let errors = xhr.responseJSON.errors;
+    /*
+    |--------------------------------------------------------------------------
+    | Collapsible filters
+    |--------------------------------------------------------------------------
+    */
+    $('#toggleFilters').on('click', function () { $('#filterPanel').collapse('toggle'); });
+    $('#applyFilter').on('click',   function () { table.ajax.reload(); });
+    $('#clearFilter').on('click',   function () {
+        $('#filter_status').val('');
+        $('#filter_start, #filter_end').val('');
+        $('#globalSearch').val('');
+        table.search('').ajax.reload();
+    });
+    $('#globalSearch').on('keyup', function () { table.search(this.value).draw(); });
+    $('#filter_status, #filter_start, #filter_end').on('change', function () { table.ajax.reload(); });
 
-            if (errors.name) {
-                $('#name_error')
-                    .removeClass('d-none')
-                    .text(errors.name[0]);
+    /*
+    |--------------------------------------------------------------------------
+    | Inline edit — debounced auto-save on input change
+    |--------------------------------------------------------------------------
+    */
+    $(document).on('change', '.inline-edit', function () {
+        var $el   = $(this);
+        var id    = $el.data('id');
+        var field = $el.data('field');
+        var value = $el.val();
+
+        $el.addClass('saving');
+
+        $.ajax({
+            url  : '{{ route("localities.inlineUpdate") }}',
+            type : 'POST',
+            data : { _token: '{{ csrf_token() }}', id: id, field: field, value: value },
+
+            success: function (res) {
+                if (res.success) {
+                    $el.removeClass('saving').addClass('saved');
+                    setTimeout(function () { $el.removeClass('saved'); }, 1200);
+                }
+            },
+
+            error: function () {
+                $el.removeClass('saving').addClass('error');
+                setTimeout(function () { $el.removeClass('error'); }, 2000);
+                Swal.fire({
+                    toast: true, position: 'top-end', icon: 'error',
+                    title: 'Could not save change', timer: 2000, showConfirmButton: false,
+                });
             }
+        });
+    });
 
-            if (errors.type) {
-                $('#type_error')
-                    .removeClass('d-none')
-                    .text(errors.type[0]);
-            }
+    // For text inputs debounce on keyup, fire on blur
+    $(document).on('keyup', '.inline-edit[type="text"]', function () {
+        clearTimeout(saveTimeout);
+        var $el = $(this);
+        saveTimeout = setTimeout(function () { $el.trigger('change'); }, 600);
+    });
+    $(document).on('blur', '.inline-edit[type="text"]', function () {
+        clearTimeout(saveTimeout);
+        $(this).trigger('change');
+    });
 
-            if (errors.parent_id) {
-                $('#parent_error')
-                    .removeClass('d-none')
-                    .text(errors.parent_id[0]);
+    /*
+    |--------------------------------------------------------------------------
+    | Delete
+    |--------------------------------------------------------------------------
+    */
+    $(document).on('click', '.delete-btn', function () {
+        var id   = $(this).data('id');
+        var name = $(this).data('name');
+
+        Swal.fire({
+            title            : 'Delete Locality?',
+            html             : 'Delete <strong>' + name + '</strong>?<br>'
+                             + '<small class="text-muted">Child localities will be unlinked (not deleted).</small>',
+            icon             : 'warning',
+            showCancelButton : true,
+            confirmButtonColor: '#d33', cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, delete',
+        }).then(function (r) {
+            if (!r.isConfirmed) return;
+
+            $.ajax({
+                url  : '/admin/localities/' + id,
+                type : 'POST',
+                data : { _token: '{{ csrf_token() }}', _method: 'DELETE' },
+
+                success: function (res) {
+                    if (res.success) {
+                        table.ajax.reload(null, false);
+                        Swal.fire({
+                            toast: true, position: 'top-end', icon: 'success',
+                            title: res.message, timer: 1800, showConfirmButton: false,
+                        });
+                    }
+                },
+                error: function () { Swal.fire('Error', 'Could not delete.', 'error'); }
+            });
+        });
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Type pill buttons inside the Add modal
+    |--------------------------------------------------------------------------
+    */
+    $(document).on('click', '.type-pill-btn', function () {
+        $('.type-pill-btn').removeClass('active');
+        $(this).addClass('active');
+        $('#locality_type').val($(this).data('value'));
+        $('input[name="locality_type_radio"][value="' + $(this).data('value') + '"]').prop('checked', true);
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Add Locality modal — reset on close
+    |--------------------------------------------------------------------------
+    */
+    $('#localityModal').on('hidden.bs.modal', function () {
+        $('#locality_name').val('');
+        $('#locality_type').val('');
+        $('#locality_parent_id').val('');
+        $('.type-pill-btn').removeClass('active');
+        $('#err_name, #err_type, #err_parent_id').addClass('d-none').text('');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Save new locality
+    |--------------------------------------------------------------------------
+    */
+    $('#saveLocality').on('click', function () {
+        $('#err_name, #err_type, #err_parent_id').addClass('d-none').text('');
+
+        $('#saveLocalityText').addClass('d-none');
+        $('#saveLocalitySpinner').removeClass('d-none');
+        $('#saveLocality').prop('disabled', true);
+
+        $.ajax({
+            url  : '{{ route("localities.ajaxStore") }}',
+            type : 'POST',
+            data : {
+                _token    : '{{ csrf_token() }}',
+                name      : $('#locality_name').val(),
+                type      : $('#locality_type').val(),
+                parent_id : $('#locality_parent_id').val(),
+            },
+
+            success: function (res) {
+                if (res.success) {
+                    $('#localityModal').modal('hide');
+                    table.ajax.reload(null, false);
+                    Swal.fire({
+                        toast: true, position: 'top-end', icon: 'success',
+                        title: res.message, timer: 2000, showConfirmButton: false,
+                    });
+                }
+            },
+
+            error: function (xhr) {
+                var errors = xhr.responseJSON?.errors ?? {};
+                if (errors.name)      $('#err_name').removeClass('d-none').text(errors.name[0]);
+                if (errors.type)      $('#err_type').removeClass('d-none').text(errors.type[0]);
+                if (errors.parent_id) $('#err_parent_id').removeClass('d-none').text(errors.parent_id[0]);
+            },
+
+            complete: function () {
+                $('#saveLocalityText').removeClass('d-none');
+                $('#saveLocalitySpinner').addClass('d-none');
+                $('#saveLocality').prop('disabled', false);
             }
-        }
+        });
     });
 
 });
-$(document).on('change', '.inline-edit', function () {
-
-    let id = $(this).data('id');
-    let field = $(this).data('field');
-    let value = $(this).val();
-
-    let url = '';
-
-    // detect module based on table/page
-    url = "{{ route('localities.inlineUpdate') }}";
-
-    $.ajax({
-        url: url,
-        type: "POST",
-        data: {
-            _token: "{{ csrf_token() }}",
-            id: id,
-            field: field,
-            value: value
-        },
-        success: function (res) {
-            if (res.success) {
-                console.log('Updated');
-            }
-        },
-        error: function () {
-            alert('Update failed');
-        }
-    });
-
-});
-                scrollDatatable();
-
-                function scrollDatatable() {
-                    setTimeout(function() {
-                        $(".dataTables_scrollBody").mousewheel(function(event, delta) {
-                            this.scrollLeft -= (delta * 100);
-                            event.preventDefault();
-                        });
-                        $.unblockUI();
-                    }, 600);
-                }
-
-                $(document).on('click', '.exporttoexcel', function(e) {
-                    $.blockUI({
-                        css: {
-                            backgroundColor: 'transparent',
-                            border: 'none'
-                        },
-                        message: '',
-                        baseZ: 1500,
-                        overlayCSS: {
-                            backgroundColor: '#000',
-                            opacity: 0.7,
-                            cursor: 'wait'
-                        }
-                    });
-                    setTimeout(function() {
-                        $.unblockUI();
-                    }, 800);
-
-                });
-                $(document).on('click', '.refresh', function(e) {
-                    $.blockUI({
-                        css: {
-                            backgroundColor: 'transparent',
-                            border: 'none'
-                        },
-                        message: '',
-                        baseZ: 1500,
-                        overlayCSS: {
-                            backgroundColor: '#000',
-                            opacity: 0.7,
-                            cursor: 'wait'
-                        }
-                    });
-                    document.getElementById("search_tech").reset();
-                    $('#datatable').DataTable().state.clear();
-                    fetch_datatable_data();
-                });
-
-                getDatatable();
-
-                function getDatatable() {
-
-                    var table = $('#datatable').DataTable({
-                        processing: true,
-                        serverSide: true,
-                        ajax: {
-                            url: '{{ route('localities.data') }}',
-                            type: 'POST',
-                            data: function (d) {
-                                d._token = '{{ csrf_token() }}'; // 🔒 CSRF token
-
-                                $('#datatable thead tr:eq(1) th').each(function(index) {
-                                    const input = $(this).find('input.column_filter');
-                                    if (input.length > 0) {
-                                        d.columns[index] = d.columns[index] || {};
-                                        d.columns[index].data = input.data('column');
-                                        d.columns[index].search = { value: input.val() };
-                                    }
-                                });
-
-                                // send date range
-                                d.start_date = $('#start_date').val();
-                                d.end_date = $('#end_date').val();
-                                d.action_start_date = $('#action_start_date').val();
-                                d.action_end_date = $('#action_end_date').val();
-                                d.status = $('#status').val();
-                            }
-                        },
-                        columns: [
-                            { data: 'action', name: 'action', orderable: false, searchable: false },
-                            { data: 'parent', name: 'parent' },
-                            { data: 'name', name: 'name' },
-                            { data: 'status', name: 'status', searchable: false },
-                            { data: 'created_at', name: 'created_at', searchable: false },
-                        ],
-                        order: [[1, 'desc']],
-                        pageLength: 25,
-                        lengthMenu: [10, 25, 50, 100],
-                        orderCellsTop: true,
-                        fixedHeader: true,
-                    });
-
-                    // Apply column filters
-                    $('#datatable thead tr:eq(1) th').each(function (i) {
-                        $('input', this).on('keyup change', function () {
-                            table.column(i).search(this.value).draw();
-                        });
-                    });
-
-                   $('#exportForm').on('submit', function () {
-
-                        $.blockUI({
-                            css: {
-                                backgroundColor: 'transparent',
-                                border: 'none'
-                            },
-                            message: '',
-                            baseZ: 1500,
-                            overlayCSS: {
-                                backgroundColor: '#000',
-                                opacity: 0.7,
-                                cursor: 'wait'
-                            }
-                        });
-                        var filters = {};
-
-                        // Loop through each filter input in the header
-                        $('#datatable thead tr:eq(1) th').each(function (i) {
-                            var input = $(this).find('input');
-                            if (input.length > 0) {
-                                var columnName = table.column(i).dataSrc(); // get the real data name
-                                filters[columnName] = input.val();
-                            }
-                        });
-
-                        // Also include date filters
-                        filters['start_date'] = $('#start_date').val();
-                        filters['end_date'] = $('#end_date').val();
-                        filters['status'] = $('#status').val();
-
-                        // Store JSON in hidden input
-                        $('#filterInput').val(JSON.stringify(filters));
-                    });
-                }
-
-                $(document).ready(function() {
-
-                    $(document).on('click', '#clear_filter', function(e) {
-                        e.preventDefault();
-                        dropdownActive = true;
-
-                        $.blockUI({
-                            css: {
-                                backgroundColor: 'transparent',
-                                border: 'none'
-                            },
-                            message: '',
-                            baseZ: 1500,
-                            overlayCSS: {
-                                backgroundColor: '#000',
-                                opacity: 0.7,
-                                cursor: 'wait'
-                            }
-                        });
-
-                        $("#exportForm")[0].reset();
-                        $('#datatable thead tr:eq(1) th input').val('');
-                        $('.column-search').val('');
-                        let table = $('#datatable').DataTable();
-                        table.search('').columns().search('').draw();
-
-                        setTimeout($.unblockUI, 500);
-
-                        fetch_datatable_data();
-                    });
-                });
-
-                function newexportaction(e, dt, button, config) {
-                    var self = this;
-                    var oldStart = dt.settings()[0]._iDisplayStart;
-                    dt.one('preXhr', function(e, s, data) {
-                        // Just this once, load all data from the server...
-                        data.start = 0;
-                        data.length = 2147483647;
-                        dt.one('preDraw', function(e, settings) {
-                            // Call the original action function
-                            if (button[0].className.indexOf('buttons-copy') >= 0) {
-                                $.fn.dataTable.ext.buttons.copyHtml5.action.call(self, e, dt, button, config);
-                            } else if (button[0].className.indexOf('buttons-excel') >= 0) {
-                                $.fn.dataTable.ext.buttons.excelHtml5.available(dt, config) ?
-                                    $.fn.dataTable.ext.buttons.excelHtml5.action.call(self, e, dt, button, config) :
-                                    $.fn.dataTable.ext.buttons.excelFlash.action.call(self, e, dt, button, config);
-                            } else if (button[0].className.indexOf('buttons-csv') >= 0) {
-                                $.fn.dataTable.ext.buttons.csvHtml5.available(dt, config) ?
-                                    $.fn.dataTable.ext.buttons.csvHtml5.action.call(self, e, dt, button, config) :
-                                    $.fn.dataTable.ext.buttons.csvFlash.action.call(self, e, dt, button, config);
-                            } else if (button[0].className.indexOf('buttons-pdf') >= 0) {
-                                $.fn.dataTable.ext.buttons.pdfHtml5.available(dt, config) ?
-                                    $.fn.dataTable.ext.buttons.pdfHtml5.action.call(self, e, dt, button, config) :
-                                    $.fn.dataTable.ext.buttons.pdfFlash.action.call(self, e, dt, button, config);
-                            } else if (button[0].className.indexOf('buttons-print') >= 0) {
-                                $.fn.dataTable.ext.buttons.print.action(e, dt, button, config);
-                            }
-                            dt.one('preXhr', function(e, s, data) {
-                                // DataTables thinks the first item displayed is index 0, but we're not drawing that.
-                                // Set the property to what it was before exporting.
-                                settings._iDisplayStart = oldStart;
-                                data.start = oldStart;
-                            });
-                            // Reload the grid with the original page. Otherwise, API functions like table.cell(this) don't work properly.
-                            setTimeout(dt.ajax.reload, 0);
-                            // Prevent rendering of the full data to the DOM
-                            return false;
-                        });
-                    });
-                    // Requery the server with the new one-time export settings
-                    dt.ajax.reload();
-                }
 </script>
-                @endpush
+@endpush

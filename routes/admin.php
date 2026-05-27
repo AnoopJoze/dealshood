@@ -14,6 +14,8 @@ use App\Http\Controllers\LocalityController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SubCategoryController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\PermissionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -105,5 +107,19 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
     Route::post('posts/{post}',               [PostController::class, 'show'])        ->name('posts.show');
 
     Route::resource('posts', PostController::class);
+
+    // ── Roles ─────────────────────────────────────────────────────────────────────
+    Route::post('roles/getlist',                  [RoleController::class, 'getList'])         ->name('roles.getlist');
+    Route::post('roles/ajax-store',               [RoleController::class, 'ajaxStore'])       ->name('roles.ajaxStore');
+    Route::post('roles/{id}/ajax-update',         [RoleController::class, 'ajaxUpdate'])      ->name('roles.ajaxUpdate');
+    Route::get('roles/{id}/edit-data',            [RoleController::class, 'editData'])        ->name('roles.editData');
+    Route::post('roles/{id}/sync-permissions',    [RoleController::class, 'syncPermissions']) ->name('roles.syncPermissions');
+    Route::resource('roles', RoleController::class)->except(['create', 'edit', 'store', 'update']);
+
+    // ── Permissions ───────────────────────────────────────────────────────────────
+    Route::post('permissions/getlist',            [PermissionController::class, 'getList'])   ->name('permissions.getlist');
+    Route::post('permissions/ajax-store',         [PermissionController::class, 'ajaxStore']) ->name('permissions.ajaxStore');
+    Route::post('permissions/{id}/ajax-update',   [PermissionController::class, 'ajaxUpdate'])->name('permissions.ajaxUpdate');
+    Route::resource('permissions', PermissionController::class)->only(['index', 'destroy']);
 
 });
