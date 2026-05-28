@@ -591,51 +591,29 @@ $palette = [
     <div class="dh-wrap" style="padding-top:28px;">
 
         {{-- Toolbar --}}
-
-<div class="dh-toolbar">
-
-    <div>
-        <p class="dh-result-info mb-0">
-            Showing <strong id="resultCount">{{ number_format($posts->total()) }}</strong> deals
-        </p>
-    </div>
-
-    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-
-        {{-- Search --}}
-        <form action="{{ route('posts.listing') }}" method="GET"
-              style="display:flex;align-items:center;gap:8px;">
-
-            {{-- Preserve filters --}}
-            @if(request('category_id'))
-                <input type="hidden" name="category_id" value="{{ request('category_id') }}">
-            @endif
-
-            @if(request('subcategory_id'))
-                <input type="hidden" name="subcategory_id" value="{{ request('subcategory_id') }}">
-            @endif
-
-            @if(request('locality_id'))
-                <input type="hidden" name="locality_id" value="{{ request('locality_id') }}">
-            @endif
-
-            <input type="text"
-                   name="keyword"
-                   value="{{ request('keyword') }}"
-                   placeholder="Search deals..."
-                   class="dh-field"
-                   style="min-width:220px;height:40px;">
-
-        </form>
-
-        {{-- Sort Pills --}}
-        <div class="dh-sort-pills">
-            ...
+        <div class="dh-toolbar">
+            <p class="dh-result-info mb-0">
+                Showing <strong id="resultCount">{{ number_format($posts->total()) }}</strong> deals
+                @if (request('category_id'))
+                    in <strong>{{ $categories->firstWhere('slug', request('category_id'))?->name }}</strong>
+                @endif
+            </p>
+            <div class="dh-sort-pills">
+                <a href="{{ request()->fullUrlWithQuery(['sort' => 'latest']) }}"
+                   class="dh-sort-pill {{ request('sort','latest') === 'latest' ? 'active':'' }}">
+                    <i class="bi bi-clock me-1"></i> Newest
+                </a>
+                <a href="{{ request()->fullUrlWithQuery(['sort' => 'popular']) }}"
+                   class="dh-sort-pill {{ request('sort') === 'popular' ? 'active':'' }}">
+                    <i class="bi bi-eye me-1"></i> Popular
+                </a>
+                <a href="{{ request()->fullUrlWithQuery(['sort' => 'trending']) }}"
+                   class="dh-sort-pill {{ request('sort') === 'trending' ? 'active':'' }}">
+                    <i class="bi bi-fire me-1"></i> Trending
+                </a>
+            </div>
         </div>
 
-    </div>
-
-</div>
         {{-- Grid --}}
         <div class="dh-grid" id="post-wrapper">
             @forelse($posts as $post)
