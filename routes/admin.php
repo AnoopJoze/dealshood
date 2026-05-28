@@ -41,23 +41,18 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
     Route::post('/user-profile',   [InfoUserController::class, 'store'])->name('admin.user-profile-post');
     Route::get('/login',           fn() => view('dashboard'))         ->name('sign-up');
 
-    // AJAX store (modal create)
-    Route::post('users/ajax-store',           [UserController::class, 'ajaxStore'])  ->name('users.ajaxStore');
-    
-    // AJAX update (modal edit)
-    Route::post('users/{id}/ajax-update',     [UserController::class, 'ajaxUpdate']) ->name('users.ajaxUpdate');
-    
-    // JSON data for edit modal   GET admin/users/{id}/edit-data
-    Route::get('users/{id}/edit-data',        [UserController::class, 'editData'])   ->name('users.editData');
-    // ── Users ─────────────────────────────────────────────────────────────────
-    Route::get('users/create',              [UserController::class, 'create']) ->name('users.create');
-    Route::get('users/{param}',             [UserController::class, 'show'])   ->name('users.show');
-    Route::get('users',                     [UserController::class, 'index'])  ->name('users.index');
-    Route::get('users/{param}/edit',        [UserController::class, 'edit'])   ->name('users.edit');
-    Route::get('users/{param}/destroy',     [UserController::class, 'destroy'])->name('users.destroy');
-    Route::post('users/store',              [UserController::class, 'store'])  ->name('users.store');
-    Route::patch('users/{param}/update',    [UserController::class, 'update']) ->name('users.update');
-    Route::post('users/getlist',            [UserController::class, 'getlist'])->name('users.getlist');
+    // ── Users ─────────────────────────────────────────────────────────────────────
+    // Custom AJAX routes MUST come BEFORE the wildcard  users/{param}  routes
+
+    Route::post('users/getlist',              [UserController::class, 'getlist'])   ->name('users.getlist');
+    Route::post('users/ajax-store',           [UserController::class, 'ajaxStore']) ->name('users.ajaxStore');
+    Route::post('users/{id}/ajax-update',     [UserController::class, 'ajaxUpdate'])->name('users.ajaxUpdate');
+    Route::get('users/{id}/edit-data',        [UserController::class, 'editData'])  ->name('users.editData');
+
+    // Standard resource routes (index, show, destroy)
+    Route::get('users',        [UserController::class, 'index'])  ->name('users.index');
+    Route::get('users/{id}',   [UserController::class, 'show'])   ->name('users.show');
+    Route::delete('users/{id}',[UserController::class, 'destroy'])->name('users.destroy');
 
     // ── Localities ────────────────────────────────────────────────────────────
     Route::post('localities/data',          [LocalityController::class, 'data'])        ->name('localities.data');

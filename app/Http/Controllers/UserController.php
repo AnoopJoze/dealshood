@@ -14,18 +14,26 @@ class UserController extends Controller
 {
     /*
     |--------------------------------------------------------------------------
-    | Index – list view
+    | INDEX
     |--------------------------------------------------------------------------
     */
     public function index(Request $request)
     {
         $roles = Role::orderBy('name')->get();
-        return view('users.list', compact('roles'));
+
+        $stats = [
+            'total'    => User::count(),
+            'active'   => User::where('status', 'Active')->count(),
+            'inactive' => User::where('status', 'Inactive')->count(),
+            'today'    => User::whereDate('created_at', today())->count(),
+        ];
+
+        return view('users.list', compact('roles', 'stats'));
     }
 
     /*
     |--------------------------------------------------------------------------
-    | DataTables server-side feed
+    | DATATABLE FEED
     |--------------------------------------------------------------------------
     */
     public function getlist(Request $request)
@@ -44,10 +52,14 @@ class UserController extends Controller
                 if ($request->filled('status')) {
                     $query->where('users.status', $request->status);
                 }
+                if ($request->filled('role')) {
+                    $query->whereHas('roles', fn($q) => $q->where('name', $request->role));
+                }
                 if ($request->filled('start_date') && $request->filled('end_date')) {
-                    $start = Carbon::parse($request->start_date)->startOfDay();
-                    $end   = Carbon::parse($request->end_date)->endOfDay();
-                    $query->whereBetween('users.created_at', [$start, $end]);
+                    $query->whereBetween('users.created_at', [
+                        Carbon::parse($request->start_date)->startOfDay(),
+                        Carbon::parse($request->end_date)->endOfDay(),
+                    ]);
                 }
             })
 
@@ -65,71 +77,76 @@ class UserController extends Controller
                 }
             })
 
+            /*── Name + role ──*/
             ->editColumn('name', function ($row) {
                 $initial = strtoupper(substr($row->name, 0, 1));
                 $role    = $row->roles->first()?->name ?? 'User';
                 return '
-                    <div class="d-flex align-items-center">
-                        <div class="avatar rounded-circle bg-gradient-primary text-white me-3
-                                    d-flex align-items-center justify-content-center fw-bold shadow-sm"
-                             style="width:40px;height:40px;font-size:1rem;flex-shrink:0;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle bg-gradient-primary text-white d-flex align-items-center
+                                    justify-content-center fw-bold shadow-sm flex-shrink-0"
+                             style="width:40px;height:40px;font-size:1rem;">
                             ' . $initial . '
                         </div>
                         <div>
-                            <h6 class="mb-0 text-sm fw-semibold text-dark">' . e($row->name) . '</h6>
+                            <div class="fw-semibold text-sm text-dark">' . e($row->name) . '</div>
                             <small class="text-muted">' . ucfirst($role) . '</small>
                         </div>
                     </div>';
             })
 
+            /*── Email ──*/
             ->editColumn('email', function ($row) {
-                return '<span class="text-sm text-dark fw-medium">' . e($row->email) . '</span>';
+                return '<a href="mailto:' . e($row->email) . '"
+                            class="text-sm text-dark fw-medium text-decoration-none">'
+                    . e($row->email) . '</a>';
             })
 
+            /*── Role badge ──*/
             ->addColumn('role', function ($row) {
                 $role = $row->roles->first()?->name ?? 'User';
                 return '<span class="badge rounded-pill bg-primary-subtle text-primary px-3 py-2">'
                     . ucfirst($role) . '</span>';
             })
 
+            /*── Status (inline toggle) ──*/
             ->editColumn('status', function ($row) {
-                if ($row->status == 'Active') {
-                    return '<span class="badge rounded-pill bg-success-subtle text-success px-3 py-2">Active</span>';
+                if ($row->status === 'Active') {
+                    return '<span class="badge rounded-pill bg-success-subtle text-success px-3 py-2">'
+                         . '<span style="display:inline-block;width:6px;height:6px;border-radius:50%;'
+                         . 'background:currentColor;vertical-align:middle;margin-right:5px;"></span>'
+                         . 'Active</span>';
                 }
-                return '<span class="badge rounded-pill bg-danger-subtle text-danger px-3 py-2">Inactive</span>';
+                return '<span class="badge rounded-pill bg-danger-subtle text-danger px-3 py-2">'
+                     . '<span style="display:inline-block;width:6px;height:6px;border-radius:50%;'
+                     . 'background:currentColor;vertical-align:middle;margin-right:5px;"></span>'
+                     . 'Inactive</span>';
             })
 
+            /*── Created date ──*/
             ->editColumn('created_at', function ($row) {
-                return '<div class="text-sm text-muted fw-medium">'
+                return '<div class="text-sm text-muted">'
                     . Carbon::parse($row->created_at)->format('d M Y')
-                    . '<br><small class="text-xs">'
-                    . Carbon::parse($row->created_at)->diffForHumans()
-                    . '</small></div>';
+                    . '<br><small>' . Carbon::parse($row->created_at)->diffForHumans() . '</small></div>';
             })
 
+            /*── Actions ──*/
             ->addColumn('action', function ($row) {
                 return '
-                    <div class="dropdown">
-                        <button class="btn btn-light btn-sm shadow-none border mb-0"
-                                type="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-ellipsis-v"></i>
+                    <div class="d-flex gap-1">
+                        <a href="' . route('users.show', $row->id) . '"
+                           class="btn btn-sm btn-light border" title="View">
+                            <i class="fas fa-eye text-info"></i>
+                        </a>
+                        <button class="btn btn-sm btn-light border edit-btn"
+                                data-id="' . $row->id . '" title="Edit">
+                            <i class="fas fa-pen text-warning"></i>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-4 p-2">
-                            <li>
-                                <a class="dropdown-item rounded-3 py-2 edit-btn"
-                                   href="javascript:void(0)"
-                                   data-id="' . $row->id . '">
-                                    <i class="fas fa-pen me-2 text-warning"></i> Edit
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item rounded-3 py-2 view-btn"
-                                   href="'.route('users.show',$row->id).'"
-                                   data-id="' . $row->id . '">
-                                    <i class="fas fa-eye me-2 text-warning"></i> View
-                                </a>
-                            </li>
-                        </ul>
+                        <button class="btn btn-sm btn-light border delete-btn"
+                                data-id="' . $row->id . '"
+                                data-name="' . e($row->name) . '" title="Delete">
+                            <i class="fas fa-trash text-danger"></i>
+                        </button>
                     </div>';
             })
 
@@ -139,7 +156,7 @@ class UserController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | AJAX – get single user data for edit modal
+    | EDIT DATA – JSON for modal
     |--------------------------------------------------------------------------
     */
     public function editData($id)
@@ -153,7 +170,6 @@ class UserController extends Controller
             'phone'           => $user->phone,
             'status'          => $user->status,
             'role'            => $user->roles->first()?->name ?? '',
-            // Extended fields
             'location'        => $user->location,
             'about_me'        => $user->about_me,
             'company_name'    => $user->company_name,
@@ -167,7 +183,7 @@ class UserController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | AJAX – store new user
+    | AJAX STORE
     |--------------------------------------------------------------------------
     */
     public function ajaxStore(Request $request)
@@ -190,10 +206,7 @@ class UserController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors'  => $validator->errors(),
-            ], 422);
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
 
         $user = User::create([
@@ -214,15 +227,12 @@ class UserController extends Controller
 
         $user->assignRole($request->role);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'User created successfully.',
-        ]);
+        return response()->json(['success' => true, 'message' => 'User created successfully.']);
     }
 
     /*
     |--------------------------------------------------------------------------
-    | AJAX – update existing user
+    | AJAX UPDATE
     |--------------------------------------------------------------------------
     */
     public function ajaxUpdate(Request $request, $id)
@@ -247,10 +257,7 @@ class UserController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors'  => $validator->errors(),
-            ], 422);
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
 
         $data = [
@@ -275,27 +282,24 @@ class UserController extends Controller
         $user->update($data);
         $user->syncRoles([$request->role]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'User updated successfully.',
-        ]);
+        return response()->json(['success' => true, 'message' => 'User updated successfully.']);
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Show single user profile page
+    | SHOW
     |--------------------------------------------------------------------------
     */
     public function show($id)
     {
         $user  = User::with('roles')->findOrFail($id);
-        $roles = Role::orderBy('name')->get(); // needed for the inline edit modal
+        $roles = Role::orderBy('name')->get();
         return view('users.show', compact('user', 'roles'));
     }
 
     /*
     |--------------------------------------------------------------------------
-    | AJAX – delete user
+    | DESTROY
     |--------------------------------------------------------------------------
     */
     public function destroy($id)
@@ -303,9 +307,6 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $user->delete();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'User deleted successfully.',
-        ]);
+        return response()->json(['success' => true, 'message' => 'User deleted successfully.']);
     }
 }

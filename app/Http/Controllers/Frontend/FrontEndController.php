@@ -14,74 +14,51 @@ use App\Models\Locality;
 
 class FrontEndController extends Controller
 {
-    public function home(Request $request)
+    
+   public function home(Request $request)
     {
-    $localities = Locality::where('parent_id', 3)->get();
-    if($request->category_id){
-    $category = Category::where('slug', $request->category_id)->first();
-    $subcategories = SubCategory::where('category_id',$category->id)->get();
-    }else{
-    $subcategories = SubCategory::all();
-    }
-    $categories = Category::all();
-
-    $query = Post::with(['category','subcategory','locality'])
-        ->withCount(['likesData as likes','viewsData as views','sharesData as shares'])
-        ->where('status', 'published');
-
-    if ($request->filled('category_id')) {
-    $query->whereHas('category', fn($q) =>
-        $q->where('slug', $request->category_id));
-}
-
-if ($request->filled('subcategory_id')) {
-    $query->whereHas('subcategory', fn($q) =>
-        $q->where('slug', $request->subcategory_id));
-}
-
-if ($request->filled('locality_id')) {
-    $query->whereHas('locality', fn($q) =>
-        $q->where('slug', $request->locality_id));
-}
-
-    if ($request->filled('keyword')) {
-        $query->where(function ($q) use ($request) {
-            $q->where('title','like',"%{$request->keyword}%")
-              ->orWhere('description','like',"%{$request->keyword}%");
-        });
-    }
-
-    // SORT
-    if ($request->sort === 'old') {
-        $query->orderBy('created_at','asc');
-    } elseif ($request->sort === 'popular') {
-        $query->orderBy('views','desc');
-    } elseif ($request->sort === 'trending') {
-        $query->orderByRaw('(views + likes + shares) DESC');
-    } else {
-        $query->latest();
-    }
-
-    $posts = $query->paginate(12)->withQueryString();
-
-    // 🔥 AJAX RESPONSE (IMPORTANT)
-   if ($request->ajax()) {
-
-    $html = view('frontend.post-cards', compact('posts'))->render();
-
-    return response()->json([
-        'success' => true,
-        'html' => $html,
-        'next_page' => $posts->nextPageUrl(),
-    ]);
-}
-
-    return view('frontend.frontend-app', compact(
-        'posts',
-        'localities',
-        'categories',
-        'subcategories'
-    ));
+        /*
+        |--------------------------------------------------------------
+        | withCount rules — no aliases (always safe)
+        | withCount('likesData')  → $post->likes_data_count
+        | withCount('sharesData') → $post->shares_data_count
+        | views                   → real DB column
+        |--------------------------------------------------------------
+        */
+ 
+        // ── Category tiles (all categories with deal count) ────────────────
+        $categories = Category::withCount(['posts' => fn($q) => $q->where('status', 'published')])
+            ->orderByDesc('posts_count')
+            ->get();
+ 
+        // ── Category carousels — ALL categories that have published posts ──
+        // Each carousel shows top 10 most-viewed posts for that category.
+        $categoryCarousels = Category::with([
+                'posts' => function ($q) {
+                    $q->with('locality')
+                      ->withCount('likesData')
+                      ->where('status', 'published')
+                      ->orderByDesc('views')
+                      ->limit(10);
+                },
+            ])
+            ->whereHas('posts', fn($q) => $q->where('status', 'published'))
+            ->withCount(['posts' => fn($q) => $q->where('status', 'published')])
+            ->orderByDesc('posts_count')
+            ->get();   // ← no limit — every category gets a carousel
+ 
+        // ── Latest deals grid (bottom of page) ────────────────────────────
+        $posts = Post::with(['category', 'subcategory', 'locality'])
+            ->withCount(['likesData', 'sharesData'])
+            ->where('status', 'published')
+            ->latest()
+            ->paginate(12);
+ 
+        return view('frontend.frontend-app', compact(
+            'posts',
+            'categories',
+            'categoryCarousels'
+        ));
     }
     public function listing(Request $request)
     {

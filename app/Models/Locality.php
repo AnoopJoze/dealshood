@@ -32,4 +32,8 @@ class Locality extends Model
     {
         return $this->hasMany(Locality::class, 'parent_id');
     }
+    public function posts()
+    {
+        return $this->hasMany(\App\Models\Post::class);
+    }
 }
