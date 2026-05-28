@@ -339,46 +339,6 @@
                         padding:20px 0; font-size:.74rem; color:rgba(255,255,255,.3); }
     .dh-footer-bottom a { color:rgba(255,255,255,.48); text-decoration:none; }
 
-
-    /* ─── Subcategory tiles ──────────────────────────── */
-    .dh-subcat-tile-sec { background:var(--surface); padding:16px 0 8px; }
-    .dh-subcat-tile-label {
-        font-size:.64rem; font-weight:600; letter-spacing:.13em; text-transform:uppercase;
-        color:var(--ink-muted); margin-bottom:12px;
-    }
-    .dh-subcat-tile-grid {
-        display:flex; flex-wrap:wrap; gap:10px;
-    }
-    @media(max-width:600px) {
-        .dh-subcat-tile-grid {
-            flex-wrap:nowrap; overflow-x:auto; padding-bottom:4px;
-            -ms-overflow-style:none; scrollbar-width:none; cursor:grab;
-        }
-        .dh-subcat-tile-grid::-webkit-scrollbar { display:none; }
-    }
-    .dh-stile {
-        flex:0 0 auto; width:82px; display:flex; flex-direction:column;
-        align-items:center; justify-content:center; gap:7px;
-        padding:12px 6px 10px; border-radius:14px; text-decoration:none;
-        text-align:center; color:var(--ink); font-size:.68rem; font-weight:600;
-        line-height:1.25; background:#fff; border:1.5px solid rgba(0,0,0,.08);
-        box-shadow:var(--sh-sm); transition:transform .2s,box-shadow .2s,border-color .2s;
-        user-select:none;
-    }
-    .dh-stile:hover { transform:translateY(-3px); box-shadow:var(--sh-md);
-                      border-color:var(--accent); color:var(--accent); }
-    .dh-stile.stile-active { background:var(--ink); color:#fff; border-color:var(--ink);
-                               box-shadow:0 4px 16px rgba(0,0,0,.2); }
-    .dh-stile.stile-active .stile-icon { background:rgba(255,255,255,.18) !important;
-                                          color:#fff !important; }
-    .stile-icon {
-        width:36px; height:36px; border-radius:10px; flex-shrink:0;
-        display:flex; align-items:center; justify-content:center;
-        transition:transform .2s;
-    }
-    .dh-stile:hover .stile-icon { transform:scale(1.1); }
-    .stile-name { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:70px; }
-
     @keyframes fadeUp {
         from { opacity:0; transform:translateY(20px); }
         to   { opacity:1; transform:translateY(0); }
@@ -442,6 +402,72 @@
     </div>
 </header>
 
+{{-- ═════════════════════════════════════════════════════
+     FILTER CARD
+═════════════════════════════════════════════════════ --}}
+<section class="dh-filter-sec">
+    <div class="dh-filter-wrap">
+        <div class="dh-filter-card">
+            <form id="filterForm" action="javascript:void(0);">
+                <div class="dh-filter-grid">
+
+                    <div class="dh-field-group">
+                        <label class="dh-field-label">Locality</label>
+                        <select class="dh-field" name="locality_id" id="locality_id">
+                            <option value="">All Localities</option>
+                            @foreach ($localities as $loc)
+                                <option value="{{ $loc->slug }}"
+                                    {{ request('locality_id') == $loc->slug ? 'selected':'' }}>
+                                    {{ $loc->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="dh-field-group">
+                        <label class="dh-field-label">Category</label>
+                        <select class="dh-field" name="category_id" id="category_id">
+                            <option value="">All Categories</option>
+                            @foreach ($categories as $cat)
+                                <option value="{{ $cat->slug }}"
+                                    {{ request('category_id') == $cat->slug ? 'selected':'' }}>
+                                    {{ $cat->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="dh-field-group">
+                        <label class="dh-field-label">Subcategory</label>
+                        <select class="dh-field" name="subcategory_id" id="subcategory_id">
+                            <option value="">All Subcategories</option>
+                            @foreach ($subcategories as $sub)
+                                <option value="{{ $sub->slug }}"
+                                    {{ request('subcategory_id') == $sub->slug ? 'selected':'' }}>
+                                    {{ $sub->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="dh-field-group">
+                        <label class="dh-field-label">Keyword</label>
+                        <input class="dh-field" name="keyword" id="keyword"
+                               placeholder="Search deals…"
+                               value="{{ request('keyword') }}" autocomplete="off">
+                    </div>
+
+                    <div class="dh-filter-submit">
+                        <button type="submit" class="dh-search-btn">
+                            <i class="bi bi-search"></i> Search
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
 
 {{-- ═════════════════════════════════════════════════════
      CATEGORY QUICK-FILTER CHIPS
@@ -491,99 +517,6 @@ $palette = [
     </div>
 </section>
 
-
-{{-- ═════════════════════════════════════════════════════
-     SUBCATEGORY TILES (shown when a category is active)
-═════════════════════════════════════════════════════ --}}
-@if(request('category_id') && $subcategories->isNotEmpty())
-    @php $activeCatForSub = $categories->firstWhere('slug', request('category_id')); @endphp
-    <section class="dh-subcat-tile-sec">
-        <div class="dh-wrap">
-            <p class="dh-subcat-tile-label">
-                {{ $activeCatForSub?->name }} — Subcategories
-            </p>
-            <div class="dh-subcat-tile-grid" id="subcatTileGrid">
-
-                {{-- All [category] tile --}}
-                <a href="{{ route('posts.listing', ['category_id' => request('category_id')]) }}"
-                   class="dh-stile {{ !request('subcategory_id') ? 'stile-active':'' }}">
-                    <span class="stile-icon" style="background:#f1f5f9;color:var(--accent);">
-                        <i class="fas fa-th" style="font-size:.8rem;"></i>
-                    </span>
-                    <span class="stile-name">All</span>
-                </a>
-
-                @foreach ($subcategories as $i => $sub)
-                    @php $p = $palette[$i % count($palette)]; @endphp
-                    <a href="{{ route('posts.listing', ['category_id' => request('category_id'), 'subcategory_id' => $sub->slug]) }}"
-                       class="dh-stile {{ request('subcategory_id') == $sub->slug ? 'stile-active':'' }}">
-                        <span class="stile-icon" style="background:{{ $p['bg'] }};color:{{ $p['ic'] }};">
-                            <i class="fas {{ $p['icon'] }}" style="font-size:.8rem;"></i>
-                        </span>
-                        <span class="stile-name">{{ $sub->name }}</span>
-                    </a>
-                @endforeach
-
-            </div>
-        </div>
-    </section>
-@endif
-
-{{-- ═════════════════════════════════════════════════════
-     LOCALITY QUICK-FILTER CHIPS
-═════════════════════════════════════════════════════ --}}
-<section class="dh-cat-strip-sec" style="padding-top:18px;">
-    <div class="dh-wrap">
-
-        <div class="dh-subcat-tile-label" style="margin-bottom:10px;">
-            Browse by Locality
-        </div>
-
-        <div class="dh-cat-strip" id="localityChips">
-
-            {{-- All --}}
-            <a href="{{ route('posts.listing', request()->except('locality_id')) }}"
-               class="dh-cat-chip {{ !request('locality_id') ? 'active':'' }}">
-
-                <span class="chip-icon"
-                      style="background:rgba(0,0,0,.06);color:var(--ink);">
-                    <i class="fas fa-location-dot" style="font-size:.6rem;"></i>
-                </span>
-
-                All Areas
-            </a>
-
-            @foreach ($localities as $i => $loc)
-
-                @php
-                    $p = $palette[$i % count($palette)];
-                @endphp
-
-                <a href="{{ request()->fullUrlWithQuery(['locality_id' => $loc->slug]) }}"
-                   class="dh-cat-chip {{ request('locality_id') == $loc->slug ? 'active':'' }}">
-
-                    <span class="chip-icon"
-                          style="background:{{ $p['bg'] }};color:{{ $p['ic'] }};">
-                        <i class="fas fa-location-dot" style="font-size:.6rem;"></i>
-                    </span>
-
-                    {{ $loc->name }}
-
-                    @if(isset($loc->posts_count))
-                        <span style="opacity:.6;font-size:.65rem;">
-                            {{ number_format($loc->posts_count) }}
-                        </span>
-                    @endif
-
-                </a>
-
-            @endforeach
-
-        </div>
-    </div>
-</section>
-
-
 {{-- ═════════════════════════════════════════════════════
      POSTS GRID
 ═════════════════════════════════════════════════════ --}}
@@ -591,62 +524,32 @@ $palette = [
     <div class="dh-wrap" style="padding-top:28px;">
 
         {{-- Toolbar --}}
-
-<div class="dh-toolbar">
-
-    <div>
-        <p class="dh-result-info mb-0">
-            Showing <strong id="resultCount">{{ number_format($posts->total()) }}</strong> deals
-        </p>
-    </div>
-
-    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-
-        {{-- Search --}}
-        <form action="{{ route('posts.listing') }}" method="GET"
-              style="display:flex;align-items:center;gap:8px;">
-
-            {{-- Preserve filters --}}
-            @if(request('category_id'))
-                <input type="hidden" name="category_id" value="{{ request('category_id') }}">
-            @endif
-
-            @if(request('subcategory_id'))
-                <input type="hidden" name="subcategory_id" value="{{ request('subcategory_id') }}">
-            @endif
-
-            @if(request('locality_id'))
-                <input type="hidden" name="locality_id" value="{{ request('locality_id') }}">
-            @endif
-
-            <input type="text"
-                   name="keyword"
-                   value="{{ request('keyword') }}"
-                   placeholder="Search deals..."
-                   class="dh-field"
-                   style="min-width:220px;height:40px;">
-
-        </form>
-
-        {{-- Sort Pills --}}
-        <div class="dh-sort-pills">
-            ...
+        <div class="dh-toolbar">
+            <p class="dh-result-info mb-0">
+                Showing <strong id="resultCount">{{ number_format($posts->total()) }}</strong> deals
+                @if (request('category_id'))
+                    in <strong>{{ $categories->firstWhere('slug', request('category_id'))?->name }}</strong>
+                @endif
+            </p>
+            <div class="dh-sort-pills">
+                <a href="{{ request()->fullUrlWithQuery(['sort' => 'latest']) }}"
+                   class="dh-sort-pill {{ request('sort','latest') === 'latest' ? 'active':'' }}">
+                    <i class="bi bi-clock me-1"></i> Newest
+                </a>
+                <a href="{{ request()->fullUrlWithQuery(['sort' => 'popular']) }}"
+                   class="dh-sort-pill {{ request('sort') === 'popular' ? 'active':'' }}">
+                    <i class="bi bi-eye me-1"></i> Popular
+                </a>
+                <a href="{{ request()->fullUrlWithQuery(['sort' => 'trending']) }}"
+                   class="dh-sort-pill {{ request('sort') === 'trending' ? 'active':'' }}">
+                    <i class="bi bi-fire me-1"></i> Trending
+                </a>
+            </div>
         </div>
 
-    </div>
-
-</div>
         {{-- Grid --}}
         <div class="dh-grid" id="post-wrapper">
-            @forelse($posts as $post)
-            @include('frontend.post-single-card', ['post' => $post])
-        @empty
-            <div class="dh-empty" style="grid-column:1/-1;">
-                <div class="dh-empty-icon">🔍</div>
-                <p class="dh-empty-title">No Deals Found</p>
-                <p class="dh-empty-text">Try adjusting your filters or search keywords.</p>
-            </div>
-        @endforelse
+            @include('frontend.post-cards', ['posts' => $posts])
         </div>
 
         {{-- Loader --}}
@@ -708,18 +611,15 @@ document.getElementById('navToggle').addEventListener('click',function(){
     document.getElementById('navActions').classList.toggle('open');
 });
 
-// ── Drag-to-scroll (chips + subcat tiles) ────────────────────
-function makeDragScroll(el) {
-    if (!el) return;
-    let down=false,sx=0,sl=0;
-    el.addEventListener('mousedown',e=>{down=true;sx=e.pageX-el.offsetLeft;sl=el.scrollLeft;el.style.cursor='grabbing';});
-    el.addEventListener('mouseleave',()=>{down=false;el.style.cursor='grab';});
-    el.addEventListener('mouseup',()=>{down=false;el.style.cursor='grab';});
-    el.addEventListener('mousemove',e=>{if(!down)return;e.preventDefault();el.scrollLeft=sl-(e.pageX-el.offsetLeft-sx)*1.4;});
-}
+// ── Drag-to-scroll category chips ────────────────────────────
 const chips = document.getElementById('catChips');
-makeDragScroll(chips);
-makeDragScroll(document.getElementById('subcatTileGrid'));
+if(chips){
+    let down=false,sx=0,sl=0;
+    chips.addEventListener('mousedown',e=>{down=true;sx=e.pageX-chips.offsetLeft;sl=chips.scrollLeft;chips.style.cursor='grabbing';});
+    chips.addEventListener('mouseleave',()=>{down=false;chips.style.cursor='grab';});
+    chips.addEventListener('mouseup',()=>{down=false;chips.style.cursor='grab';});
+    chips.addEventListener('mousemove',e=>{if(!down)return;e.preventDefault();chips.scrollLeft=sl-(e.pageX-chips.offsetLeft-sx)*1.4;});
+}
 
 // ── Dynamic subcategories ─────────────────────────────────────
 $('#category_id').on('change', function(){

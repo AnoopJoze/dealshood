@@ -14,8 +14,7 @@ use App\Models\Locality;
 
 class FrontEndController extends Controller
 {
-    
-   public function home(Request $request)
+    public function home(Request $request)
     {
         /*
         |--------------------------------------------------------------
@@ -60,74 +59,58 @@ class FrontEndController extends Controller
             'categoryCarousels'
         ));
     }
+ 
+    // Listing page keeps filters for the dedicated browse page
     public function listing(Request $request)
     {
-    $localities = Locality::where('parent_id', 3)->get();
-    if($request->category_id){
-    $category = Category::where('slug', $request->category_id)->first();
-    $subcategories = SubCategory::where('category_id',$category->id)->get();
-    }else{
-    $subcategories = SubCategory::all();
-    }
-    $categories = Category::all();
-
-    $query = Post::with(['category','subcategory','locality'])
-        ->withCount(['likesData as likes','viewsData as views','sharesData as shares'])
-        ->where('status', 'published');
-
-    if ($request->filled('category_id')) {
-    $query->whereHas('category', fn($q) =>
-        $q->where('slug', $request->category_id));
-}
-
-if ($request->filled('subcategory_id')) {
-    $query->whereHas('subcategory', fn($q) =>
-        $q->where('slug', $request->subcategory_id));
-}
-
-if ($request->filled('locality_id')) {
-    $query->whereHas('locality', fn($q) =>
-        $q->where('slug', $request->locality_id));
-}
-
-    if ($request->filled('keyword')) {
-        $query->where(function ($q) use ($request) {
-            $q->where('title','like',"%{$request->keyword}%")
-              ->orWhere('description','like',"%{$request->keyword}%");
-        });
-    }
-
-    // SORT
-    if ($request->sort === 'old') {
-        $query->orderBy('created_at','asc');
-    } elseif ($request->sort === 'popular') {
-        $query->orderBy('views','desc');
-    } elseif ($request->sort === 'trending') {
-        $query->orderByRaw('(views + likes + shares) DESC');
-    } else {
-        $query->latest();
-    }
-
-    $posts = $query->paginate(12)->withQueryString();
-
-    // 🔥 AJAX RESPONSE (IMPORTANT)
-   if ($request->ajax()) {
-
-    $html = view('frontend.post-cards', compact('posts'))->render();
-
-    return response()->json([
-        'success' => true,
-        'html' => $html,
-        'next_page' => $posts->nextPageUrl(),
-    ]);
-}
-
-    return view('frontend.frontend-app-post-listing', compact(
-        'posts',
-        'localities',
-        'categories',
-        'subcategories'
-    ));
+        $localities    = Locality::where('parent_id', 3)->get();
+        $categories    = Category::withCount(['posts' => fn($q) => $q->where('status', 'published')])
+            ->orderByDesc('posts_count')->get();
+ 
+        if ($request->filled('category_id')) {
+            $cat           = Category::where('slug', $request->category_id)->first();
+            $subcategories = $cat ? $cat->subcategories()->get() : collect();
+        } else {
+            $subcategories = collect();
+        }
+ 
+        $query = Post::with(['category', 'subcategory', 'locality'])
+            ->withCount(['likesData', 'sharesData'])
+            ->where('status', 'published');
+ 
+        if ($request->filled('category_id')) {
+            $query->whereHas('category', fn($q) => $q->where('slug', $request->category_id));
+        }
+        if ($request->filled('subcategory_id')) {
+            $query->whereHas('subcategory', fn($q) => $q->where('slug', $request->subcategory_id));
+        }
+        if ($request->filled('locality_id')) {
+            $query->whereHas('locality', fn($q) => $q->where('slug', $request->locality_id));
+        }
+        if ($request->filled('keyword')) {
+            $query->where(fn($q) =>
+                $q->where('title',       'like', "%{$request->keyword}%")
+                  ->orWhere('description', 'like', "%{$request->keyword}%")
+            );
+        }
+ 
+        match ($request->sort) {
+            'popular'  => $query->orderByDesc('views'),
+            'trending' => $query->orderByRaw('(views + likes_data_count + shares_data_count) DESC'),
+            default    => $query->latest(),
+        };
+ 
+        $posts = $query->paginate(12)->withQueryString();
+ 
+        if ($request->ajax()) {
+            return response()->json([
+                'success'   => true,
+                'html'      => view('frontend.post-cards', compact('posts'))->render(),
+                'next_page' => $posts->nextPageUrl(),
+            ]);
+        }
+ 
+        return view('frontend.frontend-app-post-listing', compact('posts', 'categories', 'localities', 'subcategories'));
     }
     public function homes()
     {
