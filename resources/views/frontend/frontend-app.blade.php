@@ -522,15 +522,6 @@
         <p class="dh-hero-cats-label">Browse by Category</p>
         <div class="dh-cat-strip" id="catStrip">
 
-            {{-- "All Deals" tile --}}
-            <a href="{{ route('posts.listing') }}" class="dh-cat-pill pill-all">
-                <span class="pill-icon">
-                    <i class="fas fa-th"></i>
-                </span>
-                <span class="pill-name">All Deals</span>
-                <span class="pill-count">Browse</span>
-            </a>
-
             @foreach ($categories as $i => $cat)
                 @php $p = $palette[$i % count($palette)]; @endphp
                 <a href="{{ route('posts.listing', ['category_id' => $cat->slug]) }}"
