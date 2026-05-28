@@ -472,10 +472,6 @@
             <span></span><span></span><span></span>
         </button>
         <div class="dh-nav-actions" id="navActions">
-            <a href="{{ route('posts.listing') }}" class="dh-btn-nav"
-               style="background:#f1f5f9;color:var(--ink);">
-                <i class="bi bi-grid-3x3-gap"></i> All Deals
-            </a>
             <a href="https://www.instagram.com/dealshood" target="_blank"
                class="dh-btn-nav dh-btn-ig">
                 <i class="bi bi-instagram"></i> Follow
@@ -525,15 +521,6 @@
     <div class="dh-hero-cats">
         <p class="dh-hero-cats-label">Browse by Category</p>
         <div class="dh-cat-strip" id="catStrip">
-
-            {{-- "All Deals" tile --}}
-            <a href="{{ route('posts.listing') }}" class="dh-cat-pill pill-all">
-                <span class="pill-icon">
-                    <i class="fas fa-th"></i>
-                </span>
-                <span class="pill-name">All Deals</span>
-                <span class="pill-count">Browse</span>
-            </a>
 
             @foreach ($categories as $i => $cat)
                 @php $p = $palette[$i % count($palette)]; @endphp
@@ -761,18 +748,14 @@
             @endforelse
         </div>
 
-        @if ($posts->hasMorePages())
-            <div class="dh-show-more">
-                <button class="dh-more-btn" id="loadMoreBtn"
-                        data-next="{{ $posts->nextPageUrl() }}">
-                    Load More Deals
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                         stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </button>
-            </div>
-        @endif
+        
+        <!-- Show more -->
+        <div class="dh-show-more">
+            <a href="{{ route('posts.listing') }}" class="dh-more-btn">
+                Show All Deals
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+        </div>
 
     </div>
 </section>
