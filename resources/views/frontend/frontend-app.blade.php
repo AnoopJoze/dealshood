@@ -379,9 +379,6 @@ $paletteJson = json_encode($palette);
         <div class="dh-hero-eyebrow">Deals &bull; Offers &bull; Discounts</div>
         <h1 class="dh-hero-title">DealsHood</h1>
         <p class="dh-hero-sub">Discover the best deals near you.<br>Fresh offers, updated every day.</p>
-        <a href="{{ route('posts.listing') }}" class="dh-hero-cta">
-            <i class="bi bi-lightning-charge-fill"></i> Browse All Deals
-        </a>
     </div>
 
     {{-- ─── Category tiles panel ─── --}}
@@ -415,7 +412,6 @@ $paletteJson = json_encode($palette);
                         <i class="fas {{ $p['icon'] }}" style="font-size:.85rem;"></i>
                     </span>
                     <span class="tile-name">{{ $cat->name }}</span>
-                    <span class="tile-count">{{ number_format($cat->posts_count) }}</span>
                 </div>
             @endforeach
 
