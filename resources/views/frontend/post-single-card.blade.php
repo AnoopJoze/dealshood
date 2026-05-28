@@ -1,189 +1,96 @@
 @php
-    /*
-    |--------------------------------------------------------------------------
-    | IMAGE
-    |--------------------------------------------------------------------------
-    */
-    $image = $post->getFirstMediaUrl('posts');
-    if (!$image) {
-        $image = asset('frontend/img/default.jpg');
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | LIKE STATUS (guest support)
-    |--------------------------------------------------------------------------
-    */
-    $liked = \App\Models\PostLike::where('post_id', $post->id)
-        ->where(function ($q) {
-            $q->where('ip_address', request()->ip())
-              ->orWhere('session_id', session()->getId());
-        })
-        ->exists();
-
-    /*
-    |--------------------------------------------------------------------------
-    | VIDEO
-    |--------------------------------------------------------------------------
-    */
+    $image = $post->getFirstMediaUrl('posts') ?: asset('frontend/img/default.jpg');
     $video = $post->getFirstMediaUrl('videos');
+    $liked = \App\Models\PostLike::where('post_id', $post->id)
+        ->where(fn($q) => $q->where('ip_address', request()->ip())
+                            ->orWhere('session_id', session()->getId()))
+        ->exists();
 @endphp
 
 <div class="dh-card">
 
-    {{-- =============================================
-        MEDIA
-    ============================================== --}}
+    {{-- Media --}}
     <div class="dh-card-media">
-
         <a href="{{ $post->url }}" tabindex="-1">
-
-            {{-- UPLOADED VIDEO --}}
             @if($video)
-                <video preload="metadata" muted>
-                    <source src="{{ $video }}">
-                </video>
-
-            {{-- EMBEDDED VIDEO URL (YouTube etc.) --}}
+                <video preload="metadata" muted><source src="{{ $video }}"></video>
             @elseif($post->video_url)
                 <div class="ratio ratio-16x9" style="height:220px;">
-                    <iframe src="{{ str_replace('watch?v=', 'embed/', $post->video_url) }}"
+                    <iframe src="{{ str_replace('watch?v=','embed/',$post->video_url) }}"
                             allowfullscreen loading="lazy"></iframe>
                 </div>
-
-            {{-- IMAGE --}}
             @else
-                <img src="{{ $image }}"
-                     alt="{{ $post->title }}"
-                     loading="lazy">
+                <img src="{{ $image }}" alt="{{ $post->title }}" loading="lazy">
             @endif
-
         </a>
-
-        {{-- FEATURED BADGE --}}
         @if($post->is_featured)
-            <span class="dh-badge-featured">⭐ Featured</span>
+            <span class="badge-feat">⭐ Featured</span>
         @endif
-
     </div>
 
-    {{-- =============================================
-        BODY
-    ============================================== --}}
+    {{-- Body --}}
     <div class="dh-card-body">
 
-        {{-- TAXONOMY BADGES --}}
-        <div class="dh-card-badges">
-
+        {{-- Taxonomy badges --}}
+        <div class="dh-badges">
             @if($post->locality)
-                <span class="dh-badge dh-badge-loc">
-                    📍 {{ $post->locality->name }}
-                </span>
+                <span class="dh-b dh-b-loc">📍 {{ $post->locality->name }}</span>
             @endif
-
             @if($post->category)
-                <span class="dh-badge dh-badge-cat">
-                    {{ $post->category->name }}
-                </span>
+                <span class="dh-b dh-b-cat">{{ $post->category->name }}</span>
             @endif
-
             @if($post->subcategory)
-                <span class="dh-badge dh-badge-sub">
-                    {{ $post->subcategory->name }}
-                </span>
+                <span class="dh-b dh-b-sub">{{ $post->subcategory->name }}</span>
             @endif
-
         </div>
 
-        {{-- TITLE --}}
+        {{-- Title --}}
         <a href="{{ $post->url }}" class="dh-card-title">
-            {{ \Illuminate\Support\Str::limit($post->title, 60) }}
+            {{ Str::limit($post->title, 60) }}
         </a>
 
-        {{-- DESCRIPTION --}}
+        {{-- Description --}}
         <p class="dh-card-desc">
-            {{ \Illuminate\Support\Str::limit(strip_tags($post->description), 90) }}
+            {{ Str::limit(strip_tags($post->description), 90) }}
         </p>
 
-        {{-- =============================================
-            STATS ROW
-        ============================================== --}}
+        {{-- Stats --}}
         <div class="dh-card-meta">
+            <button class="dh-meta-btn likeBtn {{ $liked ? 'liked':'' }}"
+                    data-id="{{ $post->id }}">
+                <span class="dh-meta-icon"><i class="fas fa-heart"></i></span>
+                <span class="dh-meta-count" id="lc-{{ $post->id }}">
+                    {{ number_format($post->likes_data_count ?? 0) }}
+                </span>
+            </button>
+            <div class="dh-meta-box">
+                <span class="dh-meta-icon"><i class="fas fa-eye"></i></span>
+                <span class="dh-meta-count">{{ number_format($post->views ?? 0) }}</span>
+            </div>
+            <div class="dh-meta-box">
+                <span class="dh-meta-icon"><i class="fas fa-share-nodes"></i></span>
+                <span class="dh-meta-count">{{ number_format($post->shares_data_count ?? 0) }}</span>
+            </div>
+            <div class="dh-meta-time">
+                <i class="fas fa-clock"></i>
+                <span>{{ $post->created_at->diffForHumans() }}</span>
+            </div>
+        </div>
 
-    <!-- Like -->
-    <button class="dh-meta-btn likeBtn {{ $liked ? 'liked' : '' }}"
-            data-id="{{ $post->id }}">
-
-        <span class="dh-meta-icon">
-            <i class="fas fa-heart"></i>
-        </span>
-
-        <span class="dh-meta-count"
-              id="like-count-{{ $post->id }}">
-            {{ number_format($post->likes) }}
-        </span>
-    </button>
-
-    <!-- Views -->
-    <div class="dh-meta-box">
-        <span class="dh-meta-icon">
-            <i class="fas fa-eye"></i>
-        </span>
-
-        <span class="dh-meta-count">
-            {{ number_format($post->views) }}
-        </span>
-    </div>
-
-    <!-- Shares -->
-    <div class="dh-meta-box">
-        <span class="dh-meta-icon">
-            <i class="fas fa-share-nodes"></i>
-        </span>
-
-        <span class="dh-meta-count">
-            {{ number_format($post->shares) }}
-        </span>
-    </div>
-
-    <!-- Time -->
-    <div class="dh-meta-time">
-        <i class="fas fa-clock"></i>
-
-        <span>
-            {{ $post->created_at->diffForHumans() }}
-        </span>
-    </div>
-
-</div>
-
-        {{-- =============================================
-            ACTION BUTTONS
-        ============================================== --}}
+        {{-- Actions --}}
         <div class="dh-card-actions">
-
-            {{-- VIEW DETAILS --}}
-            <a href="{{ $post->url }}" class="dh-card-btn dh-card-btn-primary">
-                View Details
-            </a>
-
-            {{-- SHARE --}}
-            <button class="dh-card-btn dh-card-btn-ghost shareBtn"
-                    data-id="{{ $post->id }}"
-                    data-url="{{ $post->url }}"
-                    aria-label="Share">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+            <a href="{{ $post->url }}" class="dh-btn dh-btn-primary">View Details</a>
+            <button class="dh-btn dh-btn-ghost shareBtn"
+                    data-id="{{ $post->id }}" data-url="{{ $post->url }}" aria-label="Share">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
                      stroke="currentColor" stroke-width="2.2">
-                    <circle cx="18" cy="5" r="3"/>
-                    <circle cx="6" cy="12" r="3"/>
+                    <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/>
                     <circle cx="18" cy="19" r="3"/>
                     <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
                     <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
                 </svg>
             </button>
-
         </div>
 
     </div>
-
 </div>
