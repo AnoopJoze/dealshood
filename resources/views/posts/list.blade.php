@@ -3,311 +3,500 @@
 @section('content')
 
 @push('css')
-    <link href="{{ asset('assets') }}/DataTables/datatables.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.css">
-    <style>
-        #datatable thead th, #datatable tbody td { vertical-align: middle; white-space: nowrap; }
+<link href="{{ asset('assets') }}/DataTables/datatables.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.css">
 
-        /* ── Modal tabs ──────────────────────────────── */
-        .modal-tab-nav .nav-link {
-            color: #6c757d; border-radius: 8px;
-            padding: 6px 14px; font-size: .75rem; font-weight: 600;
-        }
-        .modal-tab-nav .nav-link.active {
-            background: linear-gradient(195deg,#42424a,#191919); color:#fff;
-        }
-        .modal-tab-nav .tab-err-dot {
-            display:inline-block; width:7px; height:7px;
-            background:#ea0606; border-radius:50%;
-            margin-left:5px; vertical-align:middle;
-        }
+<style>
+/* ── Design tokens (match sidenav / navbar / dashboard) ─── */
+:root {
+    --dk:      #0f172a;
+    --dk2:     #1e293b;
+    --accent:  #6366f1;
+    --surface: #f8fafc;
+    --border:  #f1f5f9;
+    --muted:   #64748b;
+    --muted2:  #94a3b8;
+    --r:       10px;
+    --sh:      0 2px 16px rgba(15,23,42,.07);
+    --sh-hover:0 6px 28px rgba(15,23,42,.12);
+}
 
-        /* ── Dropzone ────────────────────────────────── */
-        .dropzone {
-            border: 2px dashed #dee2e6; border-radius:.75rem;
-            background:#f8f9fa; min-height:80px; padding:1rem;
-        }
-        .dropzone:hover { border-color:#6c757d; }
-        .dropzone .dz-message { margin:.5em 0; font-size:.85rem; color:#9e9e9e; }
+/* ── Stat cards ──────────────────────────────────────────── */
+.ps-kpi {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    box-shadow: var(--sh);
+    padding: 1rem 1.2rem;
+    display: flex; align-items: center; gap: 14px;
+    transition: transform .16s, box-shadow .16s;
+}
+.ps-kpi:hover { transform: translateY(-2px); box-shadow: var(--sh-hover); }
+.ps-kpi-icon {
+    width: 42px; height: 42px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .95rem; flex-shrink: 0;
+}
+.ps-kpi-val { font-size: 1.5rem; font-weight: 800; line-height: 1; color: var(--dk); }
+.ps-kpi-lbl {
+    font-size: .62rem; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--muted2); margin-top: 3px;
+}
 
-        /* ── Existing images strip ────────────────────── */
-        .img-strip { display:flex; flex-wrap:wrap; gap:.5rem; margin-bottom:.75rem; }
-        .img-strip .img-wrap { position:relative; }
-        .img-strip img {
-            width:56px; height:56px; object-fit:cover;
-            border-radius:.45rem; border:2px solid #dee2e6; cursor:pointer;
-            transition: border-color .2s;
-        }
-        .img-strip img:hover { border-color:#6c757d; }
-        .img-strip .btn-del-media {
-            position:absolute; top:-6px; right:-6px;
-            width:18px; height:18px; padding:0; font-size:9px;
-            border-radius:50%; line-height:18px; text-align:center;
-        }
+/* ── Main card ───────────────────────────────────────────── */
+.ps-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    box-shadow: var(--sh);
+    overflow: hidden;
+}
+.ps-card-header {
+    padding: 1.1rem 1.4rem .9rem;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center;
+    justify-content: space-between; flex-wrap: wrap; gap: 10px;
+}
+.ps-page-title {
+    font-size: 1rem; font-weight: 800; color: var(--dk);
+    margin: 0; letter-spacing: -.01em;
+}
+.ps-page-sub { font-size: .75rem; color: var(--muted2); margin: 2px 0 0; }
 
-        /* ── Stat cards ──────────────────────────────── */
-        .stat-card {
-            border-radius:12px; padding:14px 18px;
-            display:flex; align-items:center; gap:12px;
-        }
-        .stat-card .stat-icon {
-            width:38px; height:38px; border-radius:10px;
-            display:flex; align-items:center; justify-content:center;
-            font-size:.9rem; flex-shrink:0;
-        }
-        .stat-card .stat-val { font-size:1.3rem; font-weight:700; line-height:1; }
-        .stat-card .stat-lbl { font-size:.65rem; text-transform:uppercase;
-                                letter-spacing:.05em; color:#9e9e9e; margin-top:2px; }
+/* ── View tabs (All / Trash) ─────────────────────────────── */
+.ps-view-tabs {
+    display: flex; gap: 4px;
+    border-bottom: 1px solid var(--border);
+    padding: 0 1.4rem;
+}
+.ps-view-tab {
+    font-size: .77rem; font-weight: 600;
+    padding: .6rem .9rem; border: none;
+    background: transparent; cursor: pointer;
+    color: var(--muted); border-bottom: 2px solid transparent;
+    margin-bottom: -1px; transition: color .14s, border-color .14s;
+    display: inline-flex; align-items: center; gap: 6px;
+}
+.ps-view-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.ps-view-tab .ps-tab-badge {
+    font-size: .62rem; font-weight: 700; padding: 1px 6px;
+    border-radius: 100px;
+}
 
-        /* ── Inline status colour flash ──────────────── */
-        .inline-status { cursor:pointer; transition:background .2s; }
-    </style>
+/* ── Filter panel ────────────────────────────────────────── */
+.ps-filter-panel {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 1.4rem;
+    display: none;
+}
+.ps-filter-panel.open { display: block; }
+.ps-filter-panel .form-label {
+    font-size: .65rem; font-weight: 700; letter-spacing: .09em;
+    text-transform: uppercase; color: var(--muted2); margin-bottom: 5px;
+}
+.ps-filter-panel .form-control,
+.ps-filter-panel .form-select {
+    font-size: .82rem; border-color: var(--border);
+    border-radius: 8px; background: #fff;
+}
+.ps-filter-panel .form-control:focus,
+.ps-filter-panel .form-select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(99,102,241,.12);
+}
+
+/* ── Toolbar buttons ─────────────────────────────────────── */
+.ps-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: .77rem; font-weight: 600; border-radius: 8px;
+    padding: .48rem .9rem; cursor: pointer; border: 1.5px solid;
+    transition: background .14s, color .14s, box-shadow .14s;
+    text-decoration: none; white-space: nowrap;
+}
+.ps-btn-primary {
+    background: var(--dk); color: #fff; border-color: var(--dk);
+}
+.ps-btn-primary:hover {
+    background: var(--accent); border-color: var(--accent); color: #fff;
+    box-shadow: 0 3px 12px rgba(99,102,241,.3);
+}
+.ps-btn-ghost {
+    background: #fff; color: var(--muted); border-color: var(--border);
+}
+.ps-btn-ghost:hover { background: var(--surface); color: var(--dk); }
+.ps-btn-danger {
+    background: #fff; color: #dc2626; border-color: #fecaca;
+}
+.ps-btn-danger:hover { background: #fef2f2; border-color: #dc2626; }
+
+/* ── Table ───────────────────────────────────────────────── */
+#datatable thead th {
+    font-size: .62rem; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--muted2);
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    vertical-align: middle; white-space: nowrap; padding: .7rem 1rem;
+}
+#datatable tbody td {
+    vertical-align: middle; white-space: nowrap;
+    font-size: .82rem; color: var(--dk);
+    padding: .65rem 1rem; border-bottom: 1px solid var(--border);
+}
+#datatable tbody tr:hover td { background: var(--surface); }
+#datatable tbody tr:last-child td { border-bottom: none; }
+
+/* ── Row action buttons ──────────────────────────────────── */
+.row-btn {
+    width: 30px; height: 30px; border-radius: 7px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: .72rem; border: 1px solid var(--border);
+    background: #fff; cursor: pointer; transition: all .14s;
+    text-decoration: none;
+}
+.row-btn:hover { background: var(--surface); }
+.row-btn.view:hover  { border-color: #6366f1; color: #6366f1; }
+.row-btn.edit:hover  { border-color: #d97706; color: #d97706; }
+.row-btn.del:hover   { border-color: #dc2626; color: #dc2626; background: #fef2f2; }
+.row-btn.restore:hover{ border-color: #059669; color: #059669; background: #f0fdf4; }
+.row-btn.fdel:hover  { border-color: #dc2626; color: #fff; background: #dc2626; }
+
+/* ── Inline status select ────────────────────────────────── */
+.inline-status {
+    font-size: .72rem; font-weight: 600; border: none;
+    border-radius: 100px; padding: 3px 10px; cursor: pointer;
+    outline: none; transition: background .2s;
+}
+
+/* ── Status badges ───────────────────────────────────────── */
+.s-published { background:#d1fae5;color:#059669; }
+.s-draft     { background:#f1f5f9;color:#64748b; }
+.s-archived  { background:#fef3c7;color:#d97706; }
+
+/* ── Modal — design token overrides ─────────────────────── */
+.ps-modal .modal-content {
+    border: none; border-radius: 14px;
+    box-shadow: 0 24px 60px rgba(15,23,42,.18);
+}
+.ps-modal .modal-header {
+    padding: 1.2rem 1.4rem .9rem;
+    border-bottom: 1px solid var(--border);
+}
+.ps-modal-icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    background: var(--dk); color: #fff;
+    display: flex; align-items: center;
+    justify-content: center; font-size: 1rem; flex-shrink: 0;
+}
+.ps-modal-icon.edit-mode { background: linear-gradient(135deg,#d97706,#f59e0b); }
+
+/* Tab nav */
+.ps-tab-nav {
+    display: flex; gap: 2px;
+    padding: 0 1.4rem;
+    border-bottom: 1px solid var(--border);
+}
+.ps-tab-link {
+    font-size: .75rem; font-weight: 600; padding: .6rem .85rem;
+    border: none; background: transparent; cursor: pointer;
+    color: var(--muted); border-bottom: 2px solid transparent;
+    margin-bottom: -1px; transition: color .14s, border-color .14s;
+    display: inline-flex; align-items: center; gap: 5px;
+}
+.ps-tab-link.active { color: var(--dk); border-bottom-color: var(--dk); }
+.ps-tab-link .tab-err-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #ef4444; display: inline-block;
+}
+
+/* Section label inside modal */
+.modal-section-label {
+    font-size: .62rem; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--muted2);
+    margin: 0 0 .75rem;
+}
+
+/* Form controls inside modal */
+.ps-modal .form-control,
+.ps-modal .form-select {
+    font-size: .84rem; border-color: var(--border);
+    border-radius: 8px; color: var(--dk);
+}
+.ps-modal .form-control:focus,
+.ps-modal .form-select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(99,102,241,.1);
+}
+.ps-modal .form-label {
+    font-size: .78rem; font-weight: 600; color: var(--dk);
+    margin-bottom: 5px;
+}
+
+/* Dropzone */
+.dropzone {
+    border: 2px dashed var(--border); border-radius: 10px;
+    background: var(--surface); min-height: 80px; padding: 1rem;
+    transition: border-color .15s;
+}
+.dropzone:hover { border-color: var(--accent); }
+.dropzone .dz-message { margin: .5em 0; font-size: .84rem; color: var(--muted2); }
+
+/* Image strip */
+.img-strip { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: .75rem; }
+.img-strip .img-wrap { position: relative; }
+.img-strip img {
+    width: 56px; height: 56px; object-fit: cover;
+    border-radius: 8px; border: 2px solid var(--border); cursor: pointer;
+    transition: border-color .15s;
+}
+.img-strip img:hover { border-color: var(--accent); }
+.img-strip .btn-del-media {
+    position: absolute; top: -6px; right: -6px;
+    width: 18px; height: 18px; padding: 0; font-size: 9px;
+    border-radius: 50%; line-height: 18px; text-align: center;
+}
+
+/* Modal footer */
+.ps-modal .modal-footer {
+    padding: .9rem 1.4rem; border-top: 1px solid var(--border);
+}
+
+/* Empty trash notice */
+.trash-notice {
+    background: #fef2f2; border: 1px solid #fecaca;
+    border-radius: 8px; padding: .65rem 1rem;
+    font-size: .78rem; color: #b91c1c;
+    display: flex; align-items: center; gap: 8px;
+    display: none;
+}
+.trash-notice.visible { display: flex; }
+</style>
 @endpush
 
 <div>
 
-    {{-- ─── Stat row ─────────────────────────────────────────── --}}
-    <div class="row g-3 mb-4">
-
-        <div class="col-6 col-md-3">
-            <div class="card border-0 shadow-sm stat-card" style="background:#eff6ff;">
-                <div class="stat-icon" style="background:#dbeafe;color:#1d4ed8;">
-                    <i class="fas fa-newspaper"></i>
-                </div>
-                <div>
-                    <div class="stat-val text-dark" id="stat-total">—</div>
-                    <div class="stat-lbl">Total Posts</div>
-                </div>
+{{-- ═══ KPI CARDS ═══════════════════════════════════════════ --}}
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="ps-kpi">
+            <div class="ps-kpi-icon" style="background:#dbeafe;">
+                <i class="fas fa-newspaper" style="color:#1d4ed8;"></i>
             </div>
-        </div>
-
-        <div class="col-6 col-md-3">
-            <div class="card border-0 shadow-sm stat-card" style="background:#ecfdf5;">
-                <div class="stat-icon" style="background:#d1fae5;color:#059669;">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-                <div>
-                    <div class="stat-val" style="color:#059669;" id="stat-published">—</div>
-                    <div class="stat-lbl">Published</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-6 col-md-3">
-            <div class="card border-0 shadow-sm stat-card" style="background:#f9fafb;">
-                <div class="stat-icon" style="background:#f3f4f6;color:#6b7280;">
-                    <i class="fas fa-edit"></i>
-                </div>
-                <div>
-                    <div class="stat-val text-secondary" id="stat-draft">—</div>
-                    <div class="stat-lbl">Draft</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-6 col-md-3">
-            <div class="card border-0 shadow-sm stat-card" style="background:#fffbeb;">
-                <div class="stat-icon" style="background:#fef3c7;color:#d97706;">
-                    <i class="fas fa-archive"></i>
-                </div>
-                <div>
-                    <div class="stat-val" style="color:#d97706;" id="stat-archived">—</div>
-                    <div class="stat-lbl">Archived</div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    {{-- ─── Main card ─────────────────────────────────────────── --}}
-    <div class="row">
-        <div class="col-12">
-            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-
-                {{-- Header --}}
-                <div class="card-header bg-white border-0 py-4 px-4">
-                    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
-                        <div>
-                            <h4 class="mb-1 fw-bold text-dark">Posts Management</h4>
-                            <p class="text-sm text-muted mb-0">Create, edit and manage all posts</p>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-light border rounded-3 px-3" id="toggleFilters">
-                                <i class="fas fa-filter me-2"></i>Filter
-                            </button>
-                            <button class="btn bg-gradient-primary" id="addPostBtn"
-                                    data-bs-toggle="modal" data-bs-target="#postModal">
-                                <i class="fas fa-plus me-1"></i> Add Post
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Body --}}
-                <div class="card-body pt-0 px-4 pb-4">
-
-                    {{-- Collapsible Filters --}}
-                    <div id="filterPanel" class="collapse mb-4 pt-3">
-                        <div class="card card-body border rounded-4 bg-light shadow-none p-3">
-                            <div class="row g-3 align-items-end">
-
-                                <div class="col-md-3">
-                                    <label class="form-label text-xs fw-semibold text-muted mb-1">Category</label>
-                                    <select id="filter_category" class="form-select form-select-sm">
-                                        <option value="">All Categories</option>
-                                        @foreach ($categories as $cat)
-                                            <option value="{{ $cat->id }}">{{ $cat->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="col-md-2">
-                                    <label class="form-label text-xs fw-semibold text-muted mb-1">Status</label>
-                                    <select id="filter_status" class="form-select form-select-sm">
-                                        <option value="">All Status</option>
-                                        <option value="published">Published</option>
-                                        <option value="draft">Draft</option>
-                                        <option value="archived">Archived</option>
-                                    </select>
-                                </div>
-
-                                <div class="col-md-2">
-                                    <label class="form-label text-xs fw-semibold text-muted mb-1">From Date</label>
-                                    <input type="date" id="filter_start" class="form-control form-control-sm">
-                                </div>
-
-                                <div class="col-md-2">
-                                    <label class="form-label text-xs fw-semibold text-muted mb-1">To Date</label>
-                                    <input type="date" id="filter_end" class="form-control form-control-sm">
-                                </div>
-
-                                <div class="col-md-3">
-                                    <label class="form-label text-xs fw-semibold text-muted mb-1">Quick Search</label>
-                                    <input type="text" id="globalSearch" class="form-control form-control-sm"
-                                           placeholder="Search title, category…">
-                                </div>
-
-                                <div class="col-12 d-flex gap-2">
-                                    <button id="applyFilter" class="btn btn-sm bg-gradient-primary px-3">
-                                        <i class="fas fa-search me-1"></i> Apply
-                                    </button>
-                                    <button id="clearFilter" class="btn btn-sm btn-light border px-3">
-                                        <i class="fas fa-times me-1"></i> Clear
-                                    </button>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Table --}}
-                    <div class="table-responsive">
-                        <table id="datatable" class="table align-middle table-hover mb-0">
-                            <thead class="bg-light">
-                                <tr>
-                                    <th class="text-uppercase text-secondary text-xxs fw-bolder ps-3" style="width:100px">Action</th>
-                                    <th class="text-uppercase text-secondary text-xxs fw-bolder">Title</th>
-                                    <th class="text-uppercase text-secondary text-xxs fw-bolder">Category</th>
-                                    <th class="text-uppercase text-secondary text-xxs fw-bolder">Subcategory</th>
-                                    <th class="text-uppercase text-secondary text-xxs fw-bolder">Locality</th>
-                                    <th class="text-uppercase text-secondary text-xxs fw-bolder">User</th>
-                                    <th class="text-uppercase text-secondary text-xxs fw-bolder">Status</th>
-                                    <th class="text-uppercase text-secondary text-xxs fw-bolder">Expiry</th>
-                                    <th class="text-uppercase text-secondary text-xxs fw-bolder">Created</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-
-                </div>
+            <div>
+                <div class="ps-kpi-val" id="stat-total">—</div>
+                <div class="ps-kpi-lbl">Total Posts</div>
             </div>
         </div>
     </div>
-
+    <div class="col-6 col-lg-3">
+        <div class="ps-kpi">
+            <div class="ps-kpi-icon" style="background:#d1fae5;">
+                <i class="fas fa-check-circle" style="color:#059669;"></i>
+            </div>
+            <div>
+                <div class="ps-kpi-val" style="color:#059669;" id="stat-published">—</div>
+                <div class="ps-kpi-lbl">Published</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="ps-kpi">
+            <div class="ps-kpi-icon" style="background:#f1f5f9;">
+                <i class="fas fa-pencil-alt" style="color:#64748b;"></i>
+            </div>
+            <div>
+                <div class="ps-kpi-val" style="color:#64748b;" id="stat-draft">—</div>
+                <div class="ps-kpi-lbl">Draft</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="ps-kpi">
+            <div class="ps-kpi-icon" style="background:#fef3c7;">
+                <i class="fas fa-archive" style="color:#d97706;"></i>
+            </div>
+            <div>
+                <div class="ps-kpi-val" style="color:#d97706;" id="stat-archived">—</div>
+                <div class="ps-kpi-lbl">Archived</div>
+            </div>
+        </div>
+    </div>
 </div>
 
-{{-- ═══════════════════════════════════════════════════════════════
-     CREATE / EDIT POST MODAL  —  4 tabs
-═══════════════════════════════════════════════════════════════ --}}
-<div class="modal fade" id="postModal" tabindex="-1" aria-hidden="true">
+{{-- ═══ MAIN TABLE CARD ══════════════════════════════════════ --}}
+<div class="ps-card">
+
+    {{-- Header --}}
+    <div class="ps-card-header">
+        <div>
+            <h4 class="ps-page-title">Posts Management</h4>
+            <p class="ps-page-sub">Create, edit and manage all posts</p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+            {{-- Trash notice --}}
+            <div class="trash-notice" id="trashEmptyBtn">
+                <i class="fas fa-trash-alt"></i>
+                <span id="trashedCount">0</span> in trash —
+                <button class="btn btn-link p-0 text-danger fw-semibold"
+                        style="font-size:.78rem;" id="emptyTrashBtn">
+                    Empty trash
+                </button>
+            </div>
+
+            <button class="ps-btn ps-btn-ghost" id="toggleFilters">
+                <i class="fas fa-sliders-h"></i> Filters
+            </button>
+            <button class="ps-btn ps-btn-primary" id="addPostBtn"
+                    data-bs-toggle="modal" data-bs-target="#postModal">
+                <i class="fas fa-plus"></i> Add Post
+            </button>
+        </div>
+    </div>
+
+    {{-- View tabs: All / Trash --}}
+    <div class="ps-view-tabs">
+        <button class="ps-view-tab active" data-view="all" id="tabAll">
+            <i class="fas fa-list"></i> All Posts
+            <span class="ps-tab-badge" style="background:#ede9fe;color:#7c3aed;"
+                  id="tab-badge-all">—</span>
+        </button>
+        <button class="ps-view-tab" data-view="trashed" id="tabTrashed">
+            <i class="fas fa-trash-alt"></i> Trash
+            <span class="ps-tab-badge" style="background:#fef2f2;color:#dc2626;"
+                  id="tab-badge-trashed">—</span>
+        </button>
+    </div>
+
+    {{-- Filter panel --}}
+    <div class="ps-filter-panel" id="filterPanel">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label">Category</label>
+                <select id="filter_category" class="form-select form-select-sm">
+                    <option value="">All Categories</option>
+                    @foreach ($categories as $cat)
+                        <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Status</label>
+                <select id="filter_status" class="form-select form-select-sm">
+                    <option value="">All Status</option>
+                    <option value="published">Published</option>
+                    <option value="draft">Draft</option>
+                    <option value="archived">Archived</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">From Date</label>
+                <input type="date" id="filter_start" class="form-control form-control-sm">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">To Date</label>
+                <input type="date" id="filter_end" class="form-control form-control-sm">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Quick Search</label>
+                <input type="text" id="globalSearch" class="form-control form-control-sm"
+                       placeholder="Search title…">
+            </div>
+            <div class="col-12 d-flex gap-2">
+                <button id="applyFilter" class="ps-btn ps-btn-primary">
+                    <i class="fas fa-search"></i> Apply
+                </button>
+                <button id="clearFilter" class="ps-btn ps-btn-ghost">
+                    <i class="fas fa-times"></i> Clear
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {{-- Table --}}
+    <div style="padding:0 1.4rem 1.4rem;">
+        <div class="table-responsive mt-3">
+            <table id="datatable" class="table align-middle table-hover mb-0" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th style="width:90px;">Action</th>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Subcategory</th>
+                        <th>Locality</th>
+                        <th>User</th>
+                        <th>Status</th>
+                        <th>Expiry</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+</div>{{-- /ps-card --}}
+</div>
+
+{{-- ═══════════════════════════════════════════════════════════
+     CREATE / EDIT POST MODAL — 4 tabs
+═══════════════════════════════════════════════════════════ --}}
+<div class="modal fade ps-modal" id="postModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content border-0 shadow-lg rounded-4">
+        <div class="modal-content">
 
             {{-- Header --}}
-            <div class="modal-header border-0 px-4 pt-4 pb-2">
+            <div class="modal-header">
                 <div class="d-flex align-items-center gap-3">
-                    <div id="modalIcon"
-                         class="rounded-3 bg-gradient-primary text-white d-flex align-items-center
-                                justify-content-center shadow-sm"
-                         style="width:44px;height:44px;flex-shrink:0;">
+                    <div class="ps-modal-icon" id="modalIcon">
                         <i class="fas fa-newspaper"></i>
                     </div>
                     <div>
-                        <h5 class="modal-title fw-bold text-dark mb-0" id="postModalTitle">Create Post</h5>
-                        <p class="text-xs text-muted mb-0" id="postModalSubtitle">Fill in the details below</p>
+                        <h5 class="modal-title fw-bold mb-0" style="font-size:.98rem;color:var(--dk);"
+                            id="postModalTitle">Create Post</h5>
+                        <p class="mb-0 mt-1" style="font-size:.72rem;color:var(--muted2);"
+                           id="postModalSubtitle">Fill in the details below</p>
                     </div>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
             {{-- Tab nav --}}
-            <div class="px-4 pt-2 pb-0 border-bottom">
-                <ul class="nav modal-tab-nav gap-1 pb-2" id="postModalTabs">
-                    <li class="nav-item">
-                        <a class="nav-link active" data-tab="tab-basic" href="javascript:void(0)">
-                            <i class="fas fa-align-left me-1"></i> Basic Info
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-tab="tab-location" href="javascript:void(0)">
-                            <i class="fas fa-map-marker-alt me-1"></i> Location
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-tab="tab-media" href="javascript:void(0)">
-                            <i class="fas fa-images me-1"></i> Media
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-tab="tab-seo" href="javascript:void(0)">
-                            <i class="fas fa-search me-1"></i> SEO
-                        </a>
-                    </li>
-                </ul>
+            <div class="ps-tab-nav" id="postModalTabs">
+                <button class="ps-tab-link active" data-tab="tab-basic">
+                    <i class="fas fa-align-left"></i> Basic Info
+                </button>
+                <button class="ps-tab-link" data-tab="tab-location">
+                    <i class="fas fa-map-marker-alt"></i> Location
+                </button>
+                <button class="ps-tab-link" data-tab="tab-media">
+                    <i class="fas fa-images"></i> Media
+                </button>
+                <button class="ps-tab-link" data-tab="tab-seo">
+                    <i class="fas fa-search"></i> SEO
+                </button>
             </div>
 
             {{-- Body --}}
             <div class="modal-body px-4 py-3">
                 <input type="hidden" id="post_id">
 
-                {{-- ══ TAB 1: Basic Info ══ --}}
+                {{-- ── Tab 1: Basic ─────────────────────────────── --}}
                 <div class="modal-tab-pane" id="tab-basic">
-
-                    <p class="text-xs fw-bold text-uppercase text-secondary mb-2 mt-1">Post Information</p>
+                    <p class="modal-section-label">Post Information</p>
                     <div class="row g-3 mb-3">
-
                         <div class="col-12">
-                            <label class="form-label fw-semibold text-sm mb-1">
-                                Title <span class="text-danger">*</span>
-                            </label>
+                            <label class="form-label">Title <span class="text-danger">*</span></label>
                             <input type="text" id="post_title" class="form-control"
                                    placeholder="Enter post title…">
                             <small class="text-danger d-none" id="err_title"></small>
                         </div>
-
                         <div class="col-12">
-                            <label class="form-label fw-semibold text-sm mb-1">Description</label>
+                            <label class="form-label">Description</label>
                             <textarea id="description" class="form-control" rows="4"
                                       placeholder="Post content…"></textarea>
-                            <small class="text-danger d-none" id="err_description"></small>
                         </div>
-
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold text-sm mb-1">
-                                Category <span class="text-danger">*</span>
-                            </label>
+                            <label class="form-label">Category <span class="text-danger">*</span></label>
                             <select id="post_category_id" class="form-select">
                                 <option value="">— Select Category —</option>
                                 @foreach ($categories as $cat)
@@ -316,16 +505,14 @@
                             </select>
                             <small class="text-danger d-none" id="err_category_id"></small>
                         </div>
-
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold text-sm mb-1">Subcategory</label>
+                            <label class="form-label">Subcategory</label>
                             <select id="post_subcategory_id" class="form-select">
                                 <option value="">— Select Subcategory —</option>
                             </select>
                         </div>
-
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold text-sm mb-1">Locality</label>
+                            <label class="form-label">Locality</label>
                             <select id="post_locality_id" class="form-select">
                                 <option value="">— Select Locality —</option>
                                 @foreach ($localities as $loc)
@@ -333,11 +520,8 @@
                                 @endforeach
                             </select>
                         </div>
-
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold text-sm mb-1">
-                                Status <span class="text-danger">*</span>
-                            </label>
+                            <label class="form-label">Status <span class="text-danger">*</span></label>
                             <select id="post_status" class="form-select">
                                 <option value="draft">Draft</option>
                                 <option value="published">Published</option>
@@ -345,9 +529,8 @@
                             </select>
                             <small class="text-danger d-none" id="err_status"></small>
                         </div>
-
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold text-sm mb-1">Assigned User</label>
+                            <label class="form-label">Assigned User</label>
                             <select id="post_user_id" class="form-select">
                                 <option value="">— Select User —</option>
                                 @foreach ($users as $u)
@@ -355,134 +538,114 @@
                                 @endforeach
                             </select>
                         </div>
-
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold text-sm mb-1">Expiry Date</label>
+                            <label class="form-label">Expiry Date</label>
                             <input type="date" id="post_expiry_date" class="form-control">
                         </div>
-
                     </div>
-
-                    <hr class="horizontal dark my-3">
-                    <p class="text-xs fw-bold text-uppercase text-secondary mb-2">Options</p>
+                    <hr class="my-3" style="border-color:var(--border);">
+                    <p class="modal-section-label">Options</p>
                     <div class="d-flex gap-4">
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" id="post_is_featured">
-                            <label class="form-check-label text-sm" for="post_is_featured">
+                            <label class="form-check-label" style="font-size:.82rem;" for="post_is_featured">
                                 <i class="fas fa-star me-1 text-warning"></i> Featured
                             </label>
                         </div>
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" id="post_is_active" checked>
-                            <label class="form-check-label text-sm" for="post_is_active">
+                            <label class="form-check-label" style="font-size:.82rem;" for="post_is_active">
                                 <i class="fas fa-toggle-on me-1 text-success"></i> Active
                             </label>
                         </div>
                     </div>
-
                 </div>
 
-                {{-- ══ TAB 2: Location ══ --}}
+                {{-- ── Tab 2: Location ───────────────────────────── --}}
                 <div class="modal-tab-pane d-none" id="tab-location">
-
-                    <p class="text-xs fw-bold text-uppercase text-secondary mb-2 mt-1">Location Details</p>
+                    <p class="modal-section-label">Location Details</p>
                     <div class="row g-3 mb-3">
-
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold text-sm mb-1">Country</label>
+                            <label class="form-label">Country</label>
                             <input type="text" id="post_country" class="form-control" placeholder="e.g. UAE">
                         </div>
-
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold text-sm mb-1">State</label>
+                            <label class="form-label">State</label>
                             <input type="text" id="post_state" class="form-control" placeholder="e.g. Dubai">
                         </div>
-
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold text-sm mb-1">City</label>
+                            <label class="form-label">City</label>
                             <input type="text" id="post_city" class="form-control" placeholder="e.g. Downtown">
                         </div>
-
                         <div class="col-12">
-                            <label class="form-label fw-semibold text-sm mb-1">Location Description</label>
+                            <label class="form-label">Location Description</label>
                             <input type="text" id="post_location" class="form-control"
                                    placeholder="Detailed location or landmark…">
                         </div>
-
                     </div>
-
-                    <hr class="horizontal dark my-3">
-                    <p class="text-xs fw-bold text-uppercase text-secondary mb-2">
-                        GPS Coordinates <span class="text-muted fw-normal">(optional)</span>
+                    <hr class="my-3" style="border-color:var(--border);">
+                    <p class="modal-section-label">GPS Coordinates
+                        <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);">
+                            (optional)
+                        </span>
                     </p>
                     <div class="row g-3">
-
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold text-sm mb-1">Latitude</label>
+                            <label class="form-label">Latitude</label>
                             <div class="input-group">
-                                <span class="input-group-text bg-light border-end-0 text-xs text-muted">LAT</span>
+                                <span class="input-group-text bg-light border-end-0 text-xs" style="color:var(--muted2);">LAT</span>
                                 <input type="number" id="post_latitude" class="form-control border-start-0"
                                        placeholder="25.2048" step="any" min="-90" max="90">
                             </div>
                             <small class="text-danger d-none" id="err_latitude"></small>
                         </div>
-
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold text-sm mb-1">Longitude</label>
+                            <label class="form-label">Longitude</label>
                             <div class="input-group">
-                                <span class="input-group-text bg-light border-end-0 text-xs text-muted">LNG</span>
+                                <span class="input-group-text bg-light border-end-0 text-xs" style="color:var(--muted2);">LNG</span>
                                 <input type="number" id="post_longitude" class="form-control border-start-0"
                                        placeholder="55.2708" step="any" min="-180" max="180">
                             </div>
                             <small class="text-danger d-none" id="err_longitude"></small>
                         </div>
-
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold text-sm mb-1">Google Maps URL</label>
+                            <label class="form-label">Google Maps URL</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-end-0">
-                                    <i class="fas fa-map text-muted" style="font-size:.75rem;"></i>
+                                    <i class="fas fa-map" style="font-size:.75rem;color:var(--muted2);"></i>
                                 </span>
                                 <input type="text" id="post_google_map_url" class="form-control border-start-0"
                                        placeholder="https://maps.google.com/…">
                             </div>
                         </div>
-
                     </div>
-
                 </div>
 
-                {{-- ══ TAB 3: Media ══ --}}
+                {{-- ── Tab 3: Media ──────────────────────────────── --}}
                 <div class="modal-tab-pane d-none" id="tab-media">
-
-                    <p class="text-xs fw-bold text-uppercase text-secondary mb-2 mt-1">Images</p>
-
-                    {{-- Existing images --}}
+                    <p class="modal-section-label">Images</p>
                     <div id="existingImages" class="img-strip"></div>
-
-                    {{-- Dropzone --}}
                     <form action="{{ route('posts.mediaUpload') }}" class="dropzone" id="postDropzone">
                         @csrf
                         <div class="dz-message">
-                            <i class="fas fa-cloud-upload-alt me-2 text-muted"></i>
-                            <span class="fw-semibold">Drop images here</span>
-                            <span class="text-muted"> or click to upload</span>
-                            <br><small class="text-muted">Max 5 MB per file · JPG, PNG, WEBP</small>
+                            <i class="fas fa-cloud-upload-alt me-2" style="color:var(--accent);"></i>
+                            <span class="fw-semibold" style="color:var(--dk);">Drop images here</span>
+                            <span style="color:var(--muted2);"> or click to upload</span>
+                            <br><small style="color:var(--muted2);">Max 5 MB · JPG, PNG, WEBP</small>
                         </div>
                     </form>
-
-                    <hr class="horizontal dark my-4">
-                    <p class="text-xs fw-bold text-uppercase text-secondary mb-2">Video</p>
+                    <hr class="my-4" style="border-color:var(--border);">
+                    <p class="modal-section-label">Video</p>
                     <div class="row g-3">
-
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold text-sm mb-1">Upload Video File</label>
+                            <label class="form-label">Upload Video File</label>
                             <input type="file" id="post_video" class="form-control" accept="video/*">
-                            <small class="text-muted text-xs">Uploading a new file replaces the existing one</small>
+                            <small style="font-size:.72rem;color:var(--muted2);">
+                                Uploading a new file replaces the existing one
+                            </small>
                         </div>
-
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold text-sm mb-1">Video URL</label>
+                            <label class="form-label">Video URL</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-end-0">
                                     <i class="fab fa-youtube text-danger" style="font-size:.75rem;"></i>
@@ -491,58 +654,50 @@
                                        placeholder="https://youtube.com/watch?v=…">
                             </div>
                         </div>
-
                     </div>
-
                 </div>
 
-                {{-- ══ TAB 4: SEO ══ --}}
+                {{-- ── Tab 4: SEO ────────────────────────────────── --}}
                 <div class="modal-tab-pane d-none" id="tab-seo">
-
-                    <p class="text-xs fw-bold text-uppercase text-secondary mb-2 mt-1">SEO & Meta</p>
+                    <p class="modal-section-label">SEO & Meta</p>
                     <div class="row g-3">
-
                         <div class="col-12">
-                            <label class="form-label fw-semibold text-sm mb-1">Meta Title</label>
+                            <label class="form-label">Meta Title</label>
                             <input type="text" id="post_meta_title" class="form-control"
                                    placeholder="SEO title (defaults to post title if blank)">
-                            <small class="text-muted text-xs">Recommended: 50–60 characters</small>
+                            <small style="font-size:.72rem;color:var(--muted2);">Recommended: 50–60 characters</small>
                         </div>
-
                         <div class="col-12">
-                            <label class="form-label fw-semibold text-sm mb-1">Meta Description</label>
+                            <label class="form-label">Meta Description</label>
                             <textarea id="post_meta_description" class="form-control" rows="3"
                                       placeholder="Short description for search engines…"></textarea>
-                            <small class="text-muted text-xs">Recommended: 150–160 characters</small>
+                            <small style="font-size:.72rem;color:var(--muted2);">Recommended: 150–160 characters</small>
                         </div>
-
                         <div class="col-12">
-                            <label class="form-label fw-semibold text-sm mb-1">Keywords</label>
+                            <label class="form-label">Keywords</label>
                             <input type="text" id="post_keywords" class="form-control"
                                    placeholder="keyword1, keyword2, keyword3…">
-                            <small class="text-muted text-xs">Comma-separated keywords</small>
+                            <small style="font-size:.72rem;color:var(--muted2);">Comma-separated</small>
                         </div>
-
                     </div>
-
                 </div>
 
             </div>{{-- /modal-body --}}
 
             {{-- Footer --}}
-            <div class="modal-footer border-0 px-4 pb-4 pt-2 justify-content-between">
-                <div id="modalMeta" class="text-xs text-muted d-none">
+            <div class="modal-footer justify-content-between">
+                <div id="modalMeta" class="d-none" style="font-size:.72rem;color:var(--muted2);">
                     <i class="fas fa-clock me-1"></i>
                     <span id="modalMetaText"></span>
                 </div>
                 <div class="d-flex gap-2 ms-auto">
-                    <button class="btn btn-light border rounded-3 px-4" data-bs-dismiss="modal">
-                        <i class="fas fa-times me-2"></i> Cancel
+                    <button class="ps-btn ps-btn-ghost" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i> Cancel
                     </button>
-                    <button class="btn bg-gradient-primary px-4" id="savePost">
-                        <span id="savePostText"><i class="fas fa-save me-2"></i> Save Post</span>
+                    <button class="ps-btn ps-btn-primary" id="savePost">
+                        <span id="savePostText"><i class="fas fa-save"></i> Save Post</span>
                         <span id="savePostSpinner" class="d-none">
-                            <span class="spinner-border spinner-border-sm me-2"></span> Saving…
+                            <span class="spinner-border spinner-border-sm"></span> Saving…
                         </span>
                     </button>
                 </div>
@@ -562,310 +717,222 @@
 <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.umd.js"></script>
 
 <script>
-// ── Globals ──────────────────────────────────────────────────────────────────
 let editorInstance, table;
-let postId     = null;
-let isEditMode = false;
+let postId = null, isEditMode = false, viewMode = 'all';
 
-// ── CKEditor ─────────────────────────────────────────────────────────────────
+// ── CKEditor ──────────────────────────────────────────────────
 ClassicEditor.create(document.querySelector('#description'))
-    .then(e => { editorInstance = e; })
-    .catch(console.error);
+    .then(e => { editorInstance = e; }).catch(console.error);
 
-// ── Dropzone ─────────────────────────────────────────────────────────────────
+// ── Dropzone ──────────────────────────────────────────────────
 Dropzone.autoDiscover = false;
-
 const myDropzone = new Dropzone('#postDropzone', {
-    url             : '{{ route("posts.mediaUpload") }}',
-    autoProcessQueue: false,
-    parallelUploads : 5,
-    maxFilesize     : 5,
-    acceptedFiles   : 'image/*',
-    headers         : { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-    sending         : (file, xhr, fd) => fd.append('post_id', postId),
-    success         : function (file, res) {
+    url: '{{ route("posts.mediaUpload") }}',
+    autoProcessQueue: false, parallelUploads: 5,
+    maxFilesize: 5, acceptedFiles: 'image/*',
+    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+    sending: (file, xhr, fd) => fd.append('post_id', postId),
+    success: function(file, res) {
         if (res.url) appendImageThumb(res.id, res.url);
         this.removeFile(file);
     },
-    error: (file, msg) => console.error('Dropzone error:', msg),
+    error: (file, msg) => console.error(msg),
 });
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
 function appendImageThumb(id, url) {
     $('#existingImages').append(`
         <div class="img-wrap" id="media-wrap-${id}">
             <a href="${url}" data-fancybox="edit-gallery">
-                <img src="${url}" alt="image">
+                <img src="${url}" alt="">
             </a>
-            <button type="button" class="btn btn-danger btn-del-media" data-id="${id}" title="Remove">
+            <button type="button" class="btn btn-danger btn-del-media"
+                    data-id="${id}" title="Remove">
                 <i class="fas fa-times"></i>
             </button>
         </div>`);
 }
 
-/*
-|--------------------------------------------------------------------------
-| Tab switching
-|--------------------------------------------------------------------------
-*/
+/* ── Tab switching (view) ─────────────────────────────────── */
+$(document).on('click', '.ps-view-tab', function() {
+    $('.ps-view-tab').removeClass('active');
+    $(this).addClass('active');
+    viewMode = $(this).data('view');
+    const isTrashed = viewMode === 'trashed';
+    $('#trashEmptyBtn').toggleClass('visible', isTrashed);
+    table.ajax.reload();
+});
+
+/* ── Tab switching (modal) ────────────────────────────────── */
 var fieldTabMap = {
-    title: 'tab-basic', description: 'tab-basic',
-    category_id: 'tab-basic', status: 'tab-basic',
-    latitude: 'tab-location', longitude: 'tab-location',
-    meta_title: 'tab-seo', meta_description: 'tab-seo', keywords: 'tab-seo',
+    title:'tab-basic', description:'tab-basic',
+    category_id:'tab-basic', status:'tab-basic',
+    latitude:'tab-location', longitude:'tab-location',
+    meta_title:'tab-seo', meta_description:'tab-seo', keywords:'tab-seo',
 };
 
-$(document).on('click', '#postModalTabs .nav-link', function () {
+$(document).on('click', '#postModalTabs .ps-tab-link', function() {
     var target = $(this).data('tab');
-    $('#postModalTabs .nav-link').removeClass('active');
+    $('#postModalTabs .ps-tab-link').removeClass('active');
     $(this).addClass('active');
     $('.modal-tab-pane').addClass('d-none');
     $('#' + target).removeClass('d-none');
 });
 
 function switchToTab(tabId) {
-    $('#postModalTabs .nav-link[data-tab="' + tabId + '"]').trigger('click');
+    $('#postModalTabs .ps-tab-link[data-tab="' + tabId + '"]').trigger('click');
 }
 
-/*
-|--------------------------------------------------------------------------
-| Error helpers
-|--------------------------------------------------------------------------
-*/
+/* ── Error helpers ────────────────────────────────────────── */
 function clearErrors() {
     $('.text-danger[id^="err_"]').addClass('d-none').text('');
     $('.form-control, .form-select').removeClass('is-invalid');
     $('#postModalTabs .tab-err-dot').remove();
 }
-
 function showErrors(errors) {
     var firstTab = null, tabsWithErrors = {};
-    $.each(errors, function (field, msgs) {
+    $.each(errors, function(field, msgs) {
         $('#err_' + field).removeClass('d-none').text(msgs[0]);
         $('#post_' + field).addClass('is-invalid');
         var tab = fieldTabMap[field] || 'tab-basic';
         tabsWithErrors[tab] = true;
         if (!firstTab) firstTab = tab;
     });
-    $.each(tabsWithErrors, function (tab) {
-        var link = $('#postModalTabs .nav-link[data-tab="' + tab + '"]');
-        if (!link.find('.tab-err-dot').length) {
-            link.append('<span class="tab-err-dot"></span>');
-        }
+    $.each(tabsWithErrors, function(tab) {
+        var link = $('#postModalTabs .ps-tab-link[data-tab="' + tab + '"]');
+        if (!link.find('.tab-err-dot').length)
+            link.append('<span class="tab-err-dot ms-1"></span>');
     });
     if (firstTab) switchToTab(firstTab);
 }
 
-/*
-|--------------------------------------------------------------------------
-| Reset modal
-|--------------------------------------------------------------------------
-*/
+/* ── Reset modal ──────────────────────────────────────────── */
 function resetModal() {
     isEditMode = false; postId = null;
     clearErrors();
     switchToTab('tab-basic');
-
-    // Header
     $('#postModalTitle').text('Create Post');
     $('#postModalSubtitle').text('Fill in the details below');
-    $('#modalIcon').removeClass('bg-gradient-warning').addClass('bg-gradient-primary');
+    $('#modalIcon').removeClass('edit-mode');
     $('#modalMeta').addClass('d-none');
-    $('#savePostText').html('<i class="fas fa-plus me-2"></i> Create Post');
-
-    // Fields – Basic
+    $('#savePostText').html('<i class="fas fa-save"></i> Save Post');
     $('#post_id, #post_title, #post_expiry_date').val('');
     $('#post_category_id, #post_locality_id, #post_user_id').val('');
     $('#post_subcategory_id').html('<option value="">— Select Subcategory —</option>');
     $('#post_status').val('draft');
     $('#post_is_featured').prop('checked', false);
     $('#post_is_active').prop('checked', true);
-    editorInstance && editorInstance.setData('');
-
-    // Fields – Location
+    editorInstance?.setData('');
     $('#post_country, #post_state, #post_city, #post_location').val('');
     $('#post_latitude, #post_longitude, #post_google_map_url').val('');
-
-    // Fields – Media
     $('#existingImages').empty();
     $('#post_video').val('');
     $('#post_video_url').val('');
     myDropzone.removeAllFiles(true);
-
-    // Fields – SEO
     $('#post_meta_title, #post_meta_description, #post_keywords').val('');
 }
 
-/*
-|--------------------------------------------------------------------------
-| Open CREATE
-|--------------------------------------------------------------------------
-*/
 $('#addPostBtn').on('click', resetModal);
+$('#postModal').on('hidden.bs.modal', resetModal);
 
-$('#postModal').on('hidden.bs.modal', function () {
-    resetModal();
-});
-
-/*
-|--------------------------------------------------------------------------
-| Category → Subcategory cascade
-|--------------------------------------------------------------------------
-*/
-$(document).on('change', '#post_category_id', function () {
+/* ── Category → Subcategory cascade ──────────────────────── */
+$(document).on('change', '#post_category_id', function() {
     var id = $(this).val();
     $('#post_subcategory_id').html('<option value="">— Select Subcategory —</option>');
     if (!id) return;
-    $.get('{{ url("admin/get-subcategories") }}/' + id, function (res) {
+    $.get('{{ url("admin/get-subcategories") }}/' + id, function(res) {
         var html = '<option value="">— Select Subcategory —</option>';
-        res.forEach(item => { html += '<option value="' + item.id + '">' + item.name + '</option>'; });
+        res.forEach(r => { html += `<option value="${r.id}">${r.name}</option>`; });
         $('#post_subcategory_id').html(html);
     });
 });
 
-/*
-|--------------------------------------------------------------------------
-| Open EDIT
-|--------------------------------------------------------------------------
-*/
-$(document).on('click', '.editPost', function () {
+/* ── Open EDIT ────────────────────────────────────────────── */
+$(document).on('click', '.editPost', function() {
     var id = $(this).data('id');
     resetModal();
-
-    $.get('{{ url("admin/posts") }}/' + id + '/edit-data', function (res) {
-        isEditMode = true;
-        postId     = res.id;
-
-        // Header
+    $.get('{{ url("admin/posts") }}/' + id + '/edit-data', function(res) {
+        isEditMode = true; postId = res.id;
         $('#post_id').val(res.id);
         $('#postModalTitle').text('Edit Post');
         $('#postModalSubtitle').text('Editing post #' + res.id);
-        $('#modalIcon').removeClass('bg-gradient-primary').addClass('bg-gradient-warning');
-        $('#savePostText').html('<i class="fas fa-save me-2"></i> Save Changes');
-
-        // Meta footer
+        $('#modalIcon').addClass('edit-mode');
+        $('#savePostText').html('<i class="fas fa-save"></i> Save Changes');
         if (res.updated_at) {
             $('#modalMeta').removeClass('d-none');
             $('#modalMetaText').text('Last updated: ' + res.updated_at);
         }
-
-        // Basic
         $('#post_title').val(res.title);
         $('#post_status').val(res.status);
         $('#post_user_id').val(res.user_id);
         $('#post_locality_id').val(res.locality_id);
         $('#post_expiry_date').val(res.expiry_date ?? '');
         $('#post_is_featured').prop('checked', !!res.is_featured);
-        $('#post_is_active').prop('checked',   !!res.is_active);
+        $('#post_is_active').prop('checked', !!res.is_active);
         editorInstance.setData(res.description ?? '');
-
-        // Category cascade then set subcategory
         if (res.category_id) {
             $('#post_category_id').val(res.category_id).trigger('change');
             setTimeout(() => $('#post_subcategory_id').val(res.subcategory_id), 450);
         }
-
-        // Location
-        $('#post_country').val(res.country       ?? '');
-        $('#post_state').val(res.state           ?? '');
-        $('#post_city').val(res.city             ?? '');
-        $('#post_location').val(res.location     ?? '');
-        $('#post_latitude').val(res.latitude     ?? '');
-        $('#post_longitude').val(res.longitude   ?? '');
+        $('#post_country').val(res.country ?? '');
+        $('#post_state').val(res.state ?? '');
+        $('#post_city').val(res.city ?? '');
+        $('#post_location').val(res.location ?? '');
+        $('#post_latitude').val(res.latitude ?? '');
+        $('#post_longitude').val(res.longitude ?? '');
         $('#post_google_map_url').val(res.google_map_url ?? '');
-
-        // Media – existing images
-        if (res.images && res.images.length) {
-            res.images.forEach(img => appendImageThumb(img.id, img.url));
-        }
+        (res.images ?? []).forEach(img => appendImageThumb(img.id, img.url));
         $('#post_video_url').val(res.video_url ?? '');
-
-        // SEO
-        $('#post_meta_title').val(res.meta_title       ?? '');
+        $('#post_meta_title').val(res.meta_title ?? '');
         $('#post_meta_description').val(res.meta_description ?? '');
-        $('#post_keywords').val(res.keywords           ?? '');
-
+        $('#post_keywords').val(res.keywords ?? '');
         $('#postModal').modal('show');
-    }).fail(function () {
-        Swal.fire('Error', 'Could not load post data.', 'error');
-    });
+    }).fail(() => Swal.fire('Error', 'Could not load post data.', 'error'));
 });
 
-/*
-|--------------------------------------------------------------------------
-| Save (create or update)
-|--------------------------------------------------------------------------
-*/
-$('#savePost').on('click', function () {
+/* ── Save ─────────────────────────────────────────────────── */
+$('#savePost').on('click', function() {
     clearErrors();
     $('#savePostText').addClass('d-none');
     $('#savePostSpinner').removeClass('d-none');
     $('#savePost').prop('disabled', true);
-
-    var url    = isEditMode ? '{{ url("admin/posts") }}/' + postId : '{{ route("posts.ajaxStore") }}';
-    var method = isEditMode ? 'PUT' : 'POST';
-
     $.ajax({
-        url  : url,
+        url  : isEditMode ? '{{ url("admin/posts") }}/' + postId : '{{ route("posts.ajaxStore") }}',
         type : 'POST',
         data : {
-            _token           : '{{ csrf_token() }}',
-            _method          : method,
-            title            : $('#post_title').val(),
-            user_id          : $('#post_user_id').val(),
-            category_id      : $('#post_category_id').val(),
-            subcategory_id   : $('#post_subcategory_id').val(),
-            locality_id      : $('#post_locality_id').val(),
-            status           : $('#post_status').val(),
-            expiry_date      : $('#post_expiry_date').val(),
-            is_featured      : $('#post_is_featured').is(':checked') ? 1 : 0,
-            is_active        : $('#post_is_active').is(':checked')   ? 1 : 0,
-            description      : editorInstance.getData(),
-            // Location
-            country          : $('#post_country').val(),
-            state            : $('#post_state').val(),
-            city             : $('#post_city').val(),
-            location         : $('#post_location').val(),
-            latitude         : $('#post_latitude').val(),
-            longitude        : $('#post_longitude').val(),
-            google_map_url   : $('#post_google_map_url').val(),
-            // Media
-            video_url        : $('#post_video_url').val(),
-            // SEO
-            meta_title       : $('#post_meta_title').val(),
-            meta_description : $('#post_meta_description').val(),
-            keywords         : $('#post_keywords').val(),
+            _token:'{{ csrf_token() }}', _method: isEditMode ? 'PUT' : 'POST',
+            title:$('#post_title').val(), user_id:$('#post_user_id').val(),
+            category_id:$('#post_category_id').val(),
+            subcategory_id:$('#post_subcategory_id').val(),
+            locality_id:$('#post_locality_id').val(),
+            status:$('#post_status').val(),
+            expiry_date:$('#post_expiry_date').val(),
+            is_featured:$('#post_is_featured').is(':checked')?1:0,
+            is_active:$('#post_is_active').is(':checked')?1:0,
+            description:editorInstance.getData(),
+            country:$('#post_country').val(), state:$('#post_state').val(),
+            city:$('#post_city').val(), location:$('#post_location').val(),
+            latitude:$('#post_latitude').val(), longitude:$('#post_longitude').val(),
+            google_map_url:$('#post_google_map_url').val(),
+            video_url:$('#post_video_url').val(),
+            meta_title:$('#post_meta_title').val(),
+            meta_description:$('#post_meta_description').val(),
+            keywords:$('#post_keywords').val(),
         },
-
-        success: function (res) {
+        success: function(res) {
             if (!res.success) return;
-
             postId = res.data.id;
-
-            // Process queued dropzone images now that we have a post ID
-            if (myDropzone.getQueuedFiles().length) {
-                myDropzone.processQueue();
-            }
-
+            if (myDropzone.getQueuedFiles().length) myDropzone.processQueue();
             $('#postModal').modal('hide');
             table.ajax.reload(null, false);
-
-            Swal.fire({
-                icon : 'success',
+            Swal.fire({ icon:'success',
                 title: isEditMode ? 'Post updated!' : 'Post created!',
-                timer: 1600, showConfirmButton: false,
-            });
+                timer:1500, showConfirmButton:false });
         },
-
-        error: function (xhr) {
-            if (xhr.status === 422) {
-                showErrors(xhr.responseJSON.errors ?? {});
-            } else {
-                Swal.fire('Error', 'Something went wrong.', 'error');
-            }
+        error: function(xhr) {
+            if (xhr.status === 422) showErrors(xhr.responseJSON.errors ?? {});
+            else Swal.fire('Error', 'Something went wrong.', 'error');
         },
-
-        complete: function () {
+        complete: function() {
             $('#savePostText').removeClass('d-none');
             $('#savePostSpinner').addClass('d-none');
             $('#savePost').prop('disabled', false);
@@ -873,115 +940,119 @@ $('#savePost').on('click', function () {
     });
 });
 
-/*
-|--------------------------------------------------------------------------
-| Delete media item
-|--------------------------------------------------------------------------
-*/
-$(document).on('click', '.btn-del-media', function () {
-    var mediaId = $(this).data('id');
-    var $wrap   = $('#media-wrap-' + mediaId);
-
+/* ── Soft delete ──────────────────────────────────────────── */
+$(document).on('click', '.deletePost', function() {
+    var id = $(this).data('id'), title = $(this).data('title');
     Swal.fire({
-        title: 'Remove image?', icon: 'warning',
-        showCancelButton: true, confirmButtonColor: '#d33',
-        confirmButtonText: 'Yes, remove',
-    }).then(function (r) {
+        title:'Move to Trash?',
+        html:'<strong>' + title + '</strong> will be moved to the trash.',
+        icon:'warning', showCancelButton:true,
+        confirmButtonColor:'#dc2626', cancelButtonColor:'#64748b',
+        confirmButtonText:'Move to trash',
+    }).then(r => {
         if (!r.isConfirmed) return;
         $.ajax({
-            url  : '{{ url("admin/posts/media") }}/' + mediaId,
-            type : 'POST',
-            data : { _token: '{{ csrf_token() }}', _method: 'DELETE' },
-            success: function (res) { if (res.success) $wrap.remove(); }
+            url:'{{ url("admin/posts") }}/' + id, type:'POST',
+            data:{ _token:'{{ csrf_token() }}', _method:'DELETE' },
+            success: res => { if (res.success) { table.ajax.reload(null,false); toastSuccess(res.message); } }
         });
     });
 });
 
-/*
-|--------------------------------------------------------------------------
-| Delete post
-|--------------------------------------------------------------------------
-*/
-$(document).on('click', '.deletePost', function () {
-    var id    = $(this).data('id');
-    var title = $(this).data('title');
+/* ── Restore ──────────────────────────────────────────────── */
+$(document).on('click', '.restorePost', function() {
+    var id = $(this).data('id');
+    $.post('{{ url("admin/posts") }}/' + id + '/restore', { _token:'{{ csrf_token() }}' },
+        res => { if (res.success) { table.ajax.reload(null,false); toastSuccess(res.message); }
+    });
+});
 
+/* ── Force delete ─────────────────────────────────────────── */
+$(document).on('click', '.forceDeletePost', function() {
+    var id = $(this).data('id'), title = $(this).data('title');
     Swal.fire({
-        title            : 'Delete Post?',
-        html             : 'You are about to delete <strong>' + title + '</strong>.<br>This cannot be undone.',
-        icon             : 'warning',
-        showCancelButton : true,
-        confirmButtonColor: '#d33', cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Yes, delete',
-    }).then(function (result) {
-        if (!result.isConfirmed) return;
+        title:'Delete Permanently?',
+        html:'<strong>' + title + '</strong> and all its media will be deleted forever.',
+        icon:'error', showCancelButton:true,
+        confirmButtonColor:'#dc2626', cancelButtonColor:'#64748b',
+        confirmButtonText:'Delete forever',
+    }).then(r => {
+        if (!r.isConfirmed) return;
         $.ajax({
-            url  : '{{ url("admin/posts") }}/' + id,
-            type : 'POST',
-            data : { _token: '{{ csrf_token() }}', _method: 'DELETE' },
-            success: function (res) {
-                if (res.success) {
-                    table.ajax.reload(null, false);
-                    Swal.fire({ icon: 'success', title: 'Deleted!', timer: 1500, showConfirmButton: false });
-                }
-            }
+            url:'{{ url("admin/posts") }}/' + id + '/force-delete', type:'POST',
+            data:{ _token:'{{ csrf_token() }}', _method:'DELETE' },
+            success: res => { if (res.success) { table.ajax.reload(null,false); toastSuccess(res.message); } }
         });
     });
 });
 
-/*
-|--------------------------------------------------------------------------
-| Inline status change
-|--------------------------------------------------------------------------
-*/
-$(document).on('change', '.inline-status', function () {
-    var $el = $(this), val = $el.val();
-    $.post('{{ route("posts.inlineUpdate") }}', {
-        _token: '{{ csrf_token() }}',
-        id    : $el.data('id'),
-        field : 'status',
-        value : val,
-    }, function (res) {
-        if (!res.success) Swal.fire('Error', 'Status update failed', 'error');
+/* ── Empty trash ──────────────────────────────────────────── */
+$('#emptyTrashBtn').on('click', function() {
+    Swal.fire({
+        title:'Empty Trash?', text:'All trashed posts will be permanently deleted.',
+        icon:'warning', showCancelButton:true,
+        confirmButtonColor:'#dc2626', confirmButtonText:'Empty trash',
+    }).then(r => {
+        if (!r.isConfirmed) return;
+        $.post('{{ url("admin/posts/empty-trash") }}', { _token:'{{ csrf_token() }}' },
+            res => { if (res.success) { table.ajax.reload(null,false); toastSuccess(res.message); }
+        });
     });
 });
 
-/*
-|--------------------------------------------------------------------------
-| Filters
-|--------------------------------------------------------------------------
-*/
-$('#toggleFilters').on('click', function () { $('#filterPanel').collapse('toggle'); });
+/* ── Delete media ─────────────────────────────────────────── */
+$(document).on('click', '.btn-del-media', function() {
+    var id = $(this).data('id');
+    Swal.fire({
+        title:'Remove image?', icon:'warning',
+        showCancelButton:true, confirmButtonColor:'#dc2626',
+        confirmButtonText:'Remove',
+    }).then(r => {
+        if (!r.isConfirmed) return;
+        $.ajax({
+            url:'{{ url("admin/posts/media") }}/' + id, type:'POST',
+            data:{ _token:'{{ csrf_token() }}', _method:'DELETE' },
+            success: res => { if (res.success) $('#media-wrap-' + id).remove(); }
+        });
+    });
+});
 
-$('#applyFilter').on('click', function () { table.ajax.reload(); });
+/* ── Inline status ────────────────────────────────────────── */
+$(document).on('change', '.inline-status', function() {
+    var $el=$(this);
+    $.post('{{ route("posts.inlineUpdate") }}', {
+        _token:'{{ csrf_token() }}', id:$el.data('id'), field:'status', value:$el.val(),
+    }, res => { if (!res.success) Swal.fire('Error','Status update failed','error'); });
+});
 
-$('#clearFilter').on('click', function () {
+/* ── Filters ──────────────────────────────────────────────── */
+$('#toggleFilters').on('click', () => $('#filterPanel').toggleClass('open'));
+$('#applyFilter').on('click',  () => table.ajax.reload());
+$('#clearFilter').on('click',  () => {
     $('#filter_category, #filter_status').val('');
     $('#filter_start, #filter_end, #globalSearch').val('');
     table.search('').ajax.reload();
 });
+$('#globalSearch').on('keyup', function() { table.search(this.value).draw(); });
+$('#filter_status,#filter_category,#filter_start,#filter_end').on('change', () => table.ajax.reload());
 
-$('#globalSearch').on('keyup', function () { table.search(this.value).draw(); });
+/* ── Toast helper ─────────────────────────────────────────── */
+function toastSuccess(msg) {
+    Swal.fire({ toast:true, position:'top-end', icon:'success',
+        title:msg, timer:1800, showConfirmButton:false });
+}
 
-$('#filter_status, #filter_category, #filter_start, #filter_end').on('change', function () {
-    table.ajax.reload();
-});
-
-/*
-|--------------------------------------------------------------------------
-| DataTable
-|--------------------------------------------------------------------------
-*/
-$(function () {
-
+/* ── DataTable ────────────────────────────────────────────── */
+$(function() {
     table = $('#datatable').DataTable({
-        processing : true,
-        serverSide : true,
+        processing: true,
+        serverSide: true,
         ajax: {
             url : '{{ route("posts.data") }}',
             type: 'POST',
-            data: function (d) {
+            data: function(d) {
                 d._token      = '{{ csrf_token() }}';
+                d.trashed     = viewMode === 'trashed' ? 1 : 0;
                 d.status      = $('#filter_status').val();
                 d.category_id = $('#filter_category').val();
                 d.start_date  = $('#filter_start').val();
@@ -989,47 +1060,39 @@ $(function () {
             }
         },
         columns: [
-            { data: 'action',      name: 'action',      orderable: false, searchable: false },
-            { data: 'title',       name: 'title' },
-            { data: 'category',    name: 'category',    orderable: false },
-            { data: 'subcategory', name: 'subcategory', orderable: false },
-            { data: 'locality',    name: 'locality',    orderable: false },
-            { data: 'user',        name: 'user',        orderable: false },
-            { data: 'status',      name: 'status',      searchable: false },
-            { data: 'expiry',      name: 'expiry',      searchable: false },
-            { data: 'created_at',  name: 'created_at',  searchable: false },
+            { data:'action',      name:'action',      orderable:false, searchable:false },
+            { data:'title',       name:'title' },
+            { data:'category',    name:'category',    orderable:false },
+            { data:'subcategory', name:'subcategory', orderable:false },
+            { data:'locality',    name:'locality',    orderable:false },
+            { data:'user',        name:'user',        orderable:false },
+            { data:'status',      name:'status',      searchable:false },
+            { data:'expiry',      name:'expiry',      searchable:false },
+            { data:'created_at',  name:'created_at',  searchable:false },
         ],
-        order      : [[8, 'desc']],
-        pageLength : 10,
-        lengthMenu : [10, 25, 50, 100],
-        orderCellsTop: true,
+        order:[[8,'desc']],
+        pageLength:10,
+        lengthMenu:[10,25,50,100],
 
-        drawCallback: function (settings) {
+        drawCallback: function(settings) {
             var json = settings.json ?? {};
-            $('#stat-total').text(json.totalCount     ?? '—');
+            $('#stat-total').text(json.totalCount ?? '—');
             $('#stat-published').text(json.publishedCount ?? '—');
-            $('#stat-draft').text(json.draftCount     ?? '—');
+            $('#stat-draft').text(json.draftCount ?? '—');
             $('#stat-archived').text(json.archivedCount ?? '—');
-            // Reinit fancybox after each draw
+            var tc = json.trashedCount ?? 0;
+            $('#tab-badge-all').text(json.totalCount ?? '—');
+            $('#tab-badge-trashed').text(tc);
+            $('#trashedCount').text(tc);
             Fancybox.bind('[data-fancybox^="gallery-"]');
         },
-    });
 
-    // Auto-open edit if coming back from show page
-    var autoId = sessionStorage.getItem('autoEditPostId');
-    if (autoId) {
-        sessionStorage.removeItem('autoEditPostId');
-        setTimeout(function () {
-            var $btn = $('.editPost[data-id="' + autoId + '"]');
-            if ($btn.length) $btn.trigger('click');
-            else {
-                resetModal();
-                $.get('{{ url("admin/posts") }}/' + autoId + '/edit-data', function (res) {
-                    // populate edit modal manually if row not visible
-                });
-            }
-        }, 800);
-    }
+        language: {
+            processing: '<div class="d-flex align-items-center gap-2 justify-content-center py-3">'
+                + '<div class="spinner-border spinner-border-sm" style="color:var(--accent);"></div>'
+                + '<span style="font-size:.82rem;color:var(--muted);">Loading…</span></div>',
+        }
+    });
 });
 </script>
 @endpush

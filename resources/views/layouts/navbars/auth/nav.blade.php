@@ -1,116 +1,480 @@
-<!-- Navbar -->
-<nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur" navbar-scroll="true">
-    <div class="container-fluid py-1 px-3">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a></li>
-            <li class="breadcrumb-item text-sm text-dark active text-capitalize" aria-current="page">{{ str_replace('-', ' ', Request::path()) }}</li>
-            </ol>
-            <h6 class="font-weight-bolder mb-0 text-capitalize">{{ str_replace('-', ' ', Request::path()) }}</h6>
-        </nav>
-        <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4 d-flex justify-content-end" id="navbar"> 
-            <div class="ms-md-3 pe-md-3 d-flex align-items-center">
-            <div class="input-group">
-                <span class="input-group-text text-body"><i class="fas fa-search" aria-hidden="true"></i></span>
-                <input type="text" class="form-control" placeholder="Type here...">
-            </div>
-            </div>
-            <ul class="navbar-nav  justify-content-end">
-            <li class="nav-item d-flex align-items-center">
-                <a href="{{ url('/admin/logout')}}" class="nav-link text-body font-weight-bold px-0">
-                    <i class="fa fa-user me-sm-1"></i>
-                    <span class="d-sm-inline d-none">Sign Out</span>
-                </a>
-            </li>
-            <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
-                <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
-                <div class="sidenav-toggler-inner">
-                    <i class="sidenav-toggler-line"></i>
-                    <i class="sidenav-toggler-line"></i>
-                    <i class="sidenav-toggler-line"></i>
-                </div>
-                </a>
-            </li>
-            <li class="nav-item px-3 d-flex align-items-center">
-                <a href="javascript:;" class="nav-link text-body p-0">
-                <i class="fa fa-cog fixed-plugin-button-nav cursor-pointer"></i>
-                </a>
-            </li>
-            <li class="nav-item dropdown pe-2 d-flex align-items-center">
-                <a href="javascript:;" class="nav-link text-body p-0" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fa fa-bell cursor-pointer"></i>
-                </a>
-                <ul class="dropdown-menu  dropdown-menu-end  px-2 py-3 me-sm-n4" aria-labelledby="dropdownMenuButton">
-                <li class="mb-2">
-                    <a class="dropdown-item border-radius-md" href="javascript:;">
-                    <div class="d-flex py-1">
-                        <div class="my-auto">
-                        <img src="../assets/img/team-2.jpg" class="avatar avatar-sm  me-3 ">
-                        </div>
-                        <div class="d-flex flex-column justify-content-center">
-                        <h6 class="text-sm font-weight-normal mb-1">
-                            <span class="font-weight-bold">New message</span> from Laur
-                        </h6>
-                        <p class="text-xs text-secondary mb-0">
-                            <i class="fa fa-clock me-1"></i>
-                            13 minutes ago
-                        </p>
-                        </div>
-                    </div>
-                    </a>
-                </li>
-                <li class="mb-2">
-                    <a class="dropdown-item border-radius-md" href="javascript:;">
-                    <div class="d-flex py-1">
-                        <div class="my-auto">
-                        <img src="../assets/img/small-logos/logo-spotify.svg" class="avatar avatar-sm bg-gradient-dark  me-3 ">
-                        </div>
-                        <div class="d-flex flex-column justify-content-center">
-                        <h6 class="text-sm font-weight-normal mb-1">
-                            <span class="font-weight-bold">New album</span> by Travis Scott
-                        </h6>
-                        <p class="text-xs text-secondary mb-0">
-                            <i class="fa fa-clock me-1"></i>
-                            1 day
-                        </p>
-                        </div>
-                    </div>
-                    </a>
-                </li>
-                <li>
-                    <a class="dropdown-item border-radius-md" href="javascript:;">
-                    <div class="d-flex py-1">
-                        <div class="avatar avatar-sm bg-gradient-secondary  me-3  my-auto">
-                        <svg width="12px" height="12px" viewBox="0 0 43 36" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                            <title>credit-card</title>
-                            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                            <g transform="translate(-2169.000000, -745.000000)" fill="#FFFFFF" fill-rule="nonzero">
-                                <g transform="translate(1716.000000, 291.000000)">
-                                <g transform="translate(453.000000, 454.000000)">
-                                    <path class="color-background" d="M43,10.7482083 L43,3.58333333 C43,1.60354167 41.3964583,0 39.4166667,0 L3.58333333,0 C1.60354167,0 0,1.60354167 0,3.58333333 L0,10.7482083 L43,10.7482083 Z" opacity="0.593633743"></path>
-                                    <path class="color-background" d="M0,16.125 L0,32.25 C0,34.2297917 1.60354167,35.8333333 3.58333333,35.8333333 L39.4166667,35.8333333 C41.3964583,35.8333333 43,34.2297917 43,32.25 L43,16.125 L0,16.125 Z M19.7083333,26.875 L7.16666667,26.875 L7.16666667,23.2916667 L19.7083333,23.2916667 L19.7083333,26.875 Z M35.8333333,26.875 L28.6666667,26.875 L28.6666667,23.2916667 L35.8333333,23.2916667 L35.8333333,26.875 Z"></path>
-                                </g>
-                                </g>
-                            </g>
-                            </g>
-                        </svg>
-                        </div>
-                        <div class="d-flex flex-column justify-content-center">
-                        <h6 class="text-sm font-weight-normal mb-1">
-                            Payment successfully completed
-                        </h6>
-                        <p class="text-xs text-secondary mb-0">
-                            <i class="fa fa-clock me-1"></i>
-                            2 days
-                        </p>
-                        </div>
-                    </div>
-                    </a>
-                </li>
-                </ul>
-            </li>
-            </ul>
+@php
+    // Build a clean breadcrumb from the URL segments
+    $segments   = collect(Request::segments())->filter(fn($s) => $s !== 'admin');
+    $pageTitle  = $segments->last()
+        ? ucwords(str_replace(['-','_'], ' ', $segments->last()))
+        : 'Dashboard';
+
+    $breadcrumbs = [];
+    $path = 'admin';
+    foreach ($segments as $seg) {
+        $path .= '/' . $seg;
+        $breadcrumbs[] = [
+            'label' => ucwords(str_replace(['-','_'], ' ', $seg)),
+            'url'   => url($path),
+        ];
+    }
+@endphp
+
+<style>
+/* ── Top navbar ─────────────────────────────────────────────── */
+.dh-navbar {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    background: rgba(255,255,255,.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0,0,0,.07);
+    padding: 0 28px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+/* ── Left: breadcrumb ───────────────────────────────────────── */
+.dh-breadcrumb {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+}
+.dh-breadcrumb-trail {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: .68rem;
+    color: #94a3b8;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.dh-breadcrumb-trail a {
+    color: #94a3b8;
+    text-decoration: none;
+    transition: color .15s;
+}
+.dh-breadcrumb-trail a:hover { color: #0f172a; }
+.dh-breadcrumb-trail .sep { opacity: .4; font-size: .6rem; }
+.dh-breadcrumb-trail .current { color: #0f172a; font-weight: 600; }
+.dh-page-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -.02em;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ── Right: actions ─────────────────────────────────────────── */
+.dh-navbar-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+/* Search */
+.dh-search-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.dh-search-input {
+    width: 0;
+    padding: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: .83rem;
+    color: #0f172a;
+    transition: width .3s ease, padding .3s ease;
+    border-radius: 8px;
+}
+.dh-search-wrap.open .dh-search-input {
+    width: 200px;
+    padding: 7px 12px 7px 34px;
+    background: #f1f5f9;
+}
+.dh-search-icon-btn {
+    position: absolute;
+    left: 0;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    border-radius: 8px;
+    font-size: .8rem;
+    transition: background .15s, color .15s;
+    z-index: 1;
+}
+.dh-search-icon-btn:hover { background: #f1f5f9; color: #0f172a; }
+.dh-search-wrap.open .dh-search-icon-btn { background: transparent; }
+
+/* Icon button */
+.dh-icon-btn {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    font-size: .82rem;
+    text-decoration: none;
+    transition: background .15s, color .15s;
+}
+.dh-icon-btn:hover { background: #f1f5f9; color: #0f172a; }
+.dh-icon-btn .dh-badge {
+    position: absolute;
+    top: 4px; right: 4px;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #ef4444;
+    border: 2px solid #fff;
+}
+
+/* Divider */
+.dh-nav-sep {
+    width: 1px;
+    height: 22px;
+    background: #e2e8f0;
+    margin: 0 4px;
+}
+
+/* User chip */
+.dh-user-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 10px 5px 5px;
+    border-radius: 100px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background .15s;
+}
+.dh-user-chip:hover { background: #f1f5f9; }
+.dh-user-chip .avatar {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    font-weight: 700;
+    font-size: .78rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.dh-user-chip .uname {
+    font-size: .78rem;
+    font-weight: 600;
+    color: #0f172a;
+    white-space: nowrap;
+}
+.dh-user-chip .urole {
+    font-size: .65rem;
+    color: #94a3b8;
+    white-space: nowrap;
+}
+
+/* Notification dropdown */
+.dh-notif-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 320px;
+    background: #fff;
+    border: 1px solid #e8ecf0;
+    border-radius: 14px;
+    box-shadow: 0 12px 40px rgba(0,0,0,.12);
+    display: none;
+    z-index: 9999;
+    overflow: hidden;
+}
+.dh-notif-dropdown.open { display: block; animation: fadeSlideDown .2s both; }
+@keyframes fadeSlideDown {
+    from { opacity:0; transform:translateY(-6px); }
+    to   { opacity:1; transform:translateY(0); }
+}
+.dh-notif-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px 10px;
+    border-bottom: 1px solid #f1f5f9;
+}
+.dh-notif-head h6 {
+    font-size: .82rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}
+.dh-notif-mark {
+    font-size: .7rem;
+    color: #6366f1;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    padding: 0;
+}
+.dh-notif-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 18px;
+    text-decoration: none;
+    transition: background .12s;
+    border-bottom: 1px solid #f8fafc;
+}
+.dh-notif-item:hover { background: #f8fafc; }
+.dh-notif-item:last-child { border-bottom: none; }
+.dh-notif-icon {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .85rem;
+}
+.dh-notif-title {
+    font-size: .78rem;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0 0 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.dh-notif-time {
+    font-size: .67rem;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.dh-notif-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #6366f1;
+    flex-shrink: 0;
+}
+.dh-notif-footer {
+    padding: 10px 18px;
+    border-top: 1px solid #f1f5f9;
+    text-align: center;
+}
+.dh-notif-footer a {
+    font-size: .75rem;
+    color: #6366f1;
+    text-decoration: none;
+    font-weight: 500;
+}
+.dh-notif-footer a:hover { text-decoration: underline; }
+
+/* Mobile toggle */
+.dh-mobile-toggle {
+    display: none;
+}
+@media(max-width:768px) {
+    .dh-mobile-toggle { display: flex; }
+    .dh-user-chip .uname,
+    .dh-user-chip .urole { display: none; }
+    .dh-search-wrap.open .dh-search-input { width: 140px; }
+    .dh-page-title { font-size: .9rem; }
+}
+</style>
+
+<nav class="dh-navbar" id="dhNavbar">
+
+    {{-- ── Left: breadcrumb + title ──────────────────────────── --}}
+    <div class="dh-breadcrumb">
+        <div class="dh-breadcrumb-trail">
+            <a href="{{ url('admin/dashboard') }}">
+                <i class="fas fa-home" style="font-size:.6rem;"></i>
+            </a>
+            @foreach ($breadcrumbs as $i => $crumb)
+                <span class="sep"><i class="fas fa-chevron-right"></i></span>
+                @if ($loop->last)
+                    <span class="current">{{ $crumb['label'] }}</span>
+                @else
+                    <a href="{{ $crumb['url'] }}">{{ $crumb['label'] }}</a>
+                @endif
+            @endforeach
         </div>
+        <div class="dh-page-title">{{ $pageTitle }}</div>
     </div>
+
+    {{-- ── Right: actions ────────────────────────────────────── --}}
+    <div class="dh-navbar-right">
+
+        {{-- Search --}}
+        <div class="dh-search-wrap" id="searchWrap">
+            <button class="dh-search-icon-btn" id="searchToggle" title="Search">
+                <i class="fas fa-search"></i>
+            </button>
+            <input class="dh-search-input" id="globalSearchInput"
+                   type="text" placeholder="Search anything…" autocomplete="off">
+        </div>
+
+        <div class="dh-nav-sep"></div>
+
+        {{-- Notifications --}}
+        <div style="position:relative;">
+            <button class="dh-icon-btn" id="notifToggle" title="Notifications">
+                <i class="fas fa-bell"></i>
+                <span class="dh-badge"></span>
+            </button>
+
+            <div class="dh-notif-dropdown" id="notifDropdown">
+                <div class="dh-notif-head">
+                    <h6>Notifications</h6>
+                    <button class="dh-notif-mark" id="markAllRead">Mark all read</button>
+                </div>
+
+                <a href="javascript:;" class="dh-notif-item">
+                    <span class="dh-notif-dot"></span>
+                    <span class="dh-notif-icon" style="background:#ede9fe;color:#7c3aed;">
+                        <i class="fas fa-newspaper"></i>
+                    </span>
+                    <div style="min-width:0;">
+                        <p class="dh-notif-title">New post submitted for review</p>
+                        <span class="dh-notif-time"><i class="fas fa-clock"></i> 5 min ago</span>
+                    </div>
+                </a>
+
+                <a href="javascript:;" class="dh-notif-item">
+                    <span class="dh-notif-dot" style="background:transparent;"></span>
+                    <span class="dh-notif-icon" style="background:#d1fae5;color:#059669;">
+                        <i class="fas fa-user-plus"></i>
+                    </span>
+                    <div style="min-width:0;">
+                        <p class="dh-notif-title">New user registered</p>
+                        <span class="dh-notif-time"><i class="fas fa-clock"></i> 1 hour ago</span>
+                    </div>
+                </a>
+
+                <a href="javascript:;" class="dh-notif-item">
+                    <span class="dh-notif-dot" style="background:transparent;"></span>
+                    <span class="dh-notif-icon" style="background:#fef3c7;color:#d97706;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </span>
+                    <div style="min-width:0;">
+                        <p class="dh-notif-title">3 posts expiring this week</p>
+                        <span class="dh-notif-time"><i class="fas fa-clock"></i> 2 hours ago</span>
+                    </div>
+                </a>
+
+                <div class="dh-notif-footer">
+                    <a href="javascript:;">View all notifications</a>
+                </div>
+            </div>
+        </div>
+
+        {{-- Mobile sidenav toggle --}}
+        <a href="javascript:;" class="dh-icon-btn dh-mobile-toggle" id="iconNavbarSidenav" title="Menu">
+            <i class="fas fa-bars"></i>
+        </a>
+
+        <div class="dh-nav-sep"></div>
+
+        {{-- User chip + logout --}}
+        @auth
+            @php
+                $authUser = auth()->user();
+                $initial  = strtoupper(substr($authUser->name, 0, 1));
+                $role     = $authUser->roles->first()?->name ?? 'User';
+            @endphp
+
+            <a href="{{ url('admin/profile') }}" class="dh-user-chip">
+                <div class="avatar">{{ $initial }}</div>
+                <div>
+                    <div class="uname">{{ $authUser->name }}</div>
+                    <div class="urole">{{ ucfirst($role) }}</div>
+                </div>
+            </a>
+
+            <form action="{{ route('logout') }}" method="POST" style="margin:0;">
+                @csrf
+                <button type="submit" class="dh-icon-btn" title="Sign out"
+                        style="color:#94a3b8;"
+                        onmouseover="this.style.background='#fee2e2';this.style.color='#dc2626';"
+                        onmouseout="this.style.background='transparent';this.style.color='#94a3b8';">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </form>
+        @endauth
+
+    </div>
+
 </nav>
-<!-- End Navbar -->
+
+<script>
+(function () {
+
+    /* ── Search expand/collapse ────────────────────────────── */
+    const searchWrap  = document.getElementById('searchWrap');
+    const searchBtn   = document.getElementById('searchToggle');
+    const searchInput = document.getElementById('globalSearchInput');
+
+    searchBtn.addEventListener('click', function () {
+        searchWrap.classList.toggle('open');
+        if (searchWrap.classList.contains('open')) searchInput.focus();
+        else searchInput.value = '';
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            searchWrap.classList.remove('open');
+            searchInput.value = '';
+        }
+        // Ctrl/Cmd + K to open search
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            searchWrap.classList.add('open');
+            searchInput.focus();
+        }
+    });
+
+    /* ── Notifications dropdown ────────────────────────────── */
+    const notifBtn      = document.getElementById('notifToggle');
+    const notifDropdown = document.getElementById('notifDropdown');
+
+    notifBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        notifDropdown.classList.toggle('open');
+    });
+
+    document.addEventListener('click', function (e) {
+        if (!notifBtn.contains(e.target) && !notifDropdown.contains(e.target)) {
+            notifDropdown.classList.remove('open');
+        }
+    });
+
+    /* ── Mark all read ─────────────────────────────────────── */
+    document.getElementById('markAllRead').addEventListener('click', function () {
+        document.querySelectorAll('.dh-notif-dot').forEach(d => {
+            d.style.background = 'transparent';
+        });
+        notifBtn.querySelector('.dh-badge').style.display = 'none';
+    });
+
+})();
+</script>
