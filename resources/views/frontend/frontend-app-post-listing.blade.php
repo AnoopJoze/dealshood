@@ -436,40 +436,6 @@ $palette = [
 $paletteJson = json_encode($palette);
 @endphp
 
-{{-- ─── Locality chips ─── --}}
-<section class="dh-chips-sec">
-    <div class="dh-wrap">
-        <div class="dh-chips-head">
-            <span class="dh-chips-label">
-                <i class="fas fa-map-marker-alt"></i> Localities
-            </span>
-            @if (request('locality_id'))
-                <button class="dh-chips-clear" data-clear="locality_id">
-                    <i class="bi bi-x-circle"></i> Clear
-                </button>
-            @endif
-        </div>
-        <div class="dh-chips-row chips-scroll" id="locChips">
-            <span class="dh-chip {{ !request('locality_id') ? 'active':'' }}"
-                  data-filter="locality_id" data-val="">
-                <span class="chip-icon" style="background:rgba(0,0,0,.05);color:var(--accent);">
-                    <i class="fas fa-globe"></i>
-                </span>
-                All Areas
-            </span>
-            @foreach ($localities as $i => $loc)
-                @php $p = $palette[$i % count($palette)]; @endphp
-                <span class="dh-chip {{ request('locality_id') == $loc->slug ? 'active':'' }}"
-                      data-filter="locality_id" data-val="{{ $loc->slug }}">
-                    <span class="chip-icon" style="background:{{ $p['bg'] }};color:{{ $p['ic'] }};">
-                        <i class="fas fa-map-marker-alt"></i>
-                    </span>
-                    {{ $loc->name }}
-                </span>
-            @endforeach
-        </div>
-    </div>
-</section>
 
 {{-- ─── Category chips ─── --}}
 <section class="dh-chips-sec">
@@ -546,6 +512,40 @@ $paletteJson = json_encode($palette);
     </div>
 </section>
 
+{{-- ─── Locality chips ─── --}}
+<section class="dh-chips-sec">
+    <div class="dh-wrap">
+        <div class="dh-chips-head">
+            <span class="dh-chips-label">
+                <i class="fas fa-map-marker-alt"></i> Localities
+            </span>
+            @if (request('locality_id'))
+                <button class="dh-chips-clear" data-clear="locality_id">
+                    <i class="bi bi-x-circle"></i> Clear
+                </button>
+            @endif
+        </div>
+        <div class="dh-chips-row chips-scroll" id="locChips">
+            <span class="dh-chip {{ !request('locality_id') ? 'active':'' }}"
+                  data-filter="locality_id" data-val="">
+                <span class="chip-icon" style="background:rgba(0,0,0,.05);color:var(--accent);">
+                    <i class="fas fa-globe"></i>
+                </span>
+                All Areas
+            </span>
+            @foreach ($localities as $i => $loc)
+                @php $p = $palette[$i % count($palette)]; @endphp
+                <span class="dh-chip {{ request('locality_id') == $loc->slug ? 'active':'' }}"
+                      data-filter="locality_id" data-val="{{ $loc->slug }}">
+                    <span class="chip-icon" style="background:{{ $p['bg'] }};color:{{ $p['ic'] }};">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </span>
+                    {{ $loc->name }}
+                </span>
+            @endforeach
+        </div>
+    </div>
+</section>
 {{-- ─── Keyword search ─── --}}
 <section class="dh-search-sec">
     <div class="dh-wrap">
