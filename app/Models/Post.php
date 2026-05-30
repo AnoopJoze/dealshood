@@ -2,23 +2,37 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Post extends Model implements HasMedia
 {
-    use InteractsWithMedia, SoftDeletes;
+    use HasFactory, SoftDeletes, InteractsWithMedia;
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('posts');
+        $this->addMediaCollection('videos');
+    }
 
     protected $fillable = [
-        'user_id',
         'title',
         'slug',
         'description',
         'category_id',
         'subcategory_id',
         'locality_id',
+        'user_id',
+        'status',
+        'is_featured',
+        'is_active',
+        'views',
+        'expiry_date',
+        'published_at',
+        // Location
         'country',
         'state',
         'city',
@@ -26,67 +40,95 @@ class Post extends Model implements HasMedia
         'latitude',
         'longitude',
         'google_map_url',
-        'featured_image',
+        // Media
+        'video_url',
+        // SEO
         'meta_title',
         'meta_description',
         'keywords',
-        'status',
-        'is_featured',
-        'is_active',
-        'published_at',
-        'expiry_date',
-        'views',
-        'video',
-        'video_url',
     ];
 
-    // Relationships (important for your earlier error style issues)
+    /**
+     * Sensitive location / content fields are encrypted at rest.
+     *
+     * ⚠  These columns must be TEXT in the database (see migration).
+     *     They cannot be used in WHERE / LIKE / ORDER BY queries.
+     *
+     * Fields NOT encrypted (need to be searchable / sortable):
+     *   title, slug, status, is_featured, is_active, views,
+     *   category_id, subcategory_id, locality_id, user_id,
+     *   expiry_date, published_at, created_at, updated_at
+     */
+    protected $casts = [
+        'is_featured'  => 'boolean',
+        'is_active'    => 'boolean',
+        'published_at' => 'datetime',
+        'expiry_date'  => 'date',
 
-    public function user()
+        // Location PII — encrypted at rest
+        'latitude'       => 'encrypted',
+        'longitude'      => 'encrypted',
+        'google_map_url' => 'encrypted',
+
+        // Semi-sensitive location descriptors — encrypted at rest
+        'country'  => 'encrypted',
+        'state'    => 'encrypted',
+        'city'     => 'encrypted',
+        'location' => 'encrypted',
+
+        // Content — encrypted at rest
+        'description' => 'encrypted',
+
+        // SEO — encrypted at rest (can contain business details)
+        'meta_title'       => 'encrypted',
+        'meta_description' => 'encrypted',
+        'keywords'         => 'encrypted',
+    ];
+
+    /* ── URL accessor ──────────────────────────────── */
+    public function getUrlAttribute(): string
     {
-        return $this->belongsTo(User::class);
+        return route('post-details', [
+            'locality'    => $this->locality?->slug    ?? 'na',
+            'category'    => $this->category?->slug    ?? 'na',
+            'subcategory' => $this->subcategory?->slug ?? 'na',
+            'slug'        => $this->slug,
+        ]);
     }
 
-    public function category()
+    /* ── Relations ─────────────────────────────────── */
+    public function category():    \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
 
-    public function subcategory()
+    public function subcategory(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Subcategory::class);
     }
-    public function locality()
-{
-    return $this->belongsTo(Locality::class);
-}
-public function likesData()
-{
-    return $this->hasMany(PostLike::class);
-}
 
-public function viewsData()
-{
-    return $this->hasMany(PostView::class);
-}
+    public function locality():    \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Locality::class);
+    }
 
-public function sharesData()
-{
-    return $this->hasMany(PostShare::class);
-}
+    public function user():        \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 
-public function getUrlAttribute()
-{
-    return route('post-details', [
+    public function likesData():   \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(PostLike::class);
+    }
 
-        'locality' => $this->locality?->slug,
+    public function viewsData():   \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(PostView::class);
+    }
 
-        'category' => $this->category?->slug,
-
-        'subcategory' => $this->subcategory?->slug,
-
-        'slug' => $this->slug,
-
-    ]);
-}
+    public function sharesData():  \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(PostShare::class);
+    }
 }

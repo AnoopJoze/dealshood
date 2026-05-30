@@ -14,39 +14,75 @@ use App\Models\Locality;
 
 class FrontEndController extends Controller
 {
-    public function home(Request $request)
+     public function home(Request $request)
     {
-        /*
-        |--------------------------------------------------------------
-        | withCount rules — no aliases (always safe)
-        | withCount('likesData')  → $post->likes_data_count
-        | withCount('sharesData') → $post->shares_data_count
-        | views                   → real DB column
-        |--------------------------------------------------------------
-        */
- 
-        // ── Category tiles (all categories with deal count) ────────────────
         $categories = Category::withCount(['posts' => fn($q) => $q->where('status', 'published')])
             ->orderByDesc('posts_count')
             ->get();
  
-        // ── Category carousels — ALL categories that have published posts ──
-        // Each carousel shows top 10 most-viewed posts for that category.
+        // ── If AJAX category filter (clicked category on home page) ────────
+        if ($request->ajax() && $request->filled('filter_category')) {
+            $slug = $request->filter_category;
+            $cat  = Category::where('slug', $slug)->first();
+ 
+            // Carousel for this one category only
+            $carousel = null;
+            if ($cat) {
+                $carousel = Category::with([
+                    'posts' => function ($q) {
+                        // array withCount crashes inside nested with() — use plain string each
+                        $q->with(['locality', 'subcategory'])
+                          ->withCount('likesData')   // → likes_data_count
+                          ->withCount('sharesData')  // → shares_data_count
+                          ->where('status', 'published')
+                          ->orderByDesc('views')
+                          ->limit(10);
+                    },
+                ])->withCount(['posts' => fn($q) => $q->where('status', 'published')])
+                  ->find($cat->id);
+            }
+ 
+            // Latest posts for this category
+            $posts = Post::with(['category', 'subcategory', 'locality'])
+                ->withCount(['likesData', 'sharesData'])
+                ->where('status', 'published')
+                ->when($cat, fn($q) => $q->where('category_id', $cat->id))
+                ->latest()
+                ->paginate(12);
+ 
+            $carouselHtml = $carousel && $carousel->posts->isNotEmpty()
+                ? view('frontend.home-carousel-block',
+                    compact('carousel'))->render()
+                : '';
+ 
+            $postsHtml = view('frontend.post-cards', compact('posts'))->render();
+ 
+            return response()->json([
+                'carousel_html' => $carouselHtml,
+                'posts_html'    => $postsHtml,
+                'next_page'     => $posts->nextPageUrl(),
+                'total'         => $posts->total(),
+            ]);
+        }
+ 
+        // ── Full page load ─────────────────────────────────────────────────
         $categoryCarousels = Category::with([
                 'posts' => function ($q) {
-                    $q->with('locality')
-                      ->withCount('likesData')
+                    $q->with(['locality', 'subcategory'])
+                      ->withCount('likesData')   // plain string — safe in nested with()
+                      ->withCount('sharesData')  // plain string — safe in nested with()
                       ->where('status', 'published')
                       ->orderByDesc('views')
                       ->limit(10);
                 },
             ])
             ->whereHas('posts', fn($q) => $q->where('status', 'published'))
-            ->withCount(['posts' => fn($q) => $q->where('status', 'published')])
+            ->withCount(['posts'  => fn($q) => $q->where('status', 'published')])
             ->orderByDesc('posts_count')
-            ->get();   // ← no limit — every category gets a carousel
+            ->get();
  
-        // ── Latest deals grid (bottom of page) ────────────────────────────
+        $localities = Locality::where('parent_id', 3)->get();
+ 
         $posts = Post::with(['category', 'subcategory', 'locality'])
             ->withCount(['likesData', 'sharesData'])
             ->where('status', 'published')
@@ -54,17 +90,15 @@ class FrontEndController extends Controller
             ->paginate(12);
  
         return view('frontend.frontend-app', compact(
-            'posts',
-            'categories',
-            'categoryCarousels'
+            'posts', 'categories', 'categoryCarousels', 'localities'
         ));
     }
  
-    // Listing page keeps filters for the dedicated browse page
+    // ── Listing page ────────────────────────────────────────────────────────
     public function listing(Request $request)
     {
-        $localities    = Locality::where('parent_id', 3)->get();
-        $categories    = Category::withCount(['posts' => fn($q) => $q->where('status', 'published')])
+        $localities = Locality::where('parent_id', 3)->get();
+        $categories = Category::withCount(['posts' => fn($q) => $q->where('status', 'published')])
             ->orderByDesc('posts_count')->get();
  
         if ($request->filled('category_id')) {
@@ -89,7 +123,7 @@ class FrontEndController extends Controller
         }
         if ($request->filled('keyword')) {
             $query->where(fn($q) =>
-                $q->where('title',       'like', "%{$request->keyword}%")
+                $q->where('title', 'like', "%{$request->keyword}%")
                   ->orWhere('description', 'like', "%{$request->keyword}%")
             );
         }
@@ -104,13 +138,14 @@ class FrontEndController extends Controller
  
         if ($request->ajax()) {
             return response()->json([
-                'success'   => true,
                 'html'      => view('frontend.post-cards', compact('posts'))->render(),
                 'next_page' => $posts->nextPageUrl(),
+                'total'     => $posts->total(),
             ]);
         }
  
-        return view('frontend.frontend-app-post-listing', compact('posts', 'categories', 'localities', 'subcategories'));
+        return view('frontend.frontend-app-post-listing',
+            compact('posts', 'categories', 'localities', 'subcategories'));
     }
     public function homes()
     {
