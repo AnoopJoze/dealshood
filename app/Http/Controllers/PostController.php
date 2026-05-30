@@ -364,7 +364,7 @@ class PostController extends Controller
             'latitude'         => 'nullable|numeric|between:-90,90',
             'longitude'        => 'nullable|numeric|between:-180,180',
             // Media
-            'video_url'        => 'nullable|string|max:500',
+            //'video_url'        => 'nullable|string|max:500',
             // SEO
             'meta_title'       => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',
