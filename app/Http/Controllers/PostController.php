@@ -12,10 +12,8 @@ class PostController extends Controller
     {
         $this->middleware('can:posts.view')  ->only(['index','data','show','editData']);
         $this->middleware('can:posts.create')->only(['ajaxStore']);
-        $this->middleware('can:posts.edit')  ->only(['update','inlineUpdate']);
+        $this->middleware('can:posts.edit')->only(['update','inlineUpdate','mediaUpload','mediaDelete']);
         $this->middleware('can:posts.delete')->only(['destroy','restore','forceDelete','bulkTrash','bulkRestore','emptyTrash']);
-        $this->middleware('can:media.upload')->only(['mediaUpload']);
-        $this->middleware('can:media.delete')->only(['mediaDelete']);
     }
 
     public function index()
@@ -100,6 +98,17 @@ class PostController extends Controller
             ->editColumn('created_at', fn($row) =>
                 '<div class="text-sm text-muted">'.Carbon::parse($row->created_at)->format('d M Y').'<br><small>'.Carbon::parse($row->created_at)->diffForHumans().'</small></div>'
             )
+            ->addColumn('user', fn($row) =>
+                $row->user
+                    ? '<div class="d-flex align-items-center gap-2">
+                        <div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);
+                                    color:#fff;font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            '.strtoupper(substr($row->user->name,0,1)).'
+                        </div>
+                        <span class="text-sm">'.e($row->user->name).'</span>
+                    </div>'
+                    : '<span class="text-muted">—</span>'
+            )
             ->addColumn('action', function ($row) use ($canEdit, $canDelete) {
                 $btns = '<div style="display:flex;gap:5px;align-items:center;">';
                 $btns .= $this->actionBtn(route('posts.show',$row->id),'a','fa-eye','#6366f1','View','view');
@@ -107,7 +116,7 @@ class PostController extends Controller
                 if ($canDelete) $btns .= $this->actionBtn(null,'button','fa-trash','#dc2626','Move to trash','delete','deletePost','data-id="'.$row->id.'" data-title="'.e($row->title).'"');
                 return $btns.'</div>';
             })
-            ->rawColumns(['title','category','subcategory','locality','status','expiry','created_at','action'])
+            ->rawColumns(['title','category','subcategory','locality','user','status','expiry','created_at','action'])
             ->with(compact('totalCount','publishedCount','draftCount','archivedCount','trashedCount'))
             ->make(true);
     }
