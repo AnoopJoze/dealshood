@@ -372,7 +372,6 @@ $palette = [
 
     <div class="dh-hero-text">
         <h1 class="dh-hero-title">Discover the best deals near you.</h1>
-        <p class="dh-hero-sub">Browse by category or pick your area below</p>
     </div>
 
     {{-- Category tiles → direct link to listing page --}}
