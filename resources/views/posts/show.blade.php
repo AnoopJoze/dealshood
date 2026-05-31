@@ -907,7 +907,40 @@
 
                 {{-- ── Location ─── --}}
                 <div class="modal-tab-pane d-none" id="etab-location">
-                    <p class="modal-section-lbl">Location Details</p>
+                    <p class="modal-section-lbl">Contact Information</p>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Company Name</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-building" style="font-size:.75rem;color:var(--muted2);"></i>
+                                </span>
+                                <input type="text" id="e_company_name" class="form-control border-start-0"
+                                    value="{{ $post->company_name }}" placeholder="e.g. Acme Ltd.">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Phone Number</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-phone" style="font-size:.75rem;color:var(--muted2);"></i>
+                                </span>
+                                <input type="text" id="e_phone_number" class="form-control border-start-0"
+                                    value="{{ $post->phone_number }}" placeholder="+971 50 123 4567">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">WhatsApp Number</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0" style="background:#d1fae5!important;">
+                                    <i class="fab fa-whatsapp" style="font-size:.85rem;color:#25d366;"></i>
+                                </span>
+                                <input type="text" id="e_whatsapp_number" class="form-control border-start-0"
+                                    value="{{ $post->whatsapp_number }}" placeholder="+971 50 123 4567">
+                            </div>
+                        </div>
+                    </div>
+                    <hr style="border-color:var(--border);margin:1rem 0;">
                     <div class="row g-3 mb-3">
                         <div class="col-md-4">
                             <label class="form-label">Country</label>
@@ -1225,6 +1258,9 @@ $('#saveEditPost').on('click', function() {
     fd.append('subcategory_id',$('#e_subcategory_id').val());
     fd.append('locality_id',$('#e_locality_id').val());
     fd.append('status',$('#e_status').val());
+    fd.append('company_name', $('#e_company_name').val());
+    fd.append('phone_number',  $('#e_phone_number').val());
+    fd.append('whatsapp_number', $('#e_whatsapp_number').val());
     fd.append('user_id',$('#e_user_id').val());
     fd.append('expiry_date',$('#e_expiry_date').val());
     fd.append('is_featured',$('#e_is_featured').is(':checked')?1:0);
