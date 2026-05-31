@@ -31,8 +31,8 @@ class PostController extends Controller
     {
         $showTrashed = $request->boolean('trashed');
         $query = $showTrashed
-            ? Post::onlyTrashed()->with(['category','subcategory','locality','user'])
-            : Post::with(['category','subcategory','locality','user']);
+                    ? Post::onlyTrashed()->with(['category','subcategory','locality','user','media'])
+                    : Post::with(['category','subcategory','locality','user','media']);
 
         if ($request->filled('status'))      $query->where('status', $request->status);
         if ($request->filled('category_id')) $query->where('category_id', $request->category_id);
@@ -195,7 +195,7 @@ class PostController extends Controller
 
     public function show(Post $post)
     {
-        $post->load(['category','subcategory','locality','user','likesData','sharesData','viewsData']);
+        $post->load(['category','subcategory','locality','user','likesData','sharesData','viewsData','media']);
         $post->increment('views');
         return view('posts.show', compact('post') + [
             'categories' => Category::orderBy('name')->get(),
