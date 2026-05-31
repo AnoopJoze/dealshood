@@ -1,4 +1,6 @@
 <?php
+// app/Providers/AuthServiceProvider.php
+// Add this Gate::before so super-admin bypasses every permission check
 
 namespace App\Providers;
 
@@ -7,24 +9,13 @@ use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
-    /**
-     * The policy mappings for the application.
-     *
-     * @var array
-     */
-    protected $policies = [
-        // 'App\Models\Model' => 'App\Policies\ModelPolicy',
-    ];
+    protected $policies = [];
 
-    /**
-     * Register any authentication / authorization services.
-     *
-     * @return void
-     */
-    public function boot()
+    public function boot(): void
     {
-        $this->registerPolicies();
-
-        //
+        // Super-admin bypasses ALL permission gates
+        Gate::before(function ($user, $ability) {
+            return $user->hasRole('super-admin') ? true : null;
+        });
     }
 }
