@@ -466,7 +466,7 @@
                     <i class="fas fa-align-left"></i> Basic Info
                 </button>
                 <button class="ps-tab-link" data-tab="tab-location">
-                    <i class="fas fa-map-marker-alt"></i> Location
+                    <i class="fas fa-map-marker-alt"></i> Contact Details
                 </button>
                 <button class="ps-tab-link" data-tab="tab-media">
                     <i class="fas fa-images"></i> Media
@@ -563,63 +563,111 @@
 
                 {{-- ── Tab 2: Location ───────────────────────────── --}}
                 <div class="modal-tab-pane d-none" id="tab-location">
-                    <p class="modal-section-label">Location Details</p>
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-4">
-                            <label class="form-label">Country</label>
-                            <input type="text" id="post_country" class="form-control" placeholder="e.g. UAE">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">State</label>
-                            <input type="text" id="post_state" class="form-control" placeholder="e.g. Dubai">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">City</label>
-                            <input type="text" id="post_city" class="form-control" placeholder="e.g. Downtown">
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label">Location Description</label>
-                            <input type="text" id="post_location" class="form-control"
-                                   placeholder="Detailed location or landmark…">
-                        </div>
-                    </div>
-                    <hr class="my-3" style="border-color:var(--border);">
-                    <p class="modal-section-label">GPS Coordinates
-                        <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);">
-                            (optional)
-                        </span>
-                    </p>
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <label class="form-label">Latitude</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light border-end-0 text-xs" style="color:var(--muted2);">LAT</span>
-                                <input type="number" id="post_latitude" class="form-control border-start-0"
-                                       placeholder="25.2048" step="any" min="-90" max="90">
-                            </div>
-                            <small class="text-danger d-none" id="err_latitude"></small>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Longitude</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light border-end-0 text-xs" style="color:var(--muted2);">LNG</span>
-                                <input type="number" id="post_longitude" class="form-control border-start-0"
-                                       placeholder="55.2708" step="any" min="-180" max="180">
-                            </div>
-                            <small class="text-danger d-none" id="err_longitude"></small>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Google Maps URL</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light border-end-0">
-                                    <i class="fas fa-map" style="font-size:.75rem;color:var(--muted2);"></i>
-                                </span>
-                                <input type="text" id="post_google_map_url" class="form-control border-start-0"
-                                       placeholder="https://maps.google.com/…">
-                            </div>
-                        </div>
-                    </div>
-                </div>
+ 
+    {{-- ── Contact ─────────────────────────────────────── --}}
+    <p class="modal-section-label">Contact Information</p>
+    <div class="row g-3 mb-3">
+        <div class="col-md-4">
+            <label class="form-label">Company Name</label>
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0">
+                    <i class="fas fa-building" style="font-size:.75rem;color:var(--muted2);"></i>
+                </span>
+                <input type="text" id="post_company_name" class="form-control border-start-0"
+                       placeholder="e.g. Acme Ltd.">
+            </div>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Phone Number</label>
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0">
+                    <i class="fas fa-phone" style="font-size:.75rem;color:var(--muted2);"></i>
+                </span>
+                <input type="text" id="post_phone_number" class="form-control border-start-0"
+                       placeholder="+971 50 123 4567">
+                <small class="text-danger d-none w-100" id="err_phone_number"></small>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">WhatsApp Number</label>
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0"
+                      style="background:#d1fae5!important;">
+                    <i class="fab fa-whatsapp" style="font-size:.85rem;color:#25d366;"></i>
+                </span>
+                <input type="text" id="post_whatsapp_number" class="form-control border-start-0"
+                       placeholder="+971 50 123 4567">
+                <small class="text-danger d-none w-100" id="err_whatsapp_number"></small>
+            </div>
+        </div>
+    </div>
+ 
+    <hr class="my-3" style="border-color:var(--border);">
+ 
+    {{-- ── Location ─────────────────────────────────────── --}}
+    <p class="modal-section-label">Location Details</p>
+    <div class="row g-3 mb-3">
+        <div class="col-md-4">
+            <label class="form-label">Country</label>
+            <input type="text" id="post_country" class="form-control" placeholder="e.g. UAE">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">State</label>
+            <input type="text" id="post_state" class="form-control" placeholder="e.g. Dubai">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">City</label>
+            <input type="text" id="post_city" class="form-control" placeholder="e.g. Downtown">
+        </div>
+        <div class="col-12">
+            <label class="form-label">Location Description</label>
+            <input type="text" id="post_location" class="form-control"
+                   placeholder="Detailed location or landmark…">
+        </div>
+    </div>
+ 
+    <hr class="my-3" style="border-color:var(--border);">
+ 
+    {{-- ── GPS + Map URL ────────────────────────────────── --}}
+    <p class="modal-section-label">GPS & Map
+        <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);">
+            (optional)
+        </span>
+    </p>
+    <div class="row g-3">
+        <div class="col-md-3">
+            <label class="form-label">Latitude</label>
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0 text-xs"
+                      style="color:var(--muted2);">LAT</span>
+                <input type="number" id="post_latitude" class="form-control border-start-0"
+                       placeholder="25.2048" step="any" min="-90" max="90">
+            </div>
+            <small class="text-danger d-none" id="err_latitude"></small>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Longitude</label>
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0 text-xs"
+                      style="color:var(--muted2);">LNG</span>
+                <input type="number" id="post_longitude" class="form-control border-start-0"
+                       placeholder="55.2708" step="any" min="-180" max="180">
+            </div>
+            <small class="text-danger d-none" id="err_longitude"></small>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Google Maps URL</label>
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0">
+                    <i class="fas fa-map" style="font-size:.75rem;color:var(--muted2);"></i>
+                </span>
+                <input type="text" id="post_google_map_url" class="form-control border-start-0"
+                       placeholder="https://maps.google.com/…">
+            </div>
+        </div>
+    </div>
+ 
+</div>
 
                 {{-- ── Tab 3: Media ──────────────────────────────── --}}
                 <div class="modal-tab-pane d-none" id="tab-media">
@@ -766,6 +814,7 @@ $(document).on('click', '.ps-view-tab', function() {
 var fieldTabMap = {
     title:'tab-basic', description:'tab-basic',
     category_id:'tab-basic', status:'tab-basic',
+    company_name:'tab-location', phone_number:'tab-location', whatsapp_number:'tab-location',
     latitude:'tab-location', longitude:'tab-location',
     meta_title:'tab-seo', meta_description:'tab-seo', keywords:'tab-seo',
 };
@@ -822,6 +871,7 @@ function resetModal() {
     $('#post_is_featured').prop('checked', false);
     $('#post_is_active').prop('checked', true);
     editorInstance?.setData('');
+    $('#post_company_name, #post_phone_number, #post_whatsapp_number').val('');
     $('#post_country, #post_state, #post_city, #post_location').val('');
     $('#post_latitude, #post_longitude, #post_google_map_url').val('');
     $('#existingImages').empty();
@@ -873,6 +923,10 @@ $(document).on('click', '.editPost', function() {
             $('#post_category_id').val(res.category_id).trigger('change');
             setTimeout(() => $('#post_subcategory_id').val(res.subcategory_id), 450);
         }
+       
+        $('#post_company_name').val(res.company_name ?? '');
+        $('#post_phone_number').val(res.phone_number ?? '');
+        $('#post_whatsapp_number').val(res.whatsapp_number ?? '');
         $('#post_country').val(res.country ?? '');
         $('#post_state').val(res.state ?? '');
         $('#post_city').val(res.city ?? '');
@@ -911,7 +965,10 @@ $('#savePost').on('click', function() {
             description:editorInstance.getData(),
             country:$('#post_country').val(), state:$('#post_state').val(),
             city:$('#post_city').val(), location:$('#post_location').val(),
-            latitude:$('#post_latitude').val(), longitude:$('#post_longitude').val(),
+            latitude:$('#post_latitude').val(), longitude:$('#post_longitude').val(),            
+            company_name:$('#post_company_name').val(),
+            phone_number:$('#post_phone_number').val(),
+            whatsapp_number:$('#post_whatsapp_number').val(),
             google_map_url:$('#post_google_map_url').val(),
             video_url:$('#post_video_url').val(),
             meta_title:$('#post_meta_title').val(),

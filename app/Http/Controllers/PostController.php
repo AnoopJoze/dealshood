@@ -112,11 +112,22 @@ class PostController extends Controller
             ->make(true);
     }
 
+    
     public function editData(Post $post)
     {
-        $images = $post->getMedia('posts')->map(fn($m)=>['id'=>$m->id,'url'=>$m->getUrl()]);
+        $images = $post->getMedia('posts')->map(fn($m) => ['id' => $m->id, 'url' => $m->getUrl()]);
         $video  = $post->getMedia('videos')->first();
-        return response()->json([...$post->toArray(),'images'=>$images,'video_url_media'=>$video?->getUrl()]);
+ 
+        return response()->json([
+            ...$post->toArray(),
+            'images'          => $images,
+            'video_url_media' => $video?->getUrl(),
+            // Explicitly include encrypted contact fields
+            'company_name'    => $post->company_name,
+            'phone_number'    => $post->phone_number,
+            'whatsapp_number' => $post->whatsapp_number,
+            'google_map_url'  => $post->google_map_url,
+        ]);
     }
 
     public function ajaxStore(Request $request)
@@ -205,22 +216,42 @@ class PostController extends Controller
         return '<button class="'.$class.'" '.$extra.' title="'.$title.'" style="'.$base.'cursor:pointer;" onmouseover="'.$over.'" onmouseout="'.$out.'"><i class="fas '.$icon.'"></i></button>';
     }
 
-    private function rules(?int $ignoreId=null): array
+    private function rules(?int $ignoreId = null): array
     {
         return [
-            'title'=>'required|string|max:255','category_id'=>'required|exists:categories,id',
-            'status'=>'required|in:draft,published,archived','description'=>'nullable|string',
-            'subcategory_id'=>'nullable|exists:subcategories,id','locality_id'=>'nullable|exists:localities,id',
-            'user_id'=>'nullable|exists:users,id','expiry_date'=>'nullable|date',
-            'google_map_url'=>'nullable|string|max:500','is_featured'=>'nullable|boolean',
-            'is_active'=>'nullable|boolean','country'=>'nullable|string|max:100',
-            'state'=>'nullable|string|max:100','city'=>'nullable|string|max:100',
-            'location'=>'nullable|string|max:255','latitude'=>'nullable|numeric|between:-90,90',
-            'longitude'=>'nullable|numeric|between:-180,180','video_url'=>'nullable|string|max:500',
-            'meta_title'=>'nullable|string|max:255','meta_description'=>'nullable|string|max:500',
-            'keywords'=>'nullable|string|max:500',
+            'title'            => 'required|string|max:255',
+            'category_id'      => 'required|exists:categories,id',
+            'status'           => 'required|in:draft,published,archived',
+            'description'      => 'nullable|string',
+            'subcategory_id'   => 'nullable|exists:subcategories,id',
+            'locality_id'      => 'nullable|exists:localities,id',
+            'user_id'          => 'nullable|exists:users,id',
+            'expiry_date'      => 'nullable|date',
+            'is_featured'      => 'nullable|boolean',
+            'is_active'        => 'nullable|boolean',
+            // Location
+            'country'          => 'nullable|string|max:100',
+            'state'            => 'nullable|string|max:100',
+            'city'             => 'nullable|string|max:100',
+            'location'         => 'nullable|string|max:255',
+            'latitude'         => 'nullable|numeric|between:-90,90',
+            'longitude'        => 'nullable|numeric|between:-180,180',
+            'google_map_url'   => 'nullable|string|max:500',
+            // Contact
+            'company_name'     => 'nullable|string|max:255',
+            'phone_number'     => 'nullable|string|max:20',
+            'whatsapp_number'  => 'nullable|string|max:20',
+            // Media / SEO
+            'video_url'        => 'nullable|string|max:500',
+            'meta_title'       => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string|max:500',
+            'keywords'         => 'nullable|string|max:500',
         ];
     }
+ 
+// Patch 2 — editData(): add the three contact fields to the returned array
+// Replace the existing editData method with:
+ 
 
     private function makeSlug(string $title): string
     {
