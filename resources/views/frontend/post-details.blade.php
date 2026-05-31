@@ -469,7 +469,19 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                         @if($post->locality)
                             <span class="dh-meta-item">📍 {{ $post->locality->name }}</span>
                         @endif
-                        <span class="dh-meta-item">🕒 {{ $post->created_at->diffForHumans() }}</span>
+                        @if($post->expiry_date)
+                            @if(\Carbon\Carbon::parse($post->expiry_date)->isPast())
+                                <span class="dh-meta-item" style="color:#dc2626;">
+                                    ❌ Expired on {{ \Carbon\Carbon::parse($post->expiry_date)->format('d M Y') }}
+                                </span>
+                            @else
+                                <span class="dh-meta-item" style="color:#059669;">
+                                    ✅ Valid until {{ \Carbon\Carbon::parse($post->expiry_date)->format('d M Y') }}
+                                </span>
+                            @endif
+                        @else
+                            <span class="dh-meta-item">🕒 {{ $post->created_at->diffForHumans() }}</span>
+                        @endif
                         <span class="dh-meta-item">👁 {{ number_format($post->viewsData->count()) }} views</span>
                     </div>
 
@@ -565,36 +577,36 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
                 <div class="dh-contact-row">
                     <span class="dh-contact-icon">🏢</span>
-                    <span class="dh-contact-label">Company</span>
-                    <span class="dh-contact-value">{{ $user?->company_name ?? 'N/A' }}</span>
+                    <span class="dh-contact-label">{{ $user->company_name ?? 'N/A' }}</span>
                 </div>
                 <div class="dh-contact-row">
                     <span class="dh-contact-icon">👤</span>
-                    <span class="dh-contact-label">Owner</span>
-                    <span class="dh-contact-value">{{ $user?->name ?? 'Admin' }}</span>
+                    <span class="dh-contact-label">{{ $post->name ?? 'Admin' }}</span>
                 </div>
                 <div class="dh-contact-row">
                     <span class="dh-contact-icon">📍</span>
-                    <span class="dh-contact-label">Address</span>
-                    <span class="dh-contact-value">{{ $user?->address ?? 'Not available' }}</span>
-                </div>
-                <div class="dh-contact-row">
-                    <span class="dh-contact-icon">📞</span>
-                    <span class="dh-contact-label">Phone</span>
-                    <span class="dh-contact-value">
-                        <a href="tel:{{ $user?->phone }}">{{ $user?->phone ?? 'N/A' }}</a>
-                    </span>
+                    <span class="dh-contact-label">{{ $post->location ?? 'Not available' }}</span>
                 </div>
 
-                @if($user?->phone)
+                @if($post->phone_number||$post->whatsapp_number||$post->google_map_url)
                 <div class="dh-contact-btns">
-                    <a href="tel:{{ $user->phone }}" class="dh-cta-btn dh-cta-call">
+                @if($post->phone_number)
+                    <a href="tel:{{ $user->phone_number }}" class="dh-cta-btn dh-cta-call">
                         <i class="bi bi-telephone-fill"></i> Call Now
                     </a>
-                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $user->phone) }}"
+                @endif
+                @if($post->whatsapp_number)
+                    <a href="{{$post->whatsapp_link}}"
                        target="_blank" class="dh-cta-btn dh-cta-wa">
                         <i class="bi bi-whatsapp"></i> WhatsApp
                     </a>
+                @endif
+                @if($post->google_map_url)
+                    <a href="{{$post->google_map_url}}"
+                       target="_blank" class="dh-cta-btn dh-cta-wa">
+                        <i class="bi bi-geo-alt-fill"></i> Get Directions
+                    </a>
+                @endif
                 </div>
                 @endif
             </div>

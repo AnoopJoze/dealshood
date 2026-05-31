@@ -72,9 +72,19 @@
                 <span class="dh-meta-count">{{ number_format($post->shares_data_count ?? 0) }}</span>
             </div>
             <div class="dh-meta-time">
+            @if($post->expiry_date)
+                @if(\Carbon\Carbon::parse($post->expiry_date)->isPast())
+                    <i class="fas fa-circle-xmark" style="color:#dc2626;"></i>
+                    <span style="color:#dc2626;">Expired</span>
+                @else
+                    <i class="fas fa-calendar-check" style="color:#059669;"></i>
+                    <span style="color:#059669;">Valid until {{ \Carbon\Carbon::parse($post->expiry_date)->format('d M Y') }}</span>
+                @endif
+            @else
                 <i class="fas fa-clock"></i>
-                <span>{{ $post->created_at->diffForHumans() }}</span>
-            </div>
+                <span>Posted {{ $post->created_at->diffForHumans() }}</span>
+            @endif
+        </div>
         </div>
 
         {{-- Actions --}}

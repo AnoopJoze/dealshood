@@ -41,18 +41,27 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
     Route::post('/user-profile',   [InfoUserController::class, 'store'])->name('admin.user-profile-post');
     Route::get('/login',           fn() => view('dashboard'))         ->name('sign-up');
 
-    // ── Users ─────────────────────────────────────────────────────────────────────
-    // Custom AJAX routes MUST come BEFORE the wildcard  users/{param}  routes
-
-    Route::post('users/getlist',              [UserController::class, 'getlist'])   ->name('users.getlist');
-    Route::post('users/ajax-store',           [UserController::class, 'ajaxStore']) ->name('users.ajaxStore');
-    Route::post('users/{id}/ajax-update',     [UserController::class, 'ajaxUpdate'])->name('users.ajaxUpdate');
-    Route::get('users/{id}/edit-data',        [UserController::class, 'editData'])  ->name('users.editData');
-
-    // Standard resource routes (index, show, destroy)
-    Route::get('users',        [UserController::class, 'index'])  ->name('users.index');
-    Route::get('users/{id}',   [UserController::class, 'show'])   ->name('users.show');
-    Route::delete('users/{id}',[UserController::class, 'destroy'])->name('users.destroy');
+    /* ── Users ─────────────────────────────────────── */
+Route::prefix('users')->name('users.')->group(function () {
+ 
+    // Standard CRUD (existing)
+    Route::get('/',                       [UserController::class, 'index'])->name('index');
+    Route::post('/data',                  [UserController::class, 'getlist'])->name('getlist');
+    Route::post('/',                      [UserController::class, 'ajaxStore'])->name('ajaxStore');
+    Route::get('/{id}/edit-data',         [UserController::class, 'editData'])->name('editData');
+    Route::post('/{id}/ajax-update',      [UserController::class, 'ajaxUpdate'])->name('ajaxUpdate');
+    Route::get('/{id}',                   [UserController::class, 'show'])->name('show');
+ 
+    // Soft-delete
+    Route::delete('/{id}',               [UserController::class, 'destroy'])->name('destroy');
+    Route::post('/{id}/restore',          [UserController::class, 'restore'])->name('restore');
+    Route::delete('/{id}/force-delete',   [UserController::class, 'forceDelete'])->name('forceDelete');
+ 
+    // Bulk
+    Route::post('/bulk-trash',            [UserController::class, 'bulkTrash'])->name('bulkTrash');
+    Route::post('/bulk-restore',          [UserController::class, 'bulkRestore'])->name('bulkRestore');
+    Route::post('/empty-trash',           [UserController::class, 'emptyTrash'])->name('emptyTrash');
+});
 
     // ── Localities ────────────────────────────────────────────────────────────
     Route::post('localities/data',          [LocalityController::class, 'data'])        ->name('localities.data');
@@ -78,30 +87,30 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
 
     // ── Posts – custom routes MUST come BEFORE Route::resource ───────────────
 
-    // DataTables feed
-    Route::post('posts/data',               [PostController::class, 'data'])        ->name('posts.data');
-
-    // AJAX create
-    Route::post('posts/ajax-store',         [PostController::class, 'ajaxStore'])   ->name('posts.ajaxStore');
-
-    // Inline field update (status / is_featured / is_active)
-    Route::post('posts/inline-update',      [PostController::class, 'inlineUpdate'])->name('posts.inlineUpdate');
-
-    // JSON data for the edit modal   GET admin/posts/{post}/edit-data
-    Route::get('posts/{post}/edit-data',    [PostController::class, 'editData'])    ->name('posts.editData');
-
-    // Spatie media upload (Dropzone)
-    Route::post('posts/media-upload',       [PostController::class, 'mediaUpload']) ->name('posts.mediaUpload');
-
-    // Delete a single Spatie media item   DELETE admin/posts/media/{id}
-    Route::delete('posts/media/{id}',       [PostController::class, 'mediaDelete']) ->name('posts.mediaDelete');
-
-    // Resource routes  (index, create, store, show, edit, update, destroy)
-    // update  → PUT  /admin/posts/{post}   (posts.update)
-    // destroy → DELETE /admin/posts/{post} (posts.destroy)
-    Route::post('posts/{post}',               [PostController::class, 'show'])        ->name('posts.show');
-
-    Route::resource('posts', PostController::class);
+    /* ── Posts ─────────────────────────────────────── */
+Route::prefix('posts')->name('posts.')->group(function () {
+ 
+    // Standard CRUD (existing)
+    Route::get('/',                       [PostController::class, 'index'])->name('index');
+    Route::post('/data',                   [PostController::class, 'data'])->name('data');
+    Route::post('/',                      [PostController::class, 'ajaxStore'])->name('ajaxStore');
+    Route::get('/{post}/edit-data',       [PostController::class, 'editData'])->name('editData');
+    Route::put('/{post}',                 [PostController::class, 'update'])->name('update');
+    Route::get('/{post}',                 [PostController::class, 'show'])->name('show');
+    Route::post('/inline-update',         [PostController::class, 'inlineUpdate'])->name('inlineUpdate');
+    Route::post('/media/upload',          [PostController::class, 'mediaUpload'])->name('mediaUpload');
+    Route::delete('/media/{id}',          [PostController::class, 'mediaDelete'])->name('mediaDelete');
+ 
+    // Soft-delete
+    Route::delete('/{post}',             [PostController::class, 'destroy'])->name('destroy');
+    Route::post('/{id}/restore',          [PostController::class, 'restore'])->name('restore');
+    Route::delete('/{id}/force-delete',   [PostController::class, 'forceDelete'])->name('forceDelete');
+ 
+    // Bulk
+    Route::post('/bulk-trash',            [PostController::class, 'bulkTrash'])->name('bulkTrash');
+    Route::post('/bulk-restore',          [PostController::class, 'bulkRestore'])->name('bulkRestore');
+    Route::post('/empty-trash',           [PostController::class, 'emptyTrash'])->name('emptyTrash');
+});
 
     // ── Roles ─────────────────────────────────────────────────────────────────────
     Route::post('roles/getlist',                  [RoleController::class, 'getList'])         ->name('roles.getlist');

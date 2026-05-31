@@ -120,6 +120,7 @@
         scrollbar-width:none;
         cursor:grab;
         padding-bottom:6px;
+        padding-top:5px;
     }
     .dh-chips-row.chips-scroll::-webkit-scrollbar{ display:none; }
     .dh-chips-row.chips-scroll:active{ cursor:grabbing; }
@@ -297,7 +298,7 @@
     .dh-card-title:hover{color:var(--accent);}
     .dh-card-desc{font-size:.81rem;line-height:1.65;color:var(--ink-muted);
                    font-weight:300;flex:1;margin-bottom:14px;}
-    .dh-card-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    .dh-card-meta{display:flex;align-items:center;gap:4px;flex-wrap:wrap;
                    padding-top:10px;border-top:1px solid rgba(0,0,0,.06);margin-bottom:14px;}
     .dh-meta-btn,.dh-meta-box{display:flex;align-items:center;gap:7px;padding:4px 10px;
                                border-radius:14px;background:#fff;border:1px solid #edf0f5;
@@ -436,37 +437,35 @@ $palette = [
 $paletteJson = json_encode($palette);
 @endphp
 
-
-{{-- ─── Category chips ─── --}}
+{{-- ─── Locality chips ─── --}}
 <section class="dh-chips-sec">
     <div class="dh-wrap">
         <div class="dh-chips-head">
             <span class="dh-chips-label">
-                <i class="fas fa-tags"></i> Categories
+                <i class="fas fa-map-marker-alt"></i> Localities
             </span>
-            @if (request('category_id'))
-                <button class="dh-chips-clear" data-clear="category_id">
+            @if (request('locality_id'))
+                <button class="dh-chips-clear" data-clear="locality_id">
                     <i class="bi bi-x-circle"></i> Clear
                 </button>
             @endif
         </div>
-        <div class="dh-chips-row" id="catChips">
-            <span class="dh-chip {{ !request('category_id') ? 'active':'' }}"
-                  data-filter="category_id" data-val="">
+        <div class="dh-chips-row chips-scroll" id="locChips">
+            <span class="dh-chip {{ !request('locality_id') ? 'active':'' }}"
+                  data-filter="locality_id" data-val="">
                 <span class="chip-icon" style="background:rgba(0,0,0,.05);color:var(--accent);">
-                    <i class="fas fa-th"></i>
+                    <i class="fas fa-globe"></i>
                 </span>
-                All
+                All Areas
             </span>
-            @foreach ($categories as $i => $cat)
+            @foreach ($localities as $i => $loc)
                 @php $p = $palette[$i % count($palette)]; @endphp
-                <span class="dh-chip {{ request('category_id') == $cat->slug ? 'active':'' }}"
-                      data-filter="category_id" data-val="{{ $cat->slug }}">
+                <span class="dh-chip {{ request('locality_id') == $loc->slug ? 'active':'' }}"
+                      data-filter="locality_id" data-val="{{ $loc->slug }}">
                     <span class="chip-icon" style="background:{{ $p['bg'] }};color:{{ $p['ic'] }};">
-                        <i class="fas {{ $p['icon'] }}"></i>
+                        <i class="fas fa-map-marker-alt"></i>
                     </span>
-                    {{ $cat->name }}
-                    <span style="opacity:.6;font-size:.65rem;">{{ number_format($cat->posts_count) }}</span>
+                    {{ $loc->name }}
                 </span>
             @endforeach
         </div>
@@ -512,40 +511,6 @@ $paletteJson = json_encode($palette);
     </div>
 </section>
 
-{{-- ─── Locality chips ─── --}}
-<section class="dh-chips-sec">
-    <div class="dh-wrap">
-        <div class="dh-chips-head">
-            <span class="dh-chips-label">
-                <i class="fas fa-map-marker-alt"></i> Localities
-            </span>
-            @if (request('locality_id'))
-                <button class="dh-chips-clear" data-clear="locality_id">
-                    <i class="bi bi-x-circle"></i> Clear
-                </button>
-            @endif
-        </div>
-        <div class="dh-chips-row chips-scroll" id="locChips">
-            <span class="dh-chip {{ !request('locality_id') ? 'active':'' }}"
-                  data-filter="locality_id" data-val="">
-                <span class="chip-icon" style="background:rgba(0,0,0,.05);color:var(--accent);">
-                    <i class="fas fa-globe"></i>
-                </span>
-                All Areas
-            </span>
-            @foreach ($localities as $i => $loc)
-                @php $p = $palette[$i % count($palette)]; @endphp
-                <span class="dh-chip {{ request('locality_id') == $loc->slug ? 'active':'' }}"
-                      data-filter="locality_id" data-val="{{ $loc->slug }}">
-                    <span class="chip-icon" style="background:{{ $p['bg'] }};color:{{ $p['ic'] }};">
-                        <i class="fas fa-map-marker-alt"></i>
-                    </span>
-                    {{ $loc->name }}
-                </span>
-            @endforeach
-        </div>
-    </div>
-</section>
 {{-- ─── Keyword search ─── --}}
 <section class="dh-search-sec">
     <div class="dh-wrap">
@@ -739,37 +704,6 @@ $(document).on('click','.dh-chip',function(){
     filters[key] = val;
     filters.page = 1;
 
-    // If category changed: load subcategory chips via AJAX + clear subcategory filter
-    if(key === 'category_id'){
-        filters.subcategory_id = '';
-        $('[data-filter="subcategory_id"]').removeClass('active');
-
-        const $sec = $('#subcatSec');
-        const $row = $('#subcatChips');
-
-        if(val){
-            $sec.show();
-            $('#subcatLabel').text($('[data-filter="category_id"][data-val="'+val+'"]').text().trim().replace(/\d.*/,'').trim()+' — Subcategories');
-            $row.html('<div style="display:flex;gap:6px;"><span class="dh-chip active" data-filter="subcategory_id" data-val=""><span class="chip-icon" style="background:rgba(0,0,0,.05);color:var(--accent);"><i class="fas fa-th"></i></span>All</span></div>');
-
-            $.get('/get-subcategories/'+val,function(data){
-                let html='<span class="dh-chip active" data-filter="subcategory_id" data-val="">'
-                        +'<span class="chip-icon" style="background:rgba(0,0,0,.05);color:var(--accent);">'
-                        +'<i class="fas fa-th"></i></span>All</span>';
-                $.each(data,function(i,sub){
-                    const p=PALETTE[i%PALETTE.length];
-                    html+='<span class="dh-chip" data-filter="subcategory_id" data-val="'+sub.slug+'">'
-                         +'<span class="chip-icon" style="background:'+p.bg+';color:'+p.ic+';">'
-                         +'<i class="fas '+p.icon+'"></i></span>'+sub.name+'</span>';
-                });
-                $row.html(html);
-            });
-        } else {
-            $sec.hide();
-            $row.html('');
-        }
-    }
-
     loadPosts(true);
 });
 
@@ -780,10 +714,7 @@ $(document).on('click','.dh-chips-clear',function(){
     filters.page = 1;
     $('[data-filter="'+key+'"]').removeClass('active');
     $('[data-filter="'+key+'"][data-val=""]').addClass('active');
-    if(key==='category_id'){
-        filters.subcategory_id='';
-        $('#subcatSec').hide();
-    }
+
     loadPosts(true);
 });
 
