@@ -379,12 +379,12 @@ $palette = [
     <div class="dh-hero-panel">
         <div class="dh-glass-grid" id="catGrid">
 
-            <a href="{{ route('posts.listing') }}"
+            {{-- <a href="{{ route('posts.listing') }}"
                class="dh-gtile gtile-all"
                data-base="{{ route('posts.listing') }}">
                 <span class="gtile-icon"><i class="fas fa-th"></i></span>
                 <span class="gtile-name">All Deals</span>
-            </a>
+            </a> --}}
 
             @foreach ($categories as $i => $cat)
                 @php $p = $palette[$i % count($palette)]; @endphp
