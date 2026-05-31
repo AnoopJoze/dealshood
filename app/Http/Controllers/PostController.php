@@ -10,10 +10,10 @@ class PostController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('can:posts.view')  ->only(['index','data','show','editData']);
-        $this->middleware('can:posts.create')->only(['ajaxStore']);
-        $this->middleware('can:posts.edit')->only(['update','inlineUpdate','mediaUpload','mediaDelete']);
-        $this->middleware('can:posts.delete')->only(['destroy','restore','forceDelete','bulkTrash','bulkRestore','emptyTrash']);
+        // $this->middleware('can:posts.view')  ->only(['index','data','show','editData']);
+        // $this->middleware('can:posts.create')->only(['ajaxStore']);
+        // $this->middleware('can:posts.edit')->only(['update','inlineUpdate','mediaUpload','mediaDelete']);
+        // $this->middleware('can:posts.delete')->only(['destroy','restore','forceDelete','bulkTrash','bulkRestore','emptyTrash']);
     }
 
     public function index()
