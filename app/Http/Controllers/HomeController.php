@@ -13,133 +13,71 @@ use Spatie\Permission\Models\Role;
 class HomeController extends Controller
 {
     public function home()
-    {
-        $now   = Carbon::now();
-        $today = Carbon::today();
+{
+    $now   = Carbon::now();
+    $today = Carbon::today();
+    $isAuthor = auth()->user()->hasRole('author');
+    $userId   = auth()->id();
 
-        /*
-        |----------------------------------------------------------------------
-        | Top-row stat cards
-        |----------------------------------------------------------------------
-        */
-        $stats = [
-            // Posts
-            'posts_total'     => Post::count(),
-            'posts_published' => Post::where('status', 'published')->count(),
-            'posts_draft'     => Post::where('status', 'draft')->count(),
-            'posts_archived'  => Post::where('status', 'archived')->count(),
-            'posts_today'     => Post::whereDate('created_at', $today)->count(),
-            'posts_featured'  => Post::where('is_featured', true)->count(),
-            'posts_expired'   => Post::whereNotNull('expiry_date')
-                                     ->where('expiry_date', '<', $now)->count(),
+    // Base post scope — authors only see their own
+    $postScope = fn($q) => $isAuthor ? $q->where('user_id', $userId) : $q;
 
-            // Users
-            'users_total'     => User::count(),
-            'users_active'    => User::where('status', 'Active')->count(),
-            'users_today'     => User::whereDate('created_at', $today)->count(),
+    $stats = [
+        'posts_total'     => Post::when($isAuthor, fn($q)=>$q->where('user_id',$userId))->count(),
+        'posts_published' => Post::when($isAuthor, fn($q)=>$q->where('user_id',$userId))->where('status','published')->count(),
+        'posts_draft'     => Post::when($isAuthor, fn($q)=>$q->where('user_id',$userId))->where('status','draft')->count(),
+        'posts_archived'  => Post::when($isAuthor, fn($q)=>$q->where('user_id',$userId))->where('status','archived')->count(),
+        'posts_today'     => Post::when($isAuthor, fn($q)=>$q->where('user_id',$userId))->whereDate('created_at',$today)->count(),
+        'posts_featured'  => Post::when($isAuthor, fn($q)=>$q->where('user_id',$userId))->where('is_featured',true)->count(),
+        'posts_expired'   => Post::when($isAuthor, fn($q)=>$q->where('user_id',$userId))->whereNotNull('expiry_date')->where('expiry_date','<',$now)->count(),
+        'total_views'     => Post::when($isAuthor, fn($q)=>$q->where('user_id',$userId))->sum('views'),
 
-            // Taxonomy
-            'categories_total'    => Category::count(),
-            'subcategories_total' => Subcategory::count(),
-            'localities_total'    => Locality::count(),
-            'roles_total'         => Role::count(),
+        // These are always global — authors can still see them
+        'users_total'         => $isAuthor ? null : User::count(),
+        'users_active'        => $isAuthor ? null : User::where('status','Active')->count(),
+        'users_today'         => $isAuthor ? null : User::whereDate('created_at',$today)->count(),
+        'categories_total'    => Category::count(),
+        'subcategories_total' => Subcategory::count(),
+        'localities_total'    => Locality::count(),
+        'roles_total'         => $isAuthor ? null : Role::count(),
+    ];
 
-            // Engagement
-            'total_views'   => Post::sum('views'),
+    $postsByMonth = collect(range(11,0))->map(function($i) use ($isAuthor, $userId) {
+        $month = Carbon::now()->subMonths($i);
+        return [
+            'label'     => $month->format('M Y'),
+            'published' => Post::when($isAuthor, fn($q)=>$q->where('user_id',$userId))
+                               ->where('status','published')
+                               ->whereYear('created_at',$month->year)
+                               ->whereMonth('created_at',$month->month)->count(),
+            'draft'     => Post::when($isAuthor, fn($q)=>$q->where('user_id',$userId))
+                               ->where('status','draft')
+                               ->whereYear('created_at',$month->year)
+                               ->whereMonth('created_at',$month->month)->count(),
         ];
+    });
 
-        /*
-        |----------------------------------------------------------------------
-        | Posts chart — last 12 months (published count per month)
-        |----------------------------------------------------------------------
-        */
-        $postsByMonth = collect(range(11, 0))->map(function ($i) {
-            $month = Carbon::now()->subMonths($i);
-            return [
-                'label'     => $month->format('M Y'),
-                'published' => Post::where('status', 'published')
-                                   ->whereYear('created_at',  $month->year)
-                                   ->whereMonth('created_at', $month->month)
-                                   ->count(),
-                'draft'     => Post::where('status', 'draft')
-                                   ->whereYear('created_at',  $month->year)
-                                   ->whereMonth('created_at', $month->month)
-                                   ->count(),
-            ];
-        });
+    $recentPosts = Post::with(['category','user'])
+        ->when($isAuthor, fn($q)=>$q->where('user_id',$userId))
+        ->latest()->limit(8)->get();
 
-        /*
-        |----------------------------------------------------------------------
-        | Users chart — last 12 months (registrations per month)
-        |----------------------------------------------------------------------
-        */
-        $usersByMonth = collect(range(11, 0))->map(function ($i) {
-            $month = Carbon::now()->subMonths($i);
-            return [
-                'label' => $month->format('M Y'),
-                'count' => User::whereYear('created_at',  $month->year)
-                               ->whereMonth('created_at', $month->month)
-                               ->count(),
-            ];
-        });
+    // These stay global for authors too
+    $postsByCategory = Category::withCount(['posts' => fn($q)=>$q->where('status','published')])
+        ->orderByDesc('posts_count')->limit(8)->get();
 
-        /*
-        |----------------------------------------------------------------------
-        | Posts by category (top 8 for bar chart)
-        |----------------------------------------------------------------------
-        */
-        $postsByCategory = Category::withCount('subcategories')
-            ->withCount(['posts' => fn($q) => $q->where('status', 'published')])
-            ->orderByDesc('posts_count')
-            ->limit(8)
-            ->get();
+    $topLocalities = Locality::withCount('posts')->orderByDesc('posts_count')->limit(6)->get();
+    $topCategories = Category::withCount(['posts' => fn($q)=>$q->where('status','published')])
+        ->orderByDesc('posts_count')->limit(6)->get();
 
-        /*
-        |----------------------------------------------------------------------
-        | Recent posts (last 8)
-        |----------------------------------------------------------------------
-        */
-        $recentPosts = Post::with(['category', 'user'])
-            ->latest()
-            ->limit(8)
-            ->get();
+    $recentUsers = $isAuthor ? collect() : User::with('roles')->latest()->limit(6)->get();
+    $usersByMonth = $isAuthor ? collect() : collect(range(11,0))->map(function($i) {
+        $month = Carbon::now()->subMonths($i);
+        return ['label'=>$month->format('M Y'), 'count'=>User::whereYear('created_at',$month->year)->whereMonth('created_at',$month->month)->count()];
+    });
 
-        /*
-        |----------------------------------------------------------------------
-        | Recent users (last 6)
-        |----------------------------------------------------------------------
-        */
-        $recentUsers = User::with('roles')->latest()->limit(6)->get();
-
-        /*
-        |----------------------------------------------------------------------
-        | Top localities by post count
-        |----------------------------------------------------------------------
-        */
-        $topLocalities = Locality::withCount('posts')
-            ->orderByDesc('posts_count')
-            ->limit(6)
-            ->get();
-
-        /*
-        |----------------------------------------------------------------------
-        | Top categories by post count
-        |----------------------------------------------------------------------
-        */
-        $topCategories = Category::withCount(['posts' => fn($q) => $q->where('status', 'published')])
-            ->orderByDesc('posts_count')
-            ->limit(6)
-            ->get();
-
-        return view('dashboard', compact(
-            'stats',
-            'postsByMonth',
-            'usersByMonth',
-            'postsByCategory',
-            'recentPosts',
-            'recentUsers',
-            'topLocalities',
-            'topCategories'
-        ));
-    }
+    return view('dashboard', compact(
+        'stats','postsByMonth','usersByMonth','postsByCategory',
+        'recentPosts','recentUsers','topLocalities','topCategories'
+    ));
+}
 }

@@ -31,7 +31,9 @@ class PostController extends Controller
         $query = $showTrashed
                     ? Post::onlyTrashed()->with(['category','subcategory','locality','user','media'])
                     : Post::with(['category','subcategory','locality','user','media']);
-
+        if (auth()->user()->hasRole('author')) {
+            $query->where('user_id', auth()->id());
+        }
         if ($request->filled('status'))      $query->where('status', $request->status);
         if ($request->filled('category_id')) $query->where('category_id', $request->category_id);
         if ($request->filled('start_date'))  $query->whereDate('created_at', '>=', $request->start_date);
