@@ -46,6 +46,9 @@ class Post extends Model implements HasMedia
         'meta_title',
         'meta_description',
         'keywords',
+        // Contact
+        'phone_number',
+        'whatsapp_number',
     ];
 
     /**
@@ -64,6 +67,9 @@ class Post extends Model implements HasMedia
         'is_active'    => 'boolean',
         'published_at' => 'datetime',
         'expiry_date'  => 'date',
+        // Contact
+        'phone_number'    => 'encrypted',
+        'whatsapp_number' => 'encrypted',
 
         // Location PII — encrypted at rest
         'latitude'       => 'encrypted',
@@ -131,4 +137,14 @@ class Post extends Model implements HasMedia
     {
         return $this->hasMany(PostShare::class);
     }
+    public function getWhatsappLinkAttribute(): ?string
+{
+    if (!$this->whatsapp_number) {
+        return null;
+    }
+
+    $number = preg_replace('/[^0-9]/', '', $this->whatsapp_number);
+
+    return "https://wa.me/{$number}";
+}
 }

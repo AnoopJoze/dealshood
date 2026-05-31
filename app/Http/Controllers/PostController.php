@@ -37,25 +37,22 @@ class PostController extends Controller
     */
     public function data(Request $request)
     {
-        $query = Post::with(['category', 'subcategory', 'locality', 'user']);
+        $showTrashed = $request->boolean('trashed');
 
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-        if ($request->filled('category_id')) {
-            $query->where('category_id', $request->category_id);
-        }
-        if ($request->filled('start_date')) {
-            $query->whereDate('created_at', '>=', $request->start_date);
-        }
-        if ($request->filled('end_date')) {
-            $query->whereDate('created_at', '<=', $request->end_date);
-        }
+        $query = $showTrashed
+            ? Post::onlyTrashed()->with(['category', 'subcategory', 'locality', 'user'])
+            : Post::with(['category', 'subcategory', 'locality', 'user']);
+
+        if ($request->filled('status'))      $query->where('status', $request->status);
+        if ($request->filled('category_id')) $query->where('category_id', $request->category_id);
+        if ($request->filled('start_date'))  $query->whereDate('created_at', '>=', $request->start_date);
+        if ($request->filled('end_date'))    $query->whereDate('created_at', '<=', $request->end_date);
 
         $totalCount     = (clone $query)->count();
         $publishedCount = (clone $query)->where('status', 'published')->count();
         $draftCount     = (clone $query)->where('status', 'draft')->count();
         $archivedCount  = (clone $query)->where('status', 'archived')->count();
+        $trashedCount   = Post::onlyTrashed()->count();
 
         return DataTables::of($query)
 
@@ -69,12 +66,17 @@ class PostController extends Controller
                             <i class="fas fa-image text-muted" style="font-size:.7rem;"></i>
                          </div>';
 
+                $trashBadge = $row->trashed()
+                    ? '<span class="badge bg-danger-subtle text-danger ms-1" style="font-size:.6rem;">Trashed</span>'
+                    : '';
+
                 return '<div class="d-flex align-items-center">'
                     . $img
                     . '<div>'
                     . '<div class="text-sm fw-semibold text-dark text-truncate" style="max-width:180px;">'
                     . e($row->title)
                     . ($row->is_featured ? ' <i class="fas fa-star text-warning ms-1" style="font-size:.65rem;" title="Featured"></i>' : '')
+                    . $trashBadge
                     . '</div>'
                     . '<small class="text-muted">#' . $row->id . ' · ' . $row->slug . '</small>'
                     . '</div></div>';
@@ -101,36 +103,10 @@ class PostController extends Controller
                     : '<span class="text-muted">—</span>'
             )
 
-            ->addColumn('user', function ($row) {
-                if (!$row->user) return '<span class="text-muted">—</span>';
-                $initial = strtoupper(substr($row->user->name, 0, 1));
-                return '<div class="d-flex align-items-center gap-2">'
-                    . '<div class="rounded-circle bg-gradient-secondary text-white d-flex align-items-center
-                               justify-content-center fw-bold" style="width:28px;height:28px;font-size:.75rem;flex-shrink:0;">'
-                    . $initial . '</div>'
-                    . '<div><div class="text-sm fw-medium">' . e($row->user->name) . '</div>'
-                    . '<small class="text-muted">' . e($row->user->email) . '</small></div>'
-                    . '</div>';
-            })
-
-            ->addColumn('images', function ($row) {
-                $media = $row->getMedia('posts');
-                if ($media->isEmpty()) return '<span class="text-muted text-xs">—</span>';
-                $html = '<div class="d-flex gap-1 flex-wrap">';
-                foreach ($media->take(3) as $m) {
-                    $html .= '<a href="' . $m->getUrl() . '" data-fancybox="gallery-' . $row->id . '">'
-                           . '<img src="' . $m->getUrl() . '" width="32" height="32"
-                                  class="rounded" style="object-fit:cover;border:1px solid #dee2e6;">'
-                           . '</a>';
-                }
-                if ($media->count() > 3) {
-                    $html .= '<span class="badge bg-secondary rounded-pill align-self-center">+'
-                           . ($media->count() - 3) . '</span>';
-                }
-                return $html . '</div>';
-            })
-
             ->addColumn('status', function ($row) {
+                if ($row->trashed()) {
+                    return '<span class="badge bg-danger-subtle text-danger rounded-pill px-2">Trashed</span>';
+                }
                 $map = [
                     'published' => ['bg-success-subtle', 'text-success'],
                     'draft'     => ['bg-secondary-subtle', 'text-secondary'],
@@ -152,9 +128,7 @@ class PostController extends Controller
                 $expired = now()->gt($date);
                 if ($expired) {
                     return '<span class="badge bg-danger-subtle text-danger rounded-pill px-2">
-                                <i class="fas fa-exclamation-circle me-1" style="font-size:.6rem;"></i>
-                                Expired ' . $date->format('d M Y') . '
-                            </span>';
+                                Expired ' . $date->format('d M Y') . '</span>';
                 }
                 $soon = now()->diffInDays($date, false) <= 7;
                 return '<span class="text-sm ' . ($soon ? 'text-warning fw-semibold' : 'text-muted') . '">'
@@ -168,63 +142,89 @@ class PostController extends Controller
                 . '<br><small>' . Carbon::parse($row->created_at)->diffForHumans() . '</small></div>'
             )
 
-            ->addColumn('action', fn($row) =>
-                '<div class="d-flex gap-1">'
-                . '<a href="' . route('posts.show', $row->id) . '"
-                    class="btn btn-sm btn-light border" title="View">
-                    <i class="fas fa-eye text-info"></i>
-                   </a>'
-                . '<button class="btn btn-sm btn-light border editPost" data-id="' . $row->id . '" title="Edit">
-                    <i class="fas fa-pen text-warning"></i>
-                   </button>'
-                . '<button class="btn btn-sm btn-light border deletePost" data-id="' . $row->id . '"
-                           data-title="' . e($row->title) . '" title="Delete">
-                    <i class="fas fa-trash text-danger"></i>
-                   </button>'
-                . '</div>'
-            )
+            ->addColumn('action', function ($row) {
+    $view = route('posts.show', $row->id);
+    $id   = $row->id;
+    $t    = e($row->title);
 
-            ->rawColumns(['title', 'category', 'subcategory', 'locality', 'user', 'images', 'status', 'expiry', 'created_at', 'action'])
+    return '
+    <div style="display:flex;gap:5px;align-items:center;">
+
+        <a href="' . $view . '"
+           title="View post"
+           style="width:30px;height:30px;border-radius:7px;border:1px solid #f1f5f9;
+                  background:#fff;display:inline-flex;align-items:center;justify-content:center;
+                  font-size:.72rem;color:#94a3b8;text-decoration:none;transition:all .14s;"
+           onmouseover="this.style.borderColor=\'#6366f1\';this.style.color=\'#6366f1\';this.style.background=\'#f8fafc\';"
+           onmouseout="this.style.borderColor=\'#f1f5f9\';this.style.color=\'#94a3b8\';this.style.background=\'#fff\';">
+            <i class="fas fa-eye"></i>
+        </a>
+
+        <button class="editPost"
+                data-id="' . $id . '"
+                title="Edit post"
+                style="width:30px;height:30px;border-radius:7px;border:1px solid #f1f5f9;
+                       background:#fff;display:inline-flex;align-items:center;justify-content:center;
+                       font-size:.72rem;color:#94a3b8;cursor:pointer;transition:all .14s;"
+                onmouseover="this.style.borderColor=\'#d97706\';this.style.color=\'#d97706\';this.style.background=\'#f8fafc\';"
+                onmouseout="this.style.borderColor=\'#f1f5f9\';this.style.color=\'#94a3b8\';this.style.background=\'#fff\';">
+            <i class="fas fa-pen"></i>
+        </button>
+
+        <button class="deletePost"
+                data-id="' . $id . '"
+                data-title="' . $t . '"
+                title="Move to trash"
+                style="width:30px;height:30px;border-radius:7px;border:1px solid #f1f5f9;
+                       background:#fff;display:inline-flex;align-items:center;justify-content:center;
+                       font-size:.72rem;color:#94a3b8;cursor:pointer;transition:all .14s;"
+                onmouseover="this.style.borderColor=\'#dc2626\';this.style.color=\'#dc2626\';this.style.background=\'#fef2f2\';"
+                onmouseout="this.style.borderColor=\'#f1f5f9\';this.style.color=\'#94a3b8\';this.style.background=\'#fff\';">
+            <i class="fas fa-trash"></i>
+        </button>
+
+    </div>';
+})
+
+            ->rawColumns(['title', 'category', 'subcategory', 'locality', 'status', 'expiry', 'created_at', 'action'])
             ->with([
                 'totalCount'     => $totalCount,
                 'publishedCount' => $publishedCount,
                 'draftCount'     => $draftCount,
                 'archivedCount'  => $archivedCount,
+                'trashedCount'   => $trashedCount,
             ])
             ->make(true);
     }
 
     /*
     |--------------------------------------------------------------------------
-    | EDIT DATA – JSON for modal
+    | EDIT DATA
     |--------------------------------------------------------------------------
     */
     public function editData(Post $post)
     {
         $images = $post->getMedia('posts')->map(fn($m) => [
-            'id'   => $m->id,
-            'url'  => $m->getUrl(),
-            'name' => $m->name,
+            'id'  => $m->id,
+            'url' => $m->getUrl(),
         ]);
-
         $video = $post->getMedia('videos')->first();
 
         return response()->json([
             ...$post->toArray(),
-            'images'    => $images,
+            'images'          => $images,
             'video_url_media' => $video?->getUrl(),
         ]);
     }
 
     /*
     |--------------------------------------------------------------------------
-    | AJAX STORE
+    | STORE
     |--------------------------------------------------------------------------
     */
     public function ajaxStore(Request $request)
     {
         $validated = $request->validate($this->rules());
-
         $validated['slug']         = $this->makeSlug($validated['title']);
         $validated['user_id']      = $validated['user_id'] ?? auth()->id();
         $validated['published_at'] = ($validated['status'] === 'published') ? now() : null;
@@ -281,39 +281,97 @@ class PostController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | DESTROY
+    | SOFT DELETE  (move to trash)
     |--------------------------------------------------------------------------
     */
     public function destroy(Post $post)
     {
-        $post->delete();
-        return response()->json(['success' => true]);
+        $post->delete(); // soft delete
+
+        return response()->json(['success' => true, 'message' => 'Post moved to trash.']);
     }
 
     /*
     |--------------------------------------------------------------------------
-    | MEDIA UPLOAD
+    | RESTORE  (from trash)
+    |--------------------------------------------------------------------------
+    */
+    public function restore(int $id)
+    {
+        $post = Post::onlyTrashed()->findOrFail($id);
+        $post->restore();
+
+        return response()->json(['success' => true, 'message' => 'Post restored successfully.']);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | FORCE DELETE  (permanent)
+    |--------------------------------------------------------------------------
+    */
+    public function forceDelete(int $id)
+    {
+        $post = Post::onlyTrashed()->findOrFail($id);
+        $post->clearMediaCollection('posts');
+        $post->clearMediaCollection('videos');
+        $post->forceDelete();
+
+        return response()->json(['success' => true, 'message' => 'Post permanently deleted.']);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | BULK TRASH
+    |--------------------------------------------------------------------------
+    */
+    public function bulkTrash(Request $request)
+    {
+        $request->validate(['ids' => 'required|array', 'ids.*' => 'integer|exists:posts,id']);
+        Post::whereIn('id', $request->ids)->delete();
+        return response()->json(['success' => true, 'message' => count($request->ids) . ' posts moved to trash.']);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | BULK RESTORE
+    |--------------------------------------------------------------------------
+    */
+    public function bulkRestore(Request $request)
+    {
+        $request->validate(['ids' => 'required|array', 'ids.*' => 'integer']);
+        Post::onlyTrashed()->whereIn('id', $request->ids)->restore();
+        return response()->json(['success' => true, 'message' => count($request->ids) . ' posts restored.']);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | EMPTY TRASH  (force-delete all trashed posts)
+    |--------------------------------------------------------------------------
+    */
+    public function emptyTrash()
+    {
+        $posts = Post::onlyTrashed()->get();
+        foreach ($posts as $post) {
+            $post->clearMediaCollection('posts');
+            $post->clearMediaCollection('videos');
+            $post->forceDelete();
+        }
+        return response()->json(['success' => true, 'message' => 'Trash emptied.']);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | MEDIA
     |--------------------------------------------------------------------------
     */
     public function mediaUpload(Request $request)
     {
-        $request->validate([
-            'file'    => 'required|image|max:5120',
-            'post_id' => 'required|exists:posts,id',
-        ]);
-
+        $request->validate(['file' => 'required|image|max:5120', 'post_id' => 'required|exists:posts,id']);
         $media = Post::findOrFail($request->post_id)
-            ->addMediaFromRequest('file')
-            ->toMediaCollection('posts');
-
+            ->addMediaFromRequest('file')->toMediaCollection('posts');
         return response()->json(['success' => true, 'id' => $media->id, 'url' => $media->getUrl()]);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | MEDIA DELETE
-    |--------------------------------------------------------------------------
-    */
     public function mediaDelete($id)
     {
         Media::findOrFail($id)->delete();
@@ -329,11 +387,9 @@ class PostController extends Controller
     {
         $post->load(['category', 'subcategory', 'locality', 'user', 'likesData', 'sharesData', 'viewsData']);
         $post->increment('views');
-
         $categories = Category::orderBy('name')->get();
-        $localities  = Locality::orderBy('name')->get();
-        $users       = User::orderBy('name')->get(['id', 'name', 'email']);
-
+        $localities = Locality::orderBy('name')->get();
+        $users      = User::orderBy('name')->get(['id', 'name', 'email']);
         return view('posts.show', compact('post', 'categories', 'localities', 'users'));
     }
 
@@ -356,16 +412,13 @@ class PostController extends Controller
             'google_map_url'   => 'nullable|string|max:500',
             'is_featured'      => 'nullable|boolean',
             'is_active'        => 'nullable|boolean',
-            // Location
             'country'          => 'nullable|string|max:100',
             'state'            => 'nullable|string|max:100',
             'city'             => 'nullable|string|max:100',
             'location'         => 'nullable|string|max:255',
             'latitude'         => 'nullable|numeric|between:-90,90',
             'longitude'        => 'nullable|numeric|between:-180,180',
-            // Media
-            //'video_url'        => 'nullable|string|max:500',
-            // SEO
+            'video_url'        => 'nullable|string|max:500',
             'meta_title'       => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',
             'keywords'         => 'nullable|string|max:500',
