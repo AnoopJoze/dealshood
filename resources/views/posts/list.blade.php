@@ -1151,5 +1151,19 @@ $(function() {
         }
     });
 });
+
+@if(auth()->user()->hasRole('author'))
+// Authors: lock status to draft, hide user selector
+$('#post_status').find('option[value="published"], option[value="archived"]').hide();
+$('#post_status').val('draft');
+// Hide "Assigned User" field — always their own account
+$('#post_user_id').closest('.col-md-4').hide();
+@endif
+ 
+@if(auth()->user()->hasRole('author'))
+$('#post_status').find('option[value="published"], option[value="archived"]').hide();
+$('#post_status').val('draft');
+$('#post_user_id').closest('.col-md-4').hide();
+@endif
 </script>
 @endpush

@@ -140,38 +140,94 @@ class PostController extends Controller
             'google_map_url'  => $post->google_map_url,
         ]);
     }
-
-    public function ajaxStore(Request $request)
-    {
-        $validated = $request->validate($this->rules());
-        $validated['slug']         = $this->makeSlug($validated['title']);
-        $validated['user_id']      = $validated['user_id'] ?? auth()->id();
-        $validated['published_at'] = ($validated['status']==='published') ? now() : null;
-        $post = Post::create($validated);
-        if ($request->hasFile('video')) $post->addMediaFromRequest('video')->toMediaCollection('videos');
-        return response()->json(['success'=>true,'data'=>$post]);
+public function ajaxStore(Request $request)
+{
+    $validated = $request->validate($this->rules());
+ 
+    // Authors can only create drafts under their own account
+    if (auth()->user()->hasRole('author')) {
+        $validated['status']  = 'draft';
+        $validated['user_id'] = auth()->id();
+    } else {
+        $validated['user_id'] = $validated['user_id'] ?? auth()->id();
     }
-
-    public function update(Request $request, Post $post)
-    {
-        $validated = $request->validate($this->rules($post->id));
-        if ($validated['status']==='published' && !$post->published_at) $validated['published_at'] = now();
-        $post->update($validated);
-        if ($request->hasFile('video')) {
-            $post->clearMediaCollection('videos');
-            $post->addMediaFromRequest('video')->toMediaCollection('videos');
-        }
-        return response()->json(['success'=>true,'data'=>$post->fresh()]);
+ 
+    $validated['slug']         = $this->makeSlug($validated['title']);
+    $validated['published_at'] = ($validated['status'] === 'published') ? now() : null;
+ 
+    $post = Post::create($validated);
+ 
+    if ($request->hasFile('video')) {
+        $post->addMediaFromRequest('video')->toMediaCollection('videos');
     }
-
-    public function inlineUpdate(Request $request)
-    {
-        $request->validate(['id'=>'required|exists:posts,id','field'=>'required|in:status,is_featured,is_active','value'=>'required']);
-        Post::findOrFail($request->id)->update([$request->field=>$request->value]);
-        return response()->json(['success'=>true]);
+ 
+    return response()->json(['success' => true, 'data' => $post]);
+}
+ 
+// ── update ───────────────────────────────────────────────────
+public function update(Request $request, Post $post)
+{
+    // Authors can only edit their own posts
+    if (auth()->user()->hasRole('author') && $post->user_id !== auth()->id()) {
+        abort(403, 'You can only edit your own posts.');
     }
-
-    public function destroy(Post $post)         { $post->delete(); return response()->json(['success'=>true,'message'=>'Post moved to trash.']); }
+ 
+    $validated = $request->validate($this->rules($post->id));
+ 
+    // Authors cannot change status — always stays draft
+    if (auth()->user()->hasRole('author')) {
+        $validated['status'] = 'draft';
+    }
+ 
+    if ($validated['status'] === 'published' && ! $post->published_at) {
+        $validated['published_at'] = now();
+    }
+ 
+    $post->update($validated);
+ 
+    if ($request->hasFile('video')) {
+        $post->clearMediaCollection('videos');
+        $post->addMediaFromRequest('video')->toMediaCollection('videos');
+    }
+ 
+    return response()->json(['success' => true, 'data' => $post->fresh()]);
+}
+ 
+// ── inlineUpdate ─────────────────────────────────────────────
+public function inlineUpdate(Request $request)
+{
+    $request->validate([
+        'id'    => 'required|exists:posts,id',
+        'field' => 'required|in:status,is_featured,is_active',
+        'value' => 'required',
+    ]);
+ 
+    $post = Post::findOrFail($request->id);
+ 
+    // Authors cannot change status via inline select
+    if (auth()->user()->hasRole('author') && $request->field === 'status') {
+        return response()->json(['success' => false, 'message' => 'Authors cannot publish posts.'], 403);
+    }
+ 
+    // Authors can only update their own posts
+    if (auth()->user()->hasRole('author') && $post->user_id !== auth()->id()) {
+        abort(403);
+    }
+ 
+    $post->update([$request->field => $request->value]);
+ 
+    return response()->json(['success' => true]);
+}
+ 
+// ── destroy ──────────────────────────────────────────────────
+public function destroy(Post $post)
+{
+    if (auth()->user()->hasRole('author') && $post->user_id !== auth()->id()) {
+        abort(403);
+    }
+    $post->delete();
+    return response()->json(['success' => true, 'message' => 'Post moved to trash.']);
+}
     public function restore(int $id)            { Post::onlyTrashed()->findOrFail($id)->restore(); return response()->json(['success'=>true,'message'=>'Post restored.']); }
     public function forceDelete(int $id)
     {

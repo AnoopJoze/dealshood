@@ -73,7 +73,11 @@ class UserController extends Controller
 
     public function ajaxStore(Request $request)
     {
-        $v = \Validator::make($request->all(),['name'=>'required|string|max:255','email'=>'required|email|unique:users,email','password'=>['required','confirmed',Password::min(8)],'role'=>'required|exists:roles,name','status'=>'required|in:Active,Inactive','phone'=>'nullable|string|max:20','whatsapp_number'=>'nullable|string|max:20','location'=>'nullable|string|max:255','company_name'=>'nullable|string|max:255','address'=>'nullable|string|max:500','website'=>'nullable|url|max:255','about_me'=>'nullable|string|max:1000','latitude'=>'nullable|numeric|between:-90,90','longitude'=>'nullable|numeric|between:-180,180']);
+        $v = \Validator::make($request->all(),['name'=>'required|string|max:255','email'=>'required|email|unique:users,email','password' => [
+    'required', 'confirmed',
+    \Illuminate\Validation\Rules\Password::min(8)
+        ->letters()->mixedCase()->numbers()->symbols(),
+],'role'=>'required|exists:roles,name','status'=>'required|in:Active,Inactive','phone'=>'nullable|string|max:20','whatsapp_number'=>'nullable|string|max:20','location'=>'nullable|string|max:255','company_name'=>'nullable|string|max:255','address'=>'nullable|string|max:500','website'=>'nullable|url|max:255','about_me'=>'nullable|string|max:1000','latitude'=>'nullable|numeric|between:-90,90','longitude'=>'nullable|numeric|between:-180,180']);
         if ($v->fails()) return response()->json(['success'=>false,'errors'=>$v->errors()],422);
         $user = User::create(['name'=>$request->name,'email'=>$request->email,'password'=>Hash::make($request->password),'status'=>$request->status,'phone'=>$request->phone,'whatsapp_number'=>$request->whatsapp_number,'location'=>$request->location,'company_name'=>$request->company_name,'address'=>$request->address,'website'=>$request->website,'about_me'=>$request->about_me,'latitude'=>$request->latitude,'longitude'=>$request->longitude]);
         $user->assignRole($request->role);
@@ -83,7 +87,11 @@ class UserController extends Controller
     public function ajaxUpdate(Request $request, $id)
     {
         $user = User::findOrFail($id);
-        $v = \Validator::make($request->all(),['name'=>'required|string|max:255','email'=>'required|email|unique:users,email,'.$user->id,'password'=>['nullable','confirmed',Password::min(8)],'role'=>'required|exists:roles,name','status'=>'required|in:Active,Inactive','phone'=>'nullable|string|max:20','whatsapp_number'=>'nullable|string|max:20','location'=>'nullable|string|max:255','company_name'=>'nullable|string|max:255','address'=>'nullable|string|max:500','website'=>'nullable|url|max:255','about_me'=>'nullable|string|max:1000','latitude'=>'nullable|numeric|between:-90,90','longitude'=>'nullable|numeric|between:-180,180']);
+        $v = \Validator::make($request->all(),['name'=>'required|string|max:255','email'=>'required|email|unique:users,email,'.$user->id,'password' => [
+    'nullable', 'confirmed',
+    \Illuminate\Validation\Rules\Password::min(8)
+        ->letters()->mixedCase()->numbers()->symbols(),
+],'role'=>'required|exists:roles,name','status'=>'required|in:Active,Inactive','phone'=>'nullable|string|max:20','whatsapp_number'=>'nullable|string|max:20','location'=>'nullable|string|max:255','company_name'=>'nullable|string|max:255','address'=>'nullable|string|max:500','website'=>'nullable|url|max:255','about_me'=>'nullable|string|max:1000','latitude'=>'nullable|numeric|between:-90,90','longitude'=>'nullable|numeric|between:-180,180']);
         if ($v->fails()) return response()->json(['success'=>false,'errors'=>$v->errors()],422);
         $data = $request->only(['name','email','status','phone','whatsapp_number','location','company_name','address','website','about_me','latitude','longitude']);
         if ($request->filled('password')) $data['password'] = Hash::make($request->password);

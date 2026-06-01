@@ -2,7 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Frontend\FrontEndController;
+use App\Http\Controllers\Frontend\RegisterController;
 
+Route::middleware('guest')->group(function () {
+    Route::get('/register',  [RegisterController::class, 'show'])->name('register');
+    Route::post('/register', [RegisterController::class, 'store']);
+});
 Route::get('/', [FrontEndController::class, 'home'])->name('home');
 Route::get('/dealshood-ads-details/{locality}/{category}/{subcategory}/{slug}', [FrontEndController::class, 'postDetail'])->name('post-details');
 Route::get('/dealshood-ads', [FrontEndController::class, 'listing'])

@@ -421,15 +421,108 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     .dh-hero .dh-excerpt   { animation: fadeUp .5s .24s both; }
     .dh-hero .dh-actions   { animation: fadeUp .5s .30s both; }
     .dh-hero .dh-media-col { animation: fadeUp .6s .08s both; }
-    </style>
+
+/* ── PWA / app feel ── */
+@media (max-width: 768px) {
+
+    /* Scroll snap on hero category tiles */
+    .dh-hero-panel .dh-glass-grid {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        justify-content: flex-start;
+        padding: 0 16px 12px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        scroll-snap-type: x proximity;
+    }
+    .dh-hero-panel .dh-glass-grid::-webkit-scrollbar { display: none; }
+    .dh-gtile { scroll-snap-align: start; flex-shrink: 0; }
+
+    /* Hero height tighter on mobile */
+    .dh-hero-panel { padding: 20px 0 52px; }
+    .dh-hero-text  { padding: 28px 24px 0; }
+
+    /* Carousels scroll snap */
+    .dh-track {
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        padding-left: 16px;
+    }
+    .dh-track .dh-card { scroll-snap-align: start; }
+    .dh-track .dh-card:last-child { margin-right: 16px; }
+
+    /* Latest deals — 2-col grid on small phones, 1-col on very small */
+    .dh-grid {
+        grid-template-columns: repeat(2,1fr);
+        gap: 12px;
+    }
+    @media (max-width: 380px) {
+        .dh-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Card body tighter */
+    .dh-card-body { padding: 12px 14px 14px; }
+    .dh-card-title { font-size: .88rem; }
+    .dh-card-desc  { display: none; } /* hide on mobile to save space */
+
+    /* Section heading tighter */
+    .dh-sec-head   { margin-bottom: 14px; }
+    .dh-sec-title  { font-size: 1.15rem; }
+
+    /* Listing chips label hidden */
+    .dh-chips-label .label-text { display: none; }
+
+    /* Listing toolbar — stack on tiny screens */
+    .dh-toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    /* Sort pills — scroll, don't wrap */
+    .dh-sort-pills {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-bottom: 2px;
+    }
+    .dh-sort-pills::-webkit-scrollbar { display: none; }
+
+    /* Post detail hero taller */
+    .dh-hero.detail-hero { min-height: 60vw; }
+
+    /* Post detail description font */
+    .dh-content-body { font-size: .94rem; line-height: 1.78; }
+
+    /* Reading progress bar */
+    #reading-progress { height: 2px; }
+
+    /* Load more button full width */
+    .dh-more-btn { width: 100%; justify-content: center; }
+
+    /* Footer — single column */
+    .dh-footer-grid { grid-template-columns: 1fr !important; gap: 28px; }
+    .dh-footer { padding: 36px 0 0; }
+}
+
+/* ── Smooth momentum scroll globally ── */
+* { -webkit-overflow-scrolling: touch; }
+
+/* ── Remove ugly mobile tap highlight everywhere ── */
+* { -webkit-tap-highlight-color: transparent; }
+
+/* ── Prevent zoom on input focus (iOS) ── */
+@media (max-width: 768px) {
+    input, select, textarea { font-size: 16px !important; }
+}
+</style>
 </head>
 
 <body>
 
     <div id="reading-progress"></div>
-
-    {{-- ═══════════════════════════════════════ NAVBAR ════════════════════════════════════════ --}}
-    <nav class="dh-nav">
+<nav class="dh-nav">
         <div class="dh-nav-inner">
             <a class="dh-nav-logo" href="{{ route('home') }}">
                 <img src="/frontend/img/dealshood.png" alt="DealsHood">
@@ -449,6 +542,31 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
             </div>
         </div>
     </nav>
+    {{-- ═══════════════════════════════════════ NAVBAR ════════════════════════════════════════ --}}
+    {{-- <nav class="dh-nav" style="position:sticky;top:0;">
+    <div class="dh-nav-inner" style="position:relative;">
+        <a href="javascript:history.back()" class="dh-nav-back">
+            <i class="fas fa-chevron-left"></i>
+            <span class="d-none d-sm-inline">Back</span>
+        </a>
+
+        <span class="dh-nav-page-title">{{ Str::limit($post->title, 28) }}</span>
+
+        <a href="{{ route('home') }}" class="dh-nav-logo d-none d-md-block">
+            <img src="/frontend/img/dealshood.png" alt="DealsHood">
+        </a>
+        <div class="dh-nav-actions" style="display:flex;align-items:center;gap:10px;">
+            <a href="https://www.instagram.com/dealshood?igsh=NHJpdDhkYmJ2dTlj"
+               target="_blank" class="dh-btn-nav dh-btn-ig">
+                <i class="bi bi-instagram"></i> Follow Us
+            </a>
+            <a href="https://wa.me/918086087050?text=Hello%20I%20am%20interested%20in%20your%20listing"
+               target="_blank" class="dh-btn-nav dh-btn-wa">
+                <i class="bi bi-whatsapp"></i> Contact Us
+            </a>
+        </div>
+    </div>
+</nav> --}}
 
     {{-- ═══════════════════════════════════════ HERO ═══════════════════════════════════════════ --}}
     <header class="dh-hero">
@@ -667,6 +785,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         </div>
     </div>
 
+{{-- @include('frontend.frontend-mobile') --}}
     {{-- ═══════════════════════════════════════ SCRIPTS ════════════════════════════════════════ --}}
     <script src="/frontend/js/core/popper.min.js"></script>
     <script src="/frontend/js/core/bootstrap.min.js"></script>
@@ -795,5 +914,23 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         ],
     ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
     </script>
+    {{-- @if($post->phone_number || $post->whatsapp_number)
+<div class="mobile-cta-bar" id="mobileCta">
+    @if($post->phone_number)
+    <a href="tel:{{ $post->phone_number }}" class="mobile-cta-call">
+        <i class="bi bi-telephone-fill"></i> Call Now
+    </a>
+    @endif
+    @if($post->whatsapp_number)
+    <a href="{{ $post->whatsapp_link }}" target="_blank" class="mobile-cta-wa">
+        <i class="bi bi-whatsapp"></i> WhatsApp
+    </a>
+    @endif
+</div>
+<script>
+// Add class so body gets extra padding for the CTA bar
+document.body.classList.add('has-cta-bar');
+</script>
+@endif --}}
 </body>
 </html>
