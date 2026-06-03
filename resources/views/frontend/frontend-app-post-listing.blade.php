@@ -746,6 +746,29 @@ $paletteJson = json_encode($palette);
 </footer>
 
 @include('frontend.frontend-mobile')
+<style>
+@media(max-width: 768px) {
+    #post-wrapper {
+        grid-template-columns: 1fr !important;
+        gap: 14px;
+    }
+}
+@media(max-width: 768px) {
+    #post-wrapper {
+        grid-template-columns: 1fr !important;
+        gap: 14px;
+    }
+    /* Re-show description in single-column list */
+    #post-wrapper .dh-card-desc {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    #post-wrapper .dh-card-media img,
+    #post-wrapper .dh-card-media video { height: 200px; }
+}
+</style>
 <script src="/frontend/js/core/popper.min.js"></script>
 <script src="/frontend/js/core/bootstrap.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
