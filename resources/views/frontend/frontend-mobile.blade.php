@@ -84,11 +84,15 @@
     .loc-btn { padding: 10px 18px; font-size: .8rem; }
 
     /* ── Category tiles — bigger touch target ──────── */
-    .dh-gtile {
-        width: 72px; padding: 11px 4px 9px;
-        font-size: .64rem;
-    }
-    .dh-gtile .gtile-icon { width: 32px; height: 32px; }
+    /* ── Category tiles — remove fixed width, keep touch sizing ── */
+.dh-gtile {
+    padding: 12px 14px;
+    font-size: .82rem;
+    /* NO width here — let the grid control it */
+}
+.dh-gtile .gtile-icon {
+    width: 36px; height: 36px; flex-shrink: 0;
+}
 
     /* ── Cards — full width, better touch ──────────── */
     .dh-card { border-radius: 14px; }

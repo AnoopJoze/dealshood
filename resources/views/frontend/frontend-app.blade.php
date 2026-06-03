@@ -41,11 +41,12 @@
     .wrap { max-width:1180px; margin:0 auto; padding:0 24px; }
 
     /* ── Navbar ── */
-    .dh-nav { position:fixed; top:0; left:0; right:0; height:var(--nav-h);
+    .dh-nav { position:sticky; top:0; left:0; right:0; height:var(--nav-h);
               background:#fff; border-bottom:1px solid rgba(0,0,0,.07);
               z-index:1000; display:flex; align-items:center; }
     .dh-nav-inner { display:flex; align-items:center; justify-content:space-between;
-                    width:100%; max-width:1180px; margin:0 auto; padding:0 24px; }
+                    width:100%; max-width:1180px; margin:0 auto; padding:0 24px;
+                    position:relative; }
     .dh-nav-logo img { height:45px; display:block; }
     .dh-nav-actions { display:flex; align-items:center; gap:10px; }
     .dh-btn-nav { display:inline-flex; align-items:center; gap:6px; font-size:.75rem;
@@ -66,7 +67,7 @@
     }
 
     /* ── Hero ── */
-    .dh-hero { padding-top:var(--nav-h); position:relative; overflow:hidden;
+    .dh-hero { position:relative; overflow:hidden;
                background:var(--ink); display:flex; flex-direction:column;
                align-items:center; justify-content:center; }
     .dh-hero-bg { position:absolute; inset:0;
@@ -82,7 +83,7 @@
                      line-height:1.14; letter-spacing:-.025em; margin:0 0 8px; }
     .dh-hero-sub { font-size:.9rem; color:rgba(255,255,255,.5); font-weight:300; margin:0 0 22px; }
 
-    /* ── Location trigger button (in hero) ── */
+    /* ── Location trigger button ── */
     .loc-trigger {
         display:inline-flex; align-items:center; gap:9px;
         background:rgba(255,255,255,.13); backdrop-filter:blur(14px);
@@ -90,100 +91,81 @@
         border:1.5px solid rgba(255,255,255,.25); color:#fff;
         border-radius:100px; padding:11px 20px 11px 13px;
         font-size:.84rem; font-weight:600; cursor:pointer;
-        transition:all .18s; -webkit-tap-highlight-color:transparent;
-        white-space:nowrap;
+        transition:all .18s; -webkit-tap-highlight-color:transparent; white-space:nowrap;
     }
     .loc-trigger:hover { background:rgba(255,255,255,.22); border-color:rgba(255,255,255,.5);
                          transform:translateY(-1px); box-shadow:0 8px 28px rgba(0,0,0,.28); }
     .loc-trigger:active { transform:scale(.97); }
-    .lt-pin {
-        width:28px; height:28px; border-radius:50%;
-        background:rgba(255,255,255,.18);
-        display:flex; align-items:center; justify-content:center;
-        font-size:.7rem; flex-shrink:0; transition:background .15s;
-    }
+    .lt-pin { width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,.18);
+              display:flex; align-items:center; justify-content:center;
+              font-size:.7rem; flex-shrink:0; transition:background .15s; }
     .loc-trigger:hover .lt-pin { background:rgba(255,255,255,.28); }
-    .lt-dot {
-        width:8px; height:8px; border-radius:50%;
-        background:#4ade80; flex-shrink:0; display:none;
-        box-shadow:0 0 0 2px rgba(74,222,128,.3);
-    }
+    .lt-dot { width:8px; height:8px; border-radius:50%; background:#4ade80; flex-shrink:0;
+              display:none; box-shadow:0 0 0 2px rgba(74,222,128,.3); }
     .loc-trigger.has-loc .lt-dot { display:block; }
     .lt-label { flex:1; text-align:left; }
     .lt-chevron { font-size:.58rem; opacity:.6; margin-left:4px; }
 
-    /* Selected area pill (shown below button after selection) */
-    .loc-pill {
-        display:none; margin-top:9px;
-        background:rgba(255,255,255,.12); backdrop-filter:blur(8px);
-        border:1px solid rgba(255,255,255,.2); border-radius:100px;
-        padding:5px 8px 5px 12px; color:#fff;
-        font-size:.74rem; font-weight:500;
-        align-items:center; gap:8px; cursor:pointer;
-        transition:background .15s;
-    }
+    .loc-pill { display:none; margin-top:9px; background:rgba(255,255,255,.12);
+                backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,.2);
+                border-radius:100px; padding:5px 8px 5px 12px; color:#fff;
+                font-size:.74rem; font-weight:500; align-items:center; gap:8px;
+                cursor:pointer; transition:background .15s; }
     .loc-pill.show { display:inline-flex; }
     .loc-pill:hover { background:rgba(255,255,255,.2); }
-    .lp-clear {
-        width:18px; height:18px; border-radius:50%;
-        background:rgba(255,255,255,.2); border:none; color:#fff;
-        font-size:.55rem; cursor:pointer;
-        display:flex; align-items:center; justify-content:center;
-        -webkit-tap-highlight-color:transparent; flex-shrink:0;
-        transition:background .14s;
-    }
+    .lp-clear { width:18px; height:18px; border-radius:50%; background:rgba(255,255,255,.2);
+                border:none; color:#fff; font-size:.55rem; cursor:pointer;
+                display:flex; align-items:center; justify-content:center;
+                -webkit-tap-highlight-color:transparent; flex-shrink:0; transition:background .14s; }
     .lp-clear:hover { background:rgba(255,255,255,.38); }
 
-    /* ══════════════════════════════════════════════
-       CATEGORY TILE GRID — 2 columns, bigger text
-    ══════════════════════════════════════════════ */
+    /* ══════════════════════════════════════════
+       CATEGORY TILE GRID
+       Panel: full width, no max-width constraint.
+       Grid: 2 columns, capped at 640px, centred.
+       Tiles: horizontal (icon-left, text-right).
+    ══════════════════════════════════════════ */
     .dh-hero-panel {
-        position:relative; z-index:4; width:100%; max-width:680px;
-        padding:20px 24px 60px; animation:fadeUp .55s .25s both;
-    }
+    position:relative; z-index:4;
+    width:100%;
+    align-self:stretch;   /* ← overrides parent align-items:center */
+    padding:20px 24px 60px;
+    animation:fadeUp .55s .25s both;
+}
     .dh-glass-grid {
         display:grid;
         grid-template-columns:repeat(2, 1fr);
         gap:12px;
         width:100%;
+        max-width:640px;              /* desktop cap */
+        margin:0 auto;                /* centre on desktop */
     }
 
-    /* Each tile — horizontal layout: icon left, name right */
     .dh-gtile {
-        display:flex; flex-direction:row; align-items:center; gap:14px;
-        padding:16px 18px; border-radius:16px; text-align:left; color:#fff;
+        display:flex; flex-direction:row; align-items:center; gap:12px;
+        padding:14px 16px;
+        border-radius:14px; color:#fff;
         font-size:.88rem; font-weight:700; line-height:1.3;
         background:rgba(255,255,255,.1); backdrop-filter:blur(10px);
         -webkit-backdrop-filter:blur(10px); border:1.5px solid rgba(255,255,255,.16);
         transition:transform .2s, background .2s, box-shadow .2s, border-color .2s;
         cursor:pointer; user-select:none; text-decoration:none;
-        width:100%;
+        width:100%; min-width:0;      /* allow shrinking */
     }
-    .dh-gtile:hover {
-        transform:translateY(-3px) scale(1.02);
-        background:rgba(255,255,255,.2);
-        border-color:rgba(255,255,255,.4);
-        box-shadow:0 10px 28px rgba(0,0,0,.28);
-        color:#fff;
-    }
+    .dh-gtile:hover { transform:translateY(-3px) scale(1.02); background:rgba(255,255,255,.2);
+                      border-color:rgba(255,255,255,.4); box-shadow:0 10px 28px rgba(0,0,0,.28); color:#fff; }
     .dh-gtile:active { transform:scale(.97); }
+
     .dh-gtile .gtile-icon {
-        width:44px; height:44px; border-radius:12px; flex-shrink:0;
+        width:42px; height:42px; border-radius:11px; flex-shrink:0;
         display:flex; align-items:center; justify-content:center;
-        font-size:1rem; background:rgba(255,255,255,.16); transition:transform .2s;
+        font-size:.95rem; background:rgba(255,255,255,.16); transition:transform .2s;
     }
     .dh-gtile:hover .gtile-icon { transform:scale(1.1); }
-    .dh-gtile .gtile-name { flex:1; word-break:break-word; }
 
-    /* Mobile: 1 column on very small, 2 on normal mobile */
-    @media(max-width:480px){
-        .dh-hero-panel { max-width:100%; padding:16px 16px 48px; }
-        .dh-glass-grid { grid-template-columns:repeat(2,1fr); gap:9px; }
-        .dh-gtile { padding:13px 14px; font-size:.82rem; gap:11px; }
-        .dh-gtile .gtile-icon { width:38px; height:38px; font-size:.9rem; border-radius:10px; }
-    }
-    @media(max-width:320px){
-        .dh-glass-grid { grid-template-columns:1fr; }
+    .dh-gtile .gtile-name {
+        flex:1; min-width:0;
+        white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
 
     /* ── Sections ── */
@@ -227,8 +209,7 @@
 
     .sec-spinner { text-align:center; padding:40px 0; }
     .sec-spinner span { display:inline-block; width:9px; height:9px; border-radius:50%;
-                        background:var(--accent); margin:0 3px;
-                        animation:dotPulse 1.2s infinite both; }
+                        background:var(--accent); margin:0 3px; animation:dotPulse 1.2s infinite both; }
     .sec-spinner span:nth-child(2){ animation-delay:.2s; }
     .sec-spinner span:nth-child(3){ animation-delay:.4s; }
 
@@ -316,8 +297,33 @@
     @keyframes fadeUp { from{opacity:0;transform:translateY(18px);} to{opacity:1;transform:translateY(0);} }
     @keyframes dotPulse { 0%,80%,100%{opacity:.2;transform:scale(.75);} 40%{opacity:1;transform:scale(1);} }
 
-    /* ── Mobile tweaks ── */
+    /* ══════════════════════════════════════════
+       MOBILE  ≤ 768px
+       Panel goes edge-to-edge.
+       Grid fills the full panel width with 2 cols.
+    ══════════════════════════════════════════ */
     @media(max-width:768px){
+       .dh-hero-panel {
+        padding:16px 12px 48px;
+        align-self:stretch;   /* keep it here too for specificity */
+    }
+    .dh-glass-grid {
+        max-width:100%;
+        width:100%;
+        gap:10px;
+    }
+    .dh-gtile {
+        padding:12px 14px;
+        font-size:.82rem;
+        gap:10px;
+        border-radius:12px;
+    }
+    .dh-gtile .gtile-icon {
+        width:36px; height:36px;
+        font-size:.85rem; border-radius:9px;
+    }
+
+        /* Everything else unchanged */
         .dh-hero-text  { padding:28px 24px 0; }
         .dh-track { padding-left:16px; }
         .dh-track .dh-card:last-child { margin-right:16px; }
@@ -332,39 +338,21 @@
         .dh-footer { padding:36px 0 0; }
         input,select,textarea { font-size:16px !important; }
     }
-    * { -webkit-tap-highlight-color:transparent; -webkit-overflow-scrolling:touch; }
-    @media(max-width:768px){
-    /* ADD these three lines — everything else in this block stays the same */
-    .dh-hero-panel { max-width:100%; padding:16px 16px 48px; }
-    .dh-glass-grid { gap:9px; }
-    .dh-gtile      { padding:13px 14px; font-size:.82rem; gap:10px; }
 
-    /* existing rules below — unchanged */
-    .dh-hero-text  { padding:28px 24px 0; }
-    .dh-track { padding-left:16px; }
-    .dh-track .dh-card:last-child { margin-right:16px; }
-    .dh-grid { grid-template-columns:repeat(2,1fr); gap:12px; }
-    .dh-card-body { padding:12px 14px 14px; }
-    .dh-card-title { font-size:.88rem; }
-    .dh-card-desc  { display:none; }
-    .dh-sec-head   { margin-bottom:14px; }
-    .dh-sec-title  { font-size:1.15rem; }
-    .dh-more-btn   { width:100%; justify-content:center; }
-    .dh-footer-grid { grid-template-columns:1fr !important; gap:28px; }
-    .dh-footer { padding:36px 0 0; }
-    input,select,textarea { font-size:16px !important; }
-}
+    * { -webkit-tap-highlight-color:transparent; -webkit-overflow-scrolling:touch; }
     </style>
 </head>
 <body>
 
-{{-- ── Navbar ── --}}
-<nav class="dh-nav" style="position:sticky;top:0;">
-    <div class="dh-nav-inner" style="position:relative;">
+<nav class="dh-nav">
+    <div class="dh-nav-inner">
         <a href="{{ route('home') }}">
             <img src="/frontend/img/dealshood.png" alt="DealsHood" style="height:45px;">
         </a>
-        <div class="dh-nav-actions" style="display:flex;align-items:center;gap:10px;">
+        <button class="dh-nav-toggle" id="navToggle" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+        <div class="dh-nav-actions" id="navActions">
             <a href="https://www.instagram.com/dealshood?igsh=NHJpdDhkYmJ2dTlj"
                target="_blank" class="dh-btn-nav dh-btn-ig">
                 <i class="bi bi-instagram"></i> Follow
@@ -394,7 +382,6 @@ $palette = [
 ];
 @endphp
 
-{{-- ── Hero ── --}}
 <header class="dh-hero">
     <div class="dh-hero-bg" id="heroBg"></div>
     <div class="dh-hero-overlay"></div>
@@ -423,7 +410,6 @@ $palette = [
         </div>
     </div>
 
-    {{-- Category tiles — 2 per row, horizontal layout ── --}}
     <div class="dh-hero-panel">
         <div class="dh-glass-grid" id="catGrid">
             @foreach ($categories as $i => $cat)
@@ -447,7 +433,6 @@ $palette = [
     </div>
 </header>
 
-{{-- ── Carousels ── --}}
 <section class="dh-carousel-sec">
     <div class="wrap">
         <div class="dh-sec-head">
@@ -459,7 +444,6 @@ $palette = [
                 See all <i class="bi bi-arrow-right"></i>
             </a>
         </div>
-
         <div id="carouselContent">
             @foreach ($categoryCarousels as $i => $cat)
                 @if ($cat->posts->isNotEmpty())
@@ -503,7 +487,6 @@ $palette = [
     </div>
 </section>
 
-{{-- ── Latest Deals ── --}}
 <section class="dh-latest-sec">
     <div class="wrap">
         <div class="dh-sec-head">
@@ -515,7 +498,6 @@ $palette = [
                 View all <i class="bi bi-arrow-right"></i>
             </a>
         </div>
-
         <div class="dh-grid" id="postsGrid">
             @forelse ($posts as $post)
                 @include('frontend.post-single-card', ['post' => $post])
@@ -526,14 +508,11 @@ $palette = [
                 </div>
             @endforelse
         </div>
-
         @if ($posts->hasMorePages())
             <div class="dh-show-more" id="showMoreWrap">
-                <button class="dh-more-btn" id="loadMoreBtn"
-                        data-next="{{ $posts->nextPageUrl() }}">
+                <button class="dh-more-btn" id="loadMoreBtn" data-next="{{ $posts->nextPageUrl() }}">
                     Load More Deals
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                         stroke="currentColor" stroke-width="2">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M5 12h14M12 5l7 7-7 7"/>
                     </svg>
                 </button>
@@ -542,7 +521,6 @@ $palette = [
     </div>
 </section>
 
-{{-- ── Footer ── --}}
 <footer class="dh-footer">
     <div class="wrap">
         <div class="dh-footer-grid">
@@ -592,26 +570,23 @@ const HOME_URL    = '{{ route("home") }}';
 
 document.getElementById('footerYear').textContent = new Date().getFullYear();
 
-/* ── Nav toggle ── */
 document.getElementById('navToggle') && document.getElementById('navToggle').addEventListener('click', function () {
     document.getElementById('navActions').classList.toggle('open');
 });
 
-/* ── Hero parallax ── */
 const heroBg = document.getElementById('heroBg');
 window.addEventListener('scroll', function () {
     if (heroBg) heroBg.style.transform = 'translateY(' + (scrollY * .25) + 'px)';
 }, { passive: true });
 
-/* ── Drag-to-scroll ── */
 function makeDraggable(el) {
     if (!el) return;
-    let isDown = false, startX = 0, sl = 0, wasDragged = false;
+    let isDown=false, startX=0, sl=0, wasDragged=false;
     el.addEventListener('mousedown', e => { isDown=true; wasDragged=false; startX=e.pageX-el.offsetLeft; sl=el.scrollLeft; el.style.cursor='grabbing'; });
     el.addEventListener('mouseleave', () => { isDown=false; el.style.cursor=''; el.classList.remove('is-dragging','dragging'); });
     el.addEventListener('mouseup',    () => { isDown=false; el.style.cursor=''; el.classList.remove('is-dragging','dragging'); setTimeout(()=>wasDragged=false,50); });
     el.addEventListener('mousemove', e => {
-        if (!isDown) return; e.preventDefault();
+        if(!isDown) return; e.preventDefault();
         const walk=(e.pageX-el.offsetLeft-startX)*1.4;
         if(Math.abs(walk)>6){ wasDragged=true; el.classList.add('is-dragging','dragging'); }
         el.scrollLeft=sl-walk;
@@ -628,7 +603,6 @@ function initDrag() {
 }
 initDrag();
 
-/* ── Carousel buttons ── */
 $(document).on('click', '.c-prev,.c-next', function () {
     const $t = $('#' + $(this).data('target'));
     if (!$t.length) return;
@@ -636,9 +610,6 @@ $(document).on('click', '.c-prev,.c-next', function () {
     $t[0].scrollBy({ left: $(this).hasClass('c-prev') ? -w*2 : w*2, behavior:'smooth' });
 });
 
-/* ══════════════════════════════════════════════
-   LOCALITY STATE
-══════════════════════════════════════════════ */
 let activeLocSlug = '';
 let activeLocName = '';
 
@@ -703,14 +674,12 @@ function reloadContent() {
             } else { $('#showMoreWrap').hide(); }
             $('#carouselHeading').text(activeLocSlug ? activeLocName + ' — Popular Deals' : 'Top Deals by Category');
             $('#latestHeading').text(activeLocSlug ? activeLocName + ' — Latest Deals' : 'Latest Deals');
-            refreshLinks();
-            initDrag();
+            refreshLinks(); initDrag();
         },
         error: function () { $('#carouselContent').html(''); }
     });
 }
 
-/* ── Like ── */
 $(document).on('click', '.likeBtn', function () {
     const btn=$(this), id=btn.data('id');
     $.post('/posts/'+id+'/toggle-like', {_token:CSRF}, function(res){
@@ -718,15 +687,11 @@ $(document).on('click', '.likeBtn', function () {
         res.liked ? btn.addClass('liked') : btn.removeClass('liked');
     });
 });
-
-/* ── Share ── */
 $(document).on('click', '.shareBtn', function () {
     const id=$(this).data('id'), url=$(this).data('url');
     navigator.share ? navigator.share({url}) : (navigator.clipboard.writeText(url), alert('Link copied!'));
     $.post('/posts/'+id+'/share', {_token:CSRF, platform:'web'});
 });
-
-/* ── Load more ── */
 $(document).on('click', '#loadMoreBtn', function () {
     const btn=$(this), next=btn.data('next');
     if (!next) return;

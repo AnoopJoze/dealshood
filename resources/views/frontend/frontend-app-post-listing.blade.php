@@ -755,9 +755,9 @@ const LISTING_URL = '{{ route("posts.listing") }}';
 const CSRF        = '{{ csrf_token() }}';
 
 document.getElementById('footerYear').textContent = new Date().getFullYear();
-document.getElementById('navToggle').addEventListener('click',function(){
-    document.getElementById('navActions').classList.toggle('open');
-});
+// document.getElementById('navToggle').addEventListener('click',function(){
+//     document.getElementById('navActions').classList.toggle('open');
+// });
 
 /* ═══════════════════════════════════════════════════
    FILTER STATE — tracks current active filters
