@@ -71,7 +71,7 @@
                background:var(--ink); display:flex; flex-direction:column;
                align-items:center; justify-content:center; }
     .dh-hero-bg { position:absolute; inset:0;
-                  background:url('/frontend/img/office-dark.jpg') center/cover no-repeat; opacity:.42; }
+                  background:url('/frontend/img/office-dark.jpg') center/cover no-repeat; opacity:.52; }
     .dh-hero-overlay { position:absolute; inset:0;
                        background:linear-gradient(160deg,rgba(13,13,13,.78) 0%,rgba(13,13,13,.32) 55%,rgba(15,63,126,.2) 100%); }
     .dh-hero-wave { position:absolute; bottom:-1px; left:0; right:0; z-index:3; line-height:0; pointer-events:none; }
@@ -390,7 +390,7 @@ $palette = [
 
     <div class="dh-hero-text">
         <h1 class="dh-hero-title">Discover the best deals near you.</h1>
-        <p class="dh-hero-sub" id="heroSub">Pick your area or browse by category below</p>
+        {{-- <p class="dh-hero-sub" id="heroSub">Pick your area or browse by category below</p> --}}
 
         <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
             <button class="loc-trigger" id="locTrigger" type="button"
@@ -400,7 +400,7 @@ $palette = [
                 <span class="lt-label" id="locLabel">Choose your area</span>
                 <i class="fas fa-chevron-down lt-chevron"></i>
             </button>
-            <div class="loc-pill" id="locPill"
+            {{-- <div class="loc-pill" id="locPill"
                  onclick="window.openLocationPopup && window.openLocationPopup()">
                 <i class="fas fa-map-marker-alt" style="font-size:.62rem;opacity:.75;"></i>
                 <span id="locPillName"></span>
@@ -408,7 +408,7 @@ $palette = [
                         onclick="event.stopPropagation();clearLoc();">
                     <i class="fas fa-times"></i>
                 </button>
-            </div>
+            </div> --}}
         </div>
     </div>
 
@@ -560,7 +560,14 @@ $palette = [
 </footer>
 
 @include('frontend.frontend-mobile')
-
+<style>
+@media(max-width: 768px) {
+    #postsGrid {
+        grid-template-columns: 1fr !important;
+        gap: 16px;
+    }
+}
+</style>
 <script src="/frontend/js/core/popper.min.js"></script>
 <script src="/frontend/js/core/bootstrap.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
