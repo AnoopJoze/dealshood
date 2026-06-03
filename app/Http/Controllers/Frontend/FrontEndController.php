@@ -22,8 +22,9 @@ class FrontendController extends Controller
         $categories = Category::withCount(['posts' => fn($q) => $q->where('status', 'published')])
             ->orderByDesc('posts_count')
             ->get();
-
-        $localities = Locality::where('parent_id', 3)->get();
+        $localities = Locality::whereHas('posts', function ($q) {
+            $q->where('status', 'published');
+        })->orderBy('name')->get();
 
         /* ── AJAX: locality chip was clicked ─────────────────────────── */
         if ($request->ajax()) {
@@ -116,7 +117,9 @@ class FrontendController extends Controller
     ════════════════════════════════════════════ */
     public function listing(Request $request)
     {
-        $localities    = Locality::where('parent_id', 3)->get();
+        $localities = Locality::whereHas('posts', function ($q) {
+            $q->where('status', 'published');
+        })->orderBy('name')->get();
         $categories    = Category::withCount(['posts' => fn($q) => $q->where('status', 'published')])
                             ->orderByDesc('posts_count')->get();
         $subcategories = collect();

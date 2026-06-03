@@ -26,9 +26,24 @@
     --safe-top:    env(safe-area-inset-top, 0px);
     --bot-nav-h:   60px;
 }
+/* ══════════════════════════════════════════════════
+   BOTTOM NAVIGATION BAR
+   Shown on mobile only.
+══════════════════════════════════════════════════ */
+.bot-nav {
+    display: none; /* hidden on desktop */
+}
 
+/* ADD these two — hidden on desktop, shown on mobile below */
+.dh-nav-back       { display: none; }
+.dh-nav-page-title { display: none; }
 @media (max-width: 768px) {
+ /* ADD these two lines alongside the existing rules */
+    .dh-nav-back       { display: flex; }
+    .dh-nav-page-title { display: block; }
 
+    .bot-nav { display: flex; }
+    /* ... rest of existing rules unchanged ... */
     /* ── Base ──────────────────────────────────────── */
     html { -webkit-text-size-adjust: 100%; }
     body {

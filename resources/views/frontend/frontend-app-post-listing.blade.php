@@ -496,7 +496,8 @@
             @endif
         </span>
  
-        <a href="{{ route('home') }}" style="display:none;" class="d-none d-md-block">
+        {{-- REPLACE WITH --}}
+        <a href="{{ route('home') }}" class="d-none d-md-block">
             <img src="/frontend/img/dealshood.png" alt="DealsHood" style="height:45px;">
         </a>
         <div class="dh-nav-actions" style="display:flex;align-items:center;gap:10px;">
