@@ -26,9 +26,6 @@
     <link href="/frontend/css/soft-design-system.css?v=1.1.0" rel="stylesheet">
 
     <style>
-    /* ═══════════════════════════════════════════
-       TOKENS
-    ═══════════════════════════════════════════ */
     :root {
         --ink:#0d0d0d; --ink-mid:#3a3a3a; --ink-muted:#6b6b6b;
         --surf:#faf9f7; --surf-2:#f2f1ef;
@@ -43,9 +40,7 @@
            background:var(--surf); color:var(--ink); margin:0; }
     .wrap { max-width:1180px; margin:0 auto; padding:0 24px; }
 
-    /* ═══════════════════════════════════════════
-       NAVBAR
-    ═══════════════════════════════════════════ */
+    /* ── Navbar ── */
     .dh-nav { position:fixed; top:0; left:0; right:0; height:var(--nav-h);
               background:#fff; border-bottom:1px solid rgba(0,0,0,.07);
               z-index:1000; display:flex; align-items:center; }
@@ -70,9 +65,7 @@
         .dh-nav-actions.open { display:flex; }
     }
 
-    /* ═══════════════════════════════════════════
-       HERO
-    ═══════════════════════════════════════════ */
+    /* ── Hero ── */
     .dh-hero { padding-top:var(--nav-h); position:relative; overflow:hidden;
                background:var(--ink); display:flex; flex-direction:column;
                align-items:center; justify-content:center; }
@@ -83,19 +76,69 @@
     .dh-hero-wave { position:absolute; bottom:-1px; left:0; right:0; z-index:3; line-height:0; pointer-events:none; }
     .dh-hero-wave svg { display:block; width:100%; }
 
-    /* Hero text */
     .dh-hero-text { position:relative; z-index:4; text-align:center;
-                    max-width:600px; padding:40px 24px 0; animation:fadeUp .55s .1s both; }
+                    max-width:620px; padding:40px 24px 0; animation:fadeUp .55s .1s both; }
     .dh-hero-title { font-size:clamp(2rem,4.5vw,3.2rem); font-weight:800; color:#fff;
-                     line-height:1.14; letter-spacing:-.025em; margin:0 0 10px; }
-    .dh-hero-sub { font-size:.95rem; color:rgba(255,255,255,.55); font-weight:300; margin:0; }
+                     line-height:1.14; letter-spacing:-.025em; margin:0 0 8px; }
+    .dh-hero-sub { font-size:.9rem; color:rgba(255,255,255,.5); font-weight:300; margin:0 0 22px; }
+
+    /* ── Location trigger button (in hero) ── */
+    .loc-trigger {
+        display:inline-flex; align-items:center; gap:9px;
+        background:rgba(255,255,255,.13); backdrop-filter:blur(14px);
+        -webkit-backdrop-filter:blur(14px);
+        border:1.5px solid rgba(255,255,255,.25); color:#fff;
+        border-radius:100px; padding:11px 20px 11px 13px;
+        font-size:.84rem; font-weight:600; cursor:pointer;
+        transition:all .18s; -webkit-tap-highlight-color:transparent;
+        white-space:nowrap;
+    }
+    .loc-trigger:hover { background:rgba(255,255,255,.22); border-color:rgba(255,255,255,.5);
+                         transform:translateY(-1px); box-shadow:0 8px 28px rgba(0,0,0,.28); }
+    .loc-trigger:active { transform:scale(.97); }
+    .lt-pin {
+        width:28px; height:28px; border-radius:50%;
+        background:rgba(255,255,255,.18);
+        display:flex; align-items:center; justify-content:center;
+        font-size:.7rem; flex-shrink:0; transition:background .15s;
+    }
+    .loc-trigger:hover .lt-pin { background:rgba(255,255,255,.28); }
+    .lt-dot {
+        width:8px; height:8px; border-radius:50%;
+        background:#4ade80; flex-shrink:0; display:none;
+        box-shadow:0 0 0 2px rgba(74,222,128,.3);
+    }
+    .loc-trigger.has-loc .lt-dot { display:block; }
+    .lt-label { flex:1; text-align:left; }
+    .lt-chevron { font-size:.58rem; opacity:.6; margin-left:4px; }
+
+    /* Selected area pill (shown below button after selection) */
+    .loc-pill {
+        display:none; margin-top:9px;
+        background:rgba(255,255,255,.12); backdrop-filter:blur(8px);
+        border:1px solid rgba(255,255,255,.2); border-radius:100px;
+        padding:5px 8px 5px 12px; color:#fff;
+        font-size:.74rem; font-weight:500;
+        align-items:center; gap:8px; cursor:pointer;
+        transition:background .15s;
+    }
+    .loc-pill.show { display:inline-flex; }
+    .loc-pill:hover { background:rgba(255,255,255,.2); }
+    .lp-clear {
+        width:18px; height:18px; border-radius:50%;
+        background:rgba(255,255,255,.2); border:none; color:#fff;
+        font-size:.55rem; cursor:pointer;
+        display:flex; align-items:center; justify-content:center;
+        -webkit-tap-highlight-color:transparent; flex-shrink:0;
+        transition:background .14s;
+    }
+    .lp-clear:hover { background:rgba(255,255,255,.38); }
 
     /* Glassmorphism tile grid */
     .dh-hero-panel { position:relative; z-index:4; width:100%; max-width:1100px;
-                     padding:24px 24px 60px; animation:fadeUp .55s .25s both; }
+                     padding:20px 24px 60px; animation:fadeUp .55s .25s both; }
     .dh-glass-grid { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
     @media(max-width:480px){ .dh-glass-grid { gap:8px; } }
-
     .dh-gtile { width:84px; display:flex; flex-direction:column; align-items:center;
                 justify-content:center; gap:7px; padding:13px 6px 11px;
                 border-radius:14px; text-align:center; color:#fff;
@@ -111,88 +154,8 @@
                              font-size:.85rem; background:rgba(255,255,255,.16); transition:transform .2s; }
     .dh-gtile:hover .gtile-icon { transform:scale(1.1); }
     .dh-gtile .gtile-name { word-break:break-word; width:100%; }
-    .dh-gtile .gtile-count { font-size:.58rem; font-weight:400; opacity:.6; }
-    .dh-gtile.gtile-all { background:rgba(255,255,255,.95); color:var(--ink);
-                           border-color:transparent; box-shadow:0 4px 16px rgba(0,0,0,.18); }
-    .dh-gtile.gtile-all:hover { background:#fff; color:var(--accent); }
-    .dh-gtile.gtile-all .gtile-icon { background:var(--surf-2); color:var(--accent); }
 
-    /* ═══════════════════════════════════════════
-       LOCALITY STRIP  (sticky, below hero)
-    ═══════════════════════════════════════════ */
-    .loc-strip {
-        position:sticky;
-        top:var(--nav-h);
-        z-index:900;
-        background:var(--white);
-        border-bottom:1px solid rgba(0,0,0,.08);
-        box-shadow:0 2px 12px rgba(0,0,0,.06);
-        padding:0;
-        transition:box-shadow .2s;
-    }
-    .loc-strip-inner {
-        display:flex; align-items:stretch;
-        height:48px; gap:0;
-    }
-
-    /* LEFT — "Near me" / icon label */
-    .loc-label {
-        display:flex; align-items:center; gap:7px;
-        padding:0 16px 0 20px;
-        font-size:.68rem; font-weight:700; letter-spacing:.1em;
-        text-transform:uppercase; color:var(--ink-muted);
-        border-right:1px solid rgba(0,0,0,.07);
-        white-space:nowrap; flex-shrink:0;
-        background:var(--surf);
-    }
-    .loc-label i { color:var(--accent); font-size:.75rem; }
-
-    /* CHIPS SCROLL AREA */
-    .loc-chips {
-        display:flex; align-items:center; gap:7px;
-        flex:1; overflow-x:auto; padding:0 16px;
-        -ms-overflow-style:none; scrollbar-width:none;
-        cursor:grab;
-    }
-    .loc-chips::-webkit-scrollbar { display:none; }
-    .loc-chips.dragging { cursor:grabbing; }
-
-    .loc-chip {
-        display:inline-flex; align-items:center; gap:5px;
-        padding:5px 14px; border-radius:100px;
-        font-size:.73rem; font-weight:600; white-space:nowrap;
-        color:var(--ink-muted); background:var(--surf);
-        border:1.5px solid rgba(0,0,0,.09);
-        cursor:pointer; transition:all .14s; user-select:none; flex-shrink:0;
-    }
-    .loc-chip:hover { border-color:var(--accent); color:var(--accent);
-                      background:rgba(15,63,126,.05); transform:translateY(-1px); }
-    .loc-chip.active {
-        background:var(--ink); color:#fff;
-        border-color:var(--ink); box-shadow:0 3px 10px rgba(0,0,0,.18);
-    }
-    .loc-chip .dot { width:7px; height:7px; border-radius:50%;
-                     background:currentColor; flex-shrink:0; opacity:.7; }
-
-    /* RIGHT — active locality clear + count badge */
-    .loc-active-tag {
-        display:none; align-items:center; gap:8px;
-        padding:0 16px; border-left:1px solid rgba(0,0,0,.07);
-        font-size:.73rem; font-weight:500; color:var(--accent);
-        white-space:nowrap; flex-shrink:0; background:rgba(15,63,126,.04);
-    }
-    .loc-active-tag.show { display:flex; }
-    .loc-clear-btn {
-        width:22px; height:22px; border-radius:50%; border:1.5px solid rgba(15,63,126,.25);
-        background:transparent; color:var(--accent); cursor:pointer;
-        display:flex; align-items:center; justify-content:center;
-        font-size:.65rem; transition:all .14s;
-    }
-    .loc-clear-btn:hover { background:var(--accent); color:#fff; }
-
-    /* ═══════════════════════════════════════════
-       SECTIONS
-    ═══════════════════════════════════════════ */
+    /* ── Sections ── */
     .dh-sec-head { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:24px; }
     .dh-eyebrow { display:inline-flex; align-items:center; gap:8px; font-size:.67rem;
                   font-weight:500; letter-spacing:.14em; text-transform:uppercase;
@@ -231,7 +194,6 @@
     .dh-track.is-dragging .dh-card { pointer-events:none; }
     @media(max-width:560px){ .dh-track .dh-card { flex:0 0 260px; } }
 
-    /* Section spinner */
     .sec-spinner { text-align:center; padding:40px 0; }
     .sec-spinner span { display:inline-block; width:9px; height:9px; border-radius:50%;
                         background:var(--accent); margin:0 3px;
@@ -322,103 +284,38 @@
 
     @keyframes fadeUp { from{opacity:0;transform:translateY(18px);} to{opacity:1;transform:translateY(0);} }
     @keyframes dotPulse { 0%,80%,100%{opacity:.2;transform:scale(.75);} 40%{opacity:1;transform:scale(1);} }
-/* ── PWA / app feel ── */
-@media (max-width: 768px) {
 
-    /* Scroll snap on hero category tiles */
-    .dh-hero-panel .dh-glass-grid {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        justify-content: flex-start;
-        padding: 0 16px 12px;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        scroll-snap-type: x proximity;
+    /* ── Mobile tweaks ── */
+    @media(max-width:768px){
+        .dh-hero-panel .dh-glass-grid {
+            flex-wrap:nowrap; overflow-x:auto; justify-content:flex-start;
+            padding:0 16px 12px; -webkit-overflow-scrolling:touch;
+            scrollbar-width:none; scroll-snap-type:x proximity;
+        }
+        .dh-hero-panel .dh-glass-grid::-webkit-scrollbar { display:none; }
+        .dh-gtile { scroll-snap-align:start; flex-shrink:0; }
+        .dh-hero-panel { padding:20px 0 52px; }
+        .dh-hero-text  { padding:28px 24px 0; }
+        .dh-track { padding-left:16px; }
+        .dh-track .dh-card:last-child { margin-right:16px; }
+        .dh-grid { grid-template-columns:repeat(2,1fr); gap:12px; }
+        .dh-card-body { padding:12px 14px 14px; }
+        .dh-card-title { font-size:.88rem; }
+        .dh-card-desc  { display:none; }
+        .dh-sec-head   { margin-bottom:14px; }
+        .dh-sec-title  { font-size:1.15rem; }
+        .dh-more-btn   { width:100%; justify-content:center; }
+        .dh-footer-grid { grid-template-columns:1fr !important; gap:28px; }
+        .dh-footer { padding:36px 0 0; }
+        input,select,textarea { font-size:16px !important; }
     }
-    .dh-hero-panel .dh-glass-grid::-webkit-scrollbar { display: none; }
-    .dh-gtile { scroll-snap-align: start; flex-shrink: 0; }
-
-    /* Hero height tighter on mobile */
-    .dh-hero-panel { padding: 20px 0 52px; }
-    .dh-hero-text  { padding: 28px 24px 0; }
-
-    /* Carousels scroll snap */
-    .dh-track {
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-        padding-left: 16px;
-    }
-    .dh-track .dh-card { scroll-snap-align: start; }
-    .dh-track .dh-card:last-child { margin-right: 16px; }
-
-    /* Latest deals — 2-col grid on small phones, 1-col on very small */
-    .dh-grid {
-        grid-template-columns: repeat(2,1fr);
-        gap: 12px;
-    }
-    @media (max-width: 380px) {
-        .dh-grid { grid-template-columns: 1fr; }
-    }
-
-    /* Card body tighter */
-    .dh-card-body { padding: 12px 14px 14px; }
-    .dh-card-title { font-size: .88rem; }
-    .dh-card-desc  { display: none; } /* hide on mobile to save space */
-
-    /* Section heading tighter */
-    .dh-sec-head   { margin-bottom: 14px; }
-    .dh-sec-title  { font-size: 1.15rem; }
-
-    /* Listing chips label hidden */
-    .dh-chips-label .label-text { display: none; }
-
-    /* Listing toolbar — stack on tiny screens */
-    .dh-toolbar {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-
-    /* Sort pills — scroll, don't wrap */
-    .dh-sort-pills {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        padding-bottom: 2px;
-    }
-    .dh-sort-pills::-webkit-scrollbar { display: none; }
-
-    /* Post detail hero taller */
-    .dh-hero.detail-hero { min-height: 60vw; }
-
-    /* Post detail description font */
-    .dh-content-body { font-size: .94rem; line-height: 1.78; }
-
-    /* Reading progress bar */
-    #reading-progress { height: 2px; }
-
-    /* Load more button full width */
-    .dh-more-btn { width: 100%; justify-content: center; }
-
-    /* Footer — single column */
-    .dh-footer-grid { grid-template-columns: 1fr !important; gap: 28px; }
-    .dh-footer { padding: 36px 0 0; }
-}
-
-/* ── Smooth momentum scroll globally ── */
-* { -webkit-overflow-scrolling: touch; }
-
-/* ── Remove ugly mobile tap highlight everywhere ── */
-* { -webkit-tap-highlight-color: transparent; }
-
-/* ── Prevent zoom on input focus (iOS) ── */
-@media (max-width: 768px) {
-    input, select, textarea { font-size: 16px !important; }
-}
-</style>
+    * { -webkit-tap-highlight-color:transparent; -webkit-overflow-scrolling:touch; }
+    </style>
 </head>
 <body>
+
+{{-- ── Navbar ── --}}
+
 {{-- <nav class="dh-nav">
     <div class="dh-nav-inner">
         <a href="{{ route('home') }}">
@@ -475,26 +372,42 @@ $palette = [
 ];
 @endphp
 
-{{-- ═══ HERO ═══ --}}
+{{-- ── Hero ── --}}
 <header class="dh-hero">
     <div class="dh-hero-bg" id="heroBg"></div>
     <div class="dh-hero-overlay"></div>
 
+    {{-- ── Hero text + location trigger ── --}}
     <div class="dh-hero-text">
         <h1 class="dh-hero-title">Discover the best deals near you.</h1>
+        <p class="dh-hero-sub" id="heroSub">Pick your area or browse by category below</p>
+
+        {{-- Location button — opens popup --}}
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <button class="loc-trigger" id="locTrigger" type="button"
+                    onclick="window.openLocationPopup && window.openLocationPopup()">
+                <span class="lt-pin"><i class="fas fa-map-marker-alt"></i></span>
+                <span class="lt-dot"></span>
+                <span class="lt-label" id="locLabel">Choose your area</span>
+                <i class="fas fa-chevron-down lt-chevron"></i>
+            </button>
+
+            {{-- Shown after area selected --}}
+            <div class="loc-pill" id="locPill"
+                 onclick="window.openLocationPopup && window.openLocationPopup()">
+                <i class="fas fa-map-marker-alt" style="font-size:.62rem;opacity:.75;"></i>
+                <span id="locPillName"></span>
+                <button class="lp-clear" id="locPillClear" title="Change area"
+                        onclick="event.stopPropagation();clearLoc();">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
     </div>
 
-    {{-- Category tiles → direct link to listing page --}}
+    {{-- Category tiles --}}
     <div class="dh-hero-panel">
         <div class="dh-glass-grid" id="catGrid">
-
-            {{-- <a href="{{ route('posts.listing') }}"
-               class="dh-gtile gtile-all"
-               data-base="{{ route('posts.listing') }}">
-                <span class="gtile-icon"><i class="fas fa-th"></i></span>
-                <span class="gtile-name">All Deals</span>
-            </a> --}}
-
             @foreach ($categories as $i => $cat)
                 @php $p = $palette[$i % count($palette)]; @endphp
                 <a href="{{ route('posts.listing', ['category_id' => $cat->slug]) }}"
@@ -506,7 +419,6 @@ $palette = [
                     <span class="gtile-name">{{ $cat->name }}</span>
                 </a>
             @endforeach
-
         </div>
     </div>
 
@@ -517,52 +429,9 @@ $palette = [
     </div>
 </header>
 
-{{-- ═══════════════════════════════════════════════════════════
-     LOCALITY STRIP  — sticky, right below hero
-     Chips scroll horizontally. Active locality stored in JS,
-     appended to category tile hrefs + used in AJAX reload.
-═══════════════════════════════════════════════════════════ --}}
-<div class="loc-strip" id="locStrip">
-    <div class="wrap">
-        <div class="loc-strip-inner">
-
-            {{-- Label --}}
-            <div class="loc-label">
-                <i class="fas fa-map-marker-alt"></i>
-                <span class="d-none d-sm-inline">Near</span>
-            </div>
-
-            {{-- Scrollable locality chips --}}
-            <div class="loc-chips" id="locChips">
-                <span class="loc-chip active" data-slug="" data-name="All Areas">
-                    <i class="fas fa-globe" style="font-size:.6rem;opacity:.7;"></i>
-                    All Areas
-                </span>
-                @foreach ($localities as $loc)
-                    <span class="loc-chip" data-slug="{{ $loc->slug }}" data-name="{{ $loc->name }}">
-                        <span class="dot"></span>
-                        {{ $loc->name }}
-                    </span>
-                @endforeach
-            </div>
-
-            {{-- Active area tag + clear button (shown when a locality is selected) --}}
-            <div class="loc-active-tag" id="locActiveTag">
-                <i class="fas fa-map-marker-alt" style="font-size:.62rem;"></i>
-                <span id="locActiveName"></span>
-                <button class="loc-clear-btn" id="locClearBtn" title="Clear area filter">
-                    <i class="bi bi-x"></i>
-                </button>
-            </div>
-
-        </div>
-    </div>
-</div>
-
-{{-- ═══ CAROUSELS ═══ --}}
+{{-- ── Carousels ── --}}
 <section class="dh-carousel-sec">
     <div class="wrap">
-
         <div class="dh-sec-head">
             <div>
                 <div class="dh-eyebrow">Popular</div>
@@ -613,14 +482,12 @@ $palette = [
                 @endif
             @endforeach
         </div>
-
     </div>
 </section>
 
-{{-- ═══ LATEST DEALS ═══ --}}
+{{-- ── Latest Deals ── --}}
 <section class="dh-latest-sec">
     <div class="wrap">
-
         <div class="dh-sec-head">
             <div>
                 <div class="dh-eyebrow">Just in</div>
@@ -654,11 +521,10 @@ $palette = [
                 </button>
             </div>
         @endif
-
     </div>
 </section>
 
-{{-- ═══ FOOTER ═══ --}}
+{{-- ── Footer ── --}}
 <footer class="dh-footer">
     <div class="wrap">
         <div class="dh-footer-grid">
@@ -694,220 +560,182 @@ $palette = [
         </div>
     </div>
 </footer>
+
 @include('frontend.frontend-mobile')
-{{-- ═══ SCRIPTS ═══ --}}
+{{-- ── Scripts ── --}}
 <script src="/frontend/js/core/popper.min.js"></script>
 <script src="/frontend/js/core/bootstrap.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
 <script>
-/* ─── constants ──────────────────────────────────── */
 const CSRF        = '{{ csrf_token() }}';
 const LISTING_URL = '{{ route("posts.listing") }}';
 const HOME_URL    = '{{ route("home") }}';
 
 document.getElementById('footerYear').textContent = new Date().getFullYear();
 
-/* ─── nav toggle ─────────────────────────────────── */
+/* ── Nav toggle ── */
 document.getElementById('navToggle').addEventListener('click', function () {
     document.getElementById('navActions').classList.toggle('open');
 });
 
-/* ─── hero parallax ──────────────────────────────── */
+/* ── Hero parallax ── */
 const heroBg = document.getElementById('heroBg');
 window.addEventListener('scroll', function () {
     if (heroBg) heroBg.style.transform = 'translateY(' + (scrollY * .25) + 'px)';
 }, { passive: true });
 
-/* ─── drag-to-scroll helper ──────────────────────── */
+/* ── Drag-to-scroll ── */
 function makeDraggable(el) {
     if (!el) return;
     let isDown = false, startX = 0, sl = 0, wasDragged = false;
-    el.addEventListener('mousedown', e => {
-        isDown = true; wasDragged = false;
-        startX = e.pageX - el.offsetLeft; sl = el.scrollLeft;
-        el.style.cursor = 'grabbing';
-    });
-    el.addEventListener('mouseleave', () => { isDown = false; el.style.cursor = ''; el.classList.remove('is-dragging','dragging'); });
-    el.addEventListener('mouseup',    () => { isDown = false; el.style.cursor = ''; el.classList.remove('is-dragging','dragging'); setTimeout(() => wasDragged = false, 50); });
+    el.addEventListener('mousedown', e => { isDown=true; wasDragged=false; startX=e.pageX-el.offsetLeft; sl=el.scrollLeft; el.style.cursor='grabbing'; });
+    el.addEventListener('mouseleave', () => { isDown=false; el.style.cursor=''; el.classList.remove('is-dragging','dragging'); });
+    el.addEventListener('mouseup',    () => { isDown=false; el.style.cursor=''; el.classList.remove('is-dragging','dragging'); setTimeout(()=>wasDragged=false,50); });
     el.addEventListener('mousemove', e => {
         if (!isDown) return; e.preventDefault();
-        const walk = (e.pageX - el.offsetLeft - startX) * 1.4;
-        if (Math.abs(walk) > 6) { wasDragged = true; el.classList.add('is-dragging','dragging'); }
-        el.scrollLeft = sl - walk;
+        const walk=(e.pageX-el.offsetLeft-startX)*1.4;
+        if(Math.abs(walk)>6){ wasDragged=true; el.classList.add('is-dragging','dragging'); }
+        el.scrollLeft=sl-walk;
     });
-    el.addEventListener('click', e => { if (wasDragged) { e.preventDefault(); e.stopPropagation(); } }, true);
-    let tx = 0, ts = 0;
-    el.addEventListener('touchstart', e => { tx = e.touches[0].pageX; ts = el.scrollLeft; }, { passive: true });
-    el.addEventListener('touchmove',  e => { el.scrollLeft = ts + (tx - e.touches[0].pageX); },  { passive: true });
+    el.addEventListener('click', e=>{ if(wasDragged){ e.preventDefault(); e.stopPropagation(); } }, true);
+    let tx=0,ts=0;
+    el.addEventListener('touchstart', e=>{ tx=e.touches[0].pageX; ts=el.scrollLeft; },{passive:true});
+    el.addEventListener('touchmove',  e=>{ el.scrollLeft=ts+(tx-e.touches[0].pageX); },{passive:true});
 }
-
-/* Init drag on all carousels */
 function initDrag() {
     document.querySelectorAll('.dh-track:not([data-drag])').forEach(el => {
-        el.setAttribute('data-drag','1');
-        makeDraggable(el);
+        el.setAttribute('data-drag','1'); makeDraggable(el);
     });
 }
 initDrag();
 
-/* Drag on locality chips */
-makeDraggable(document.getElementById('locChips'));
-
-/* ─── carousel prev / next buttons ──────────────── */
+/* ── Carousel buttons ── */
 $(document).on('click', '.c-prev,.c-next', function () {
     const $t = $('#' + $(this).data('target'));
     if (!$t.length) return;
     const w = $t.find('.dh-card').first().outerWidth(true) || 300;
-    $t[0].scrollBy({ left: $(this).hasClass('c-prev') ? -w * 2 : w * 2, behavior: 'smooth' });
+    $t[0].scrollBy({ left: $(this).hasClass('c-prev') ? -w*2 : w*2, behavior:'smooth' });
 });
 
-/* ═══════════════════════════════════════════════════
-   LOCALITY SELECTION
-   ───────────────────────────────────────────────────
-   • Clicking a chip stores the active locality slug
-   • "View all" / "See all" links get locality appended
-   • Category tile hrefs get locality appended
-   • AJAX reloads carousels + latest deals for that area
-   • Clear button resets everything
-═══════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   LOCALITY STATE
+   setLocUI() and reloadContent() are called by
+   the location-popup partial after the user picks.
+══════════════════════════════════════════════ */
 let activeLocSlug = '';
 let activeLocName = '';
 
-/* Build a listing URL with optional locality param */
-function listingUrl(base, extra) {
-    let url = new URL(base, window.location.origin);
-    if (activeLocSlug) url.searchParams.set('locality_id', activeLocSlug);
-    if (extra) Object.entries(extra).forEach(([k,v]) => url.searchParams.set(k, v));
-    return url.pathname + (url.search || '');
-}
-
-/* Update all links that point to the listing page */
-function refreshLinks() {
-    /* Category tile hrefs */
-    document.querySelectorAll('#catGrid .dh-gtile[data-base]').forEach(el => {
-        el.href = listingUrl(el.dataset.base);
-    });
-    /* "View all" / "See all" links in carousels */
-    document.querySelectorAll('#carouselContent a.dh-view-all').forEach(el => {
-        const base = el.href.split('?')[0];
-        const catMatch = el.href.match(/category_id=([^&]+)/);
-        const extra = catMatch ? { category_id: catMatch[1] } : {};
-        el.href = listingUrl(base, extra);
-    });
-    /* Section "View all" links */
-    document.getElementById('carouselViewAll').href = listingUrl(LISTING_URL);
-    document.getElementById('latestViewAll').href   = listingUrl(LISTING_URL);
-}
-
-/* Update active-area UI */
 function setLocUI(slug, name) {
-    activeLocSlug = slug;
-    activeLocName = name;
+    activeLocSlug = slug || '';
+    activeLocName = name || '';
 
-    $('.loc-chip').removeClass('active');
-    $('.loc-chip[data-slug="' + slug + '"]').addClass('active');
+    /* Button */
+    document.getElementById('locLabel').textContent = slug ? name : 'Choose your area';
+    slug ? document.getElementById('locTrigger').classList.add('has-loc')
+         : document.getElementById('locTrigger').classList.remove('has-loc');
 
-    if (slug) {
-        $('#locActiveName').text(name);
-        $('#locActiveTag').addClass('show');
-    } else {
-        $('#locActiveTag').removeClass('show');
-    }
+    /* Pill below button */
+    const pill = document.getElementById('locPill');
+    document.getElementById('locPillName').textContent = name || '';
+    slug ? pill.classList.add('show') : pill.classList.remove('show');
+
+    /* Subtitle */
+    document.getElementById('heroSub').textContent = slug
+        ? 'Showing deals in ' + name
+        : 'Pick your area or browse by category below';
 
     refreshLinks();
 }
 
-/* AJAX load carousels + latest posts for active locality */
+function clearLoc() {
+    setLocUI('', '');
+    reloadContent();
+    /* persist clear to localStorage */
+    try { localStorage.setItem('dh_locality_v1', JSON.stringify({slug:'',name:'All Areas',ts:Date.now()})); } catch(e){}
+}
+
+function refreshLinks() {
+    document.querySelectorAll('#catGrid .dh-gtile[data-base]').forEach(el => {
+        let href = el.dataset.base;
+        if (activeLocSlug) href += (href.includes('?') ? '&' : '?') + 'locality_id=' + activeLocSlug;
+        el.href = href;
+    });
+    const base = LISTING_URL + (activeLocSlug ? '?locality_id=' + activeLocSlug : '');
+    document.getElementById('carouselViewAll').href = base;
+    document.getElementById('latestViewAll').href   = base;
+    document.querySelectorAll('#carouselContent a.dh-view-all').forEach(el => {
+        const m = el.href.match(/category_id=([^&]+)/);
+        let href = LISTING_URL;
+        if (m) href += '?category_id=' + m[1];
+        if (activeLocSlug) href += (m ? '&' : '?') + 'locality_id=' + activeLocSlug;
+        el.href = href;
+    });
+}
+
 function reloadContent() {
     const spinner = '<div class="sec-spinner"><span></span><span></span><span></span></div>';
     $('#carouselContent').html(spinner);
     $('#postsGrid').html('<div style="grid-column:1/-1;">' + spinner + '</div>');
     $('#showMoreWrap').hide();
-
-    const params = {};
-    if (activeLocSlug) params.filter_locality = activeLocSlug;
-
     $.ajax({
-        url: HOME_URL, type: 'GET', data: params,
+        url: HOME_URL, type: 'GET',
+        data: activeLocSlug ? { filter_locality: activeLocSlug } : {},
         headers: { 'X-Requested-With': 'XMLHttpRequest' },
         success: function (res) {
-            $('#carouselContent').html(
-                res.carousel_html ||
-                '<p style="text-align:center;color:var(--ink-muted);padding:32px 0;font-size:.85rem;">No popular deals in this area yet.</p>'
-            );
+            $('#carouselContent').html(res.carousel_html ||
+                '<p style="text-align:center;color:var(--ink-muted);padding:32px 0;font-size:.85rem;">No popular deals in this area yet.</p>');
             $('#postsGrid').html(res.posts_html || '');
-
             if (res.next_page) {
-                const btn = '<div class="dh-show-more" id="showMoreWrap"><button class="dh-more-btn" id="loadMoreBtn" data-next="' + res.next_page + '">Load More Deals <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button></div>';
-                if ($('#showMoreWrap').length) {
-                    $('#showMoreWrap').show().find('#loadMoreBtn').data('next', res.next_page);
-                } else {
-                    $('#postsGrid').after(btn);
-                }
-            } else {
-                $('#showMoreWrap').hide();
-            }
-
-            /* update carousels heading if locality is set */
-            $('#carouselHeading').text(activeLocName ? activeLocName + ' — Popular Deals' : 'Top Deals by Category');
-            $('#latestHeading').text(activeLocName ? activeLocName + ' — Latest Deals' : 'Latest Deals');
-
-            /* re-run refreshLinks so new carousel "See all" links also get locality */
+                const btn = '<div class="dh-show-more" id="showMoreWrap"><button class="dh-more-btn" id="loadMoreBtn" data-next="'
+                    + res.next_page + '">Load More Deals <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button></div>';
+                $('#showMoreWrap').length
+                    ? $('#showMoreWrap').show().find('#loadMoreBtn').data('next', res.next_page)
+                    : $('#postsGrid').after(btn);
+            } else { $('#showMoreWrap').hide(); }
+            $('#carouselHeading').text(activeLocSlug ? activeLocName + ' — Popular Deals' : 'Top Deals by Category');
+            $('#latestHeading').text(activeLocSlug ? activeLocName + ' — Latest Deals' : 'Latest Deals');
             refreshLinks();
             initDrag();
         },
-        error: function () {
-            $('#carouselContent').html('');
-        }
+        error: function () { $('#carouselContent').html(''); }
     });
 }
 
-/* Chip click */
-$(document).on('click', '.loc-chip', function () {
-    const slug = $(this).data('slug');
-    const name = $(this).data('name');
-    if (slug === activeLocSlug) return;  // no change
-    setLocUI(slug, name);
-    reloadContent();
-});
-
-/* Clear button */
-$('#locClearBtn').on('click', function () {
-    setLocUI('', 'All Areas');
-    reloadContent();
-});
-
-/* ─── like ───────────────────────────────────────── */
+/* ── Like ── */
 $(document).on('click', '.likeBtn', function () {
-    const btn = $(this), id = btn.data('id');
-    $.post('/posts/' + id + '/toggle-like', { _token: CSRF }, function (res) {
-        $('#lc-' + id).text(res.likes);
+    const btn=$(this), id=btn.data('id');
+    $.post('/posts/'+id+'/toggle-like', {_token:CSRF}, function(res){
+        $('#lc-'+id).text(res.likes);
         res.liked ? btn.addClass('liked') : btn.removeClass('liked');
     });
 });
 
-/* ─── share ──────────────────────────────────────── */
+/* ── Share ── */
 $(document).on('click', '.shareBtn', function () {
-    const id = $(this).data('id'), url = $(this).data('url');
-    navigator.share ? navigator.share({ url }) : (navigator.clipboard.writeText(url), alert('Link copied!'));
-    $.post('/posts/' + id + '/share', { _token: CSRF, platform: 'web' });
+    const id=$(this).data('id'), url=$(this).data('url');
+    navigator.share ? navigator.share({url}) : (navigator.clipboard.writeText(url), alert('Link copied!'));
+    $.post('/posts/'+id+'/share', {_token:CSRF, platform:'web'});
 });
 
-/* ─── load more ──────────────────────────────────── */
+/* ── Load more ── */
 $(document).on('click', '#loadMoreBtn', function () {
-    const btn = $(this), next = btn.data('next');
+    const btn=$(this), next=btn.data('next');
     if (!next) return;
-    btn.text('Loading…').prop('disabled', true);
-    $.get(next, function (res) {
+    btn.text('Loading…').prop('disabled',true);
+    $.get(next, function(res){
         if (res.html) {
             $('#postsGrid').append(res.html);
             res.next_page
-                ? btn.data('next', res.next_page).text('Load More Deals').prop('disabled', false)
+                ? btn.data('next',res.next_page).text('Load More Deals').prop('disabled',false)
                 : btn.closest('.dh-show-more').remove();
         }
-    }).fail(function () { btn.text('Load More Deals').prop('disabled', false); });
+    }).fail(()=> btn.text('Load More Deals').prop('disabled',false));
 });
 </script>
+
+{{-- ══ Location popup — shows on first visit, calls setLocUI + reloadContent ══ --}}
+@include('frontend.location-popup', ['localities' => $localities])
+
 </body>
 </html>
