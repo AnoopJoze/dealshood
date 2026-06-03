@@ -134,26 +134,57 @@
     }
     .lp-clear:hover { background:rgba(255,255,255,.38); }
 
-    /* Glassmorphism tile grid */
-    .dh-hero-panel { position:relative; z-index:4; width:100%; max-width:1100px;
-                     padding:20px 24px 60px; animation:fadeUp .55s .25s both; }
-    .dh-glass-grid { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
-    @media(max-width:480px){ .dh-glass-grid { gap:8px; } }
-    .dh-gtile { width:84px; display:flex; flex-direction:column; align-items:center;
-                justify-content:center; gap:7px; padding:13px 6px 11px;
-                border-radius:14px; text-align:center; color:#fff;
-                font-size:.68rem; font-weight:600; line-height:1.25;
-                background:rgba(255,255,255,.1); backdrop-filter:blur(10px);
-                -webkit-backdrop-filter:blur(10px); border:1.5px solid rgba(255,255,255,.16);
-                transition:transform .2s,background .2s,box-shadow .2s,border-color .2s;
-                cursor:pointer; user-select:none; text-decoration:none; }
-    .dh-gtile:hover { transform:translateY(-4px) scale(1.04); background:rgba(255,255,255,.2);
-                      border-color:rgba(255,255,255,.4); box-shadow:0 10px 32px rgba(0,0,0,.28); color:#fff; }
-    .dh-gtile .gtile-icon { width:36px; height:36px; border-radius:10px;
-                             display:flex; align-items:center; justify-content:center;
-                             font-size:.85rem; background:rgba(255,255,255,.16); transition:transform .2s; }
+    /* ══════════════════════════════════════════════
+       CATEGORY TILE GRID — 2 columns, bigger text
+    ══════════════════════════════════════════════ */
+    .dh-hero-panel {
+        position:relative; z-index:4; width:100%; max-width:680px;
+        padding:20px 24px 60px; animation:fadeUp .55s .25s both;
+    }
+    .dh-glass-grid {
+        display:grid;
+        grid-template-columns:repeat(2, 1fr);
+        gap:12px;
+        width:100%;
+    }
+
+    /* Each tile — horizontal layout: icon left, name right */
+    .dh-gtile {
+        display:flex; flex-direction:row; align-items:center; gap:14px;
+        padding:16px 18px; border-radius:16px; text-align:left; color:#fff;
+        font-size:.88rem; font-weight:700; line-height:1.3;
+        background:rgba(255,255,255,.1); backdrop-filter:blur(10px);
+        -webkit-backdrop-filter:blur(10px); border:1.5px solid rgba(255,255,255,.16);
+        transition:transform .2s, background .2s, box-shadow .2s, border-color .2s;
+        cursor:pointer; user-select:none; text-decoration:none;
+        width:100%;
+    }
+    .dh-gtile:hover {
+        transform:translateY(-3px) scale(1.02);
+        background:rgba(255,255,255,.2);
+        border-color:rgba(255,255,255,.4);
+        box-shadow:0 10px 28px rgba(0,0,0,.28);
+        color:#fff;
+    }
+    .dh-gtile:active { transform:scale(.97); }
+    .dh-gtile .gtile-icon {
+        width:44px; height:44px; border-radius:12px; flex-shrink:0;
+        display:flex; align-items:center; justify-content:center;
+        font-size:1rem; background:rgba(255,255,255,.16); transition:transform .2s;
+    }
     .dh-gtile:hover .gtile-icon { transform:scale(1.1); }
-    .dh-gtile .gtile-name { word-break:break-word; width:100%; }
+    .dh-gtile .gtile-name { flex:1; word-break:break-word; }
+
+    /* Mobile: 1 column on very small, 2 on normal mobile */
+    @media(max-width:480px){
+        .dh-hero-panel { max-width:100%; padding:16px 16px 48px; }
+        .dh-glass-grid { grid-template-columns:repeat(2,1fr); gap:9px; }
+        .dh-gtile { padding:13px 14px; font-size:.82rem; gap:11px; }
+        .dh-gtile .gtile-icon { width:38px; height:38px; font-size:.9rem; border-radius:10px; }
+    }
+    @media(max-width:320px){
+        .dh-glass-grid { grid-template-columns:1fr; }
+    }
 
     /* ── Sections ── */
     .dh-sec-head { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:24px; }
@@ -287,14 +318,6 @@
 
     /* ── Mobile tweaks ── */
     @media(max-width:768px){
-        .dh-hero-panel .dh-glass-grid {
-            flex-wrap:nowrap; overflow-x:auto; justify-content:flex-start;
-            padding:0 16px 12px; -webkit-overflow-scrolling:touch;
-            scrollbar-width:none; scroll-snap-type:x proximity;
-        }
-        .dh-hero-panel .dh-glass-grid::-webkit-scrollbar { display:none; }
-        .dh-gtile { scroll-snap-align:start; flex-shrink:0; }
-        .dh-hero-panel { padding:20px 0 52px; }
         .dh-hero-text  { padding:28px 24px 0; }
         .dh-track { padding-left:16px; }
         .dh-track .dh-card:last-child { margin-right:16px; }
@@ -315,28 +338,6 @@
 <body>
 
 {{-- ── Navbar ── --}}
-
-{{-- <nav class="dh-nav">
-    <div class="dh-nav-inner">
-        <a href="{{ route('home') }}">
-            <img src="/frontend/img/dealshood.png" alt="DealsHood" style="height:45px;">
-        </a>
-        <button class="dh-nav-toggle" id="navToggle" aria-label="Menu">
-            <span></span><span></span><span></span>
-        </button>
-        <div class="dh-nav-actions" id="navActions">
-            <a href="https://www.instagram.com/dealshood?igsh=NHJpdDhkYmJ2dTlj"
-               target="_blank" class="dh-btn-nav dh-btn-ig">
-                <i class="bi bi-instagram"></i> Follow
-            </a>
-            <a href="https://wa.me/918086087050?text=Hello%20I%20am%20interested%20in%20your%20listing"
-               target="_blank" class="dh-btn-nav dh-btn-wa">
-                <i class="bi bi-whatsapp"></i> Contact
-            </a>
-        </div>
-    </div>
-</nav> --}}
-{{-- ═══ NAVBAR ═══ --}}
 <nav class="dh-nav" style="position:sticky;top:0;">
     <div class="dh-nav-inner" style="position:relative;">
         <a href="{{ route('home') }}">
@@ -377,12 +378,10 @@ $palette = [
     <div class="dh-hero-bg" id="heroBg"></div>
     <div class="dh-hero-overlay"></div>
 
-    {{-- ── Hero text + location trigger ── --}}
     <div class="dh-hero-text">
         <h1 class="dh-hero-title">Discover the best deals near you.</h1>
         <p class="dh-hero-sub" id="heroSub">Pick your area or browse by category below</p>
 
-        {{-- Location button — opens popup --}}
         <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
             <button class="loc-trigger" id="locTrigger" type="button"
                     onclick="window.openLocationPopup && window.openLocationPopup()">
@@ -391,8 +390,6 @@ $palette = [
                 <span class="lt-label" id="locLabel">Choose your area</span>
                 <i class="fas fa-chevron-down lt-chevron"></i>
             </button>
-
-            {{-- Shown after area selected --}}
             <div class="loc-pill" id="locPill"
                  onclick="window.openLocationPopup && window.openLocationPopup()">
                 <i class="fas fa-map-marker-alt" style="font-size:.62rem;opacity:.75;"></i>
@@ -405,7 +402,7 @@ $palette = [
         </div>
     </div>
 
-    {{-- Category tiles --}}
+    {{-- Category tiles — 2 per row, horizontal layout ── --}}
     <div class="dh-hero-panel">
         <div class="dh-glass-grid" id="catGrid">
             @foreach ($categories as $i => $cat)
@@ -562,7 +559,7 @@ $palette = [
 </footer>
 
 @include('frontend.frontend-mobile')
-{{-- ── Scripts ── --}}
+
 <script src="/frontend/js/core/popper.min.js"></script>
 <script src="/frontend/js/core/bootstrap.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -575,7 +572,7 @@ const HOME_URL    = '{{ route("home") }}';
 document.getElementById('footerYear').textContent = new Date().getFullYear();
 
 /* ── Nav toggle ── */
-document.getElementById('navToggle').addEventListener('click', function () {
+document.getElementById('navToggle') && document.getElementById('navToggle').addEventListener('click', function () {
     document.getElementById('navActions').classList.toggle('open');
 });
 
@@ -620,8 +617,6 @@ $(document).on('click', '.c-prev,.c-next', function () {
 
 /* ══════════════════════════════════════════════
    LOCALITY STATE
-   setLocUI() and reloadContent() are called by
-   the location-popup partial after the user picks.
 ══════════════════════════════════════════════ */
 let activeLocSlug = '';
 let activeLocName = '';
@@ -629,29 +624,21 @@ let activeLocName = '';
 function setLocUI(slug, name) {
     activeLocSlug = slug || '';
     activeLocName = name || '';
-
-    /* Button */
     document.getElementById('locLabel').textContent = slug ? name : 'Choose your area';
     slug ? document.getElementById('locTrigger').classList.add('has-loc')
          : document.getElementById('locTrigger').classList.remove('has-loc');
-
-    /* Pill below button */
     const pill = document.getElementById('locPill');
     document.getElementById('locPillName').textContent = name || '';
     slug ? pill.classList.add('show') : pill.classList.remove('show');
-
-    /* Subtitle */
     document.getElementById('heroSub').textContent = slug
         ? 'Showing deals in ' + name
         : 'Pick your area or browse by category below';
-
     refreshLinks();
 }
 
 function clearLoc() {
     setLocUI('', '');
     reloadContent();
-    /* persist clear to localStorage */
     try { localStorage.setItem('dh_locality_v1', JSON.stringify({slug:'',name:'All Areas',ts:Date.now()})); } catch(e){}
 }
 
@@ -734,7 +721,6 @@ $(document).on('click', '#loadMoreBtn', function () {
 });
 </script>
 
-{{-- ══ Location popup — shows on first visit, calls setLocUI + reloadContent ══ --}}
 @include('frontend.location-popup', ['localities' => $localities])
 
 </body>
