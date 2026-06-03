@@ -333,6 +333,27 @@
         input,select,textarea { font-size:16px !important; }
     }
     * { -webkit-tap-highlight-color:transparent; -webkit-overflow-scrolling:touch; }
+    @media(max-width:768px){
+    /* ADD these three lines — everything else in this block stays the same */
+    .dh-hero-panel { max-width:100%; padding:16px 16px 48px; }
+    .dh-glass-grid { gap:9px; }
+    .dh-gtile      { padding:13px 14px; font-size:.82rem; gap:10px; }
+
+    /* existing rules below — unchanged */
+    .dh-hero-text  { padding:28px 24px 0; }
+    .dh-track { padding-left:16px; }
+    .dh-track .dh-card:last-child { margin-right:16px; }
+    .dh-grid { grid-template-columns:repeat(2,1fr); gap:12px; }
+    .dh-card-body { padding:12px 14px 14px; }
+    .dh-card-title { font-size:.88rem; }
+    .dh-card-desc  { display:none; }
+    .dh-sec-head   { margin-bottom:14px; }
+    .dh-sec-title  { font-size:1.15rem; }
+    .dh-more-btn   { width:100%; justify-content:center; }
+    .dh-footer-grid { grid-template-columns:1fr !important; gap:28px; }
+    .dh-footer { padding:36px 0 0; }
+    input,select,textarea { font-size:16px !important; }
+}
     </style>
 </head>
 <body>
