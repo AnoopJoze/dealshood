@@ -795,9 +795,9 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     document.getElementById('footerYear').textContent = new Date().getFullYear();
 
     // Nav toggle
-    document.getElementById('navToggle').addEventListener('click', function () {
-        document.getElementById('navActions').classList.toggle('open');
-    });
+    // document.getElementById('navToggle').addEventListener('click', function () {
+    //     document.getElementById('navActions').classList.toggle('open');
+    // });
 
     // Reading progress
     window.addEventListener('scroll', function () {
