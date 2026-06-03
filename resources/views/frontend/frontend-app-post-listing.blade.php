@@ -458,7 +458,7 @@
 </style>
 </head>
 <body>
-<nav class="dh-nav">
+{{-- <nav class="dh-nav">
     <div class="dh-nav-inner">
         <a href="{{ route('home') }}">
             <img src="/frontend/img/dealshood.png" alt="DealsHood" style="height:45px;">
@@ -480,8 +480,8 @@
             </a>
         </div>
     </div>
-</nav>
-{{-- <nav class="dh-nav" style="position:sticky;top:0;">
+</nav> --}}
+<nav class="dh-nav" style="position:sticky;top:0;">
     <div class="dh-nav-inner" style="position:relative;">
         <a href="{{ route('home') }}" class="dh-nav-back">
             <i class="fas fa-chevron-left"></i>
@@ -513,7 +513,7 @@
             </a>
         </div>
     </div>
-</nav> --}}
+</nav>
 
 {{-- ─── Compact Hero ─── --}}
 <header class="dh-hero">
@@ -745,7 +745,7 @@ $paletteJson = json_encode($palette);
     </div>
 </footer>
 
-{{-- @include('frontend.frontend-mobile') --}}
+@include('frontend.frontend-mobile')
 <script src="/frontend/js/core/popper.min.js"></script>
 <script src="/frontend/js/core/bootstrap.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>

@@ -522,7 +522,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 <body>
 
     <div id="reading-progress"></div>
-<nav class="dh-nav">
+{{-- <nav class="dh-nav">
         <div class="dh-nav-inner">
             <a class="dh-nav-logo" href="{{ route('home') }}">
                 <img src="/frontend/img/dealshood.png" alt="DealsHood">
@@ -541,9 +541,9 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                 </a>
             </div>
         </div>
-    </nav>
+    </nav> --}}
     {{-- ═══════════════════════════════════════ NAVBAR ════════════════════════════════════════ --}}
-    {{-- <nav class="dh-nav" style="position:sticky;top:0;">
+    <nav class="dh-nav" style="position:sticky;top:0;">
     <div class="dh-nav-inner" style="position:relative;">
         <a href="javascript:history.back()" class="dh-nav-back">
             <i class="fas fa-chevron-left"></i>
@@ -566,7 +566,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
             </a>
         </div>
     </div>
-</nav> --}}
+</nav>
 
     {{-- ═══════════════════════════════════════ HERO ═══════════════════════════════════════════ --}}
     <header class="dh-hero">
@@ -785,7 +785,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         </div>
     </div>
 
-{{-- @include('frontend.frontend-mobile') --}}
+@include('frontend.frontend-mobile')
     {{-- ═══════════════════════════════════════ SCRIPTS ════════════════════════════════════════ --}}
     <script src="/frontend/js/core/popper.min.js"></script>
     <script src="/frontend/js/core/bootstrap.min.js"></script>
@@ -914,7 +914,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         ],
     ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
     </script>
-    {{-- @if($post->phone_number || $post->whatsapp_number)
+    @if($post->phone_number || $post->whatsapp_number)
 <div class="mobile-cta-bar" id="mobileCta">
     @if($post->phone_number)
     <a href="tel:{{ $post->phone_number }}" class="mobile-cta-call">
@@ -931,6 +931,6 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 // Add class so body gets extra padding for the CTA bar
 document.body.classList.add('has-cta-bar');
 </script>
-@endif --}}
+@endif
 </body>
 </html>

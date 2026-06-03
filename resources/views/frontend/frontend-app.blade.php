@@ -324,7 +324,7 @@
     @keyframes dotPulse { 0%,80%,100%{opacity:.2;transform:scale(.75);} 40%{opacity:1;transform:scale(1);} }
 /* ── PWA / app feel ── */
 @media (max-width: 768px) {
- 
+
     /* Scroll snap on hero category tiles */
     .dh-hero-panel .dh-glass-grid {
         flex-wrap: nowrap;
@@ -337,11 +337,11 @@
     }
     .dh-hero-panel .dh-glass-grid::-webkit-scrollbar { display: none; }
     .dh-gtile { scroll-snap-align: start; flex-shrink: 0; }
- 
+
     /* Hero height tighter on mobile */
     .dh-hero-panel { padding: 20px 0 52px; }
     .dh-hero-text  { padding: 28px 24px 0; }
- 
+
     /* Carousels scroll snap */
     .dh-track {
         scroll-snap-type: x mandatory;
@@ -350,7 +350,7 @@
     }
     .dh-track .dh-card { scroll-snap-align: start; }
     .dh-track .dh-card:last-child { margin-right: 16px; }
- 
+
     /* Latest deals — 2-col grid on small phones, 1-col on very small */
     .dh-grid {
         grid-template-columns: repeat(2,1fr);
@@ -359,26 +359,26 @@
     @media (max-width: 380px) {
         .dh-grid { grid-template-columns: 1fr; }
     }
- 
+
     /* Card body tighter */
     .dh-card-body { padding: 12px 14px 14px; }
     .dh-card-title { font-size: .88rem; }
     .dh-card-desc  { display: none; } /* hide on mobile to save space */
- 
+
     /* Section heading tighter */
     .dh-sec-head   { margin-bottom: 14px; }
     .dh-sec-title  { font-size: 1.15rem; }
- 
+
     /* Listing chips label hidden */
     .dh-chips-label .label-text { display: none; }
- 
+
     /* Listing toolbar — stack on tiny screens */
     .dh-toolbar {
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
     }
- 
+
     /* Sort pills — scroll, don't wrap */
     .dh-sort-pills {
         flex-wrap: nowrap;
@@ -388,30 +388,30 @@
         padding-bottom: 2px;
     }
     .dh-sort-pills::-webkit-scrollbar { display: none; }
- 
+
     /* Post detail hero taller */
     .dh-hero.detail-hero { min-height: 60vw; }
- 
+
     /* Post detail description font */
     .dh-content-body { font-size: .94rem; line-height: 1.78; }
- 
+
     /* Reading progress bar */
     #reading-progress { height: 2px; }
- 
+
     /* Load more button full width */
     .dh-more-btn { width: 100%; justify-content: center; }
- 
+
     /* Footer — single column */
     .dh-footer-grid { grid-template-columns: 1fr !important; gap: 28px; }
     .dh-footer { padding: 36px 0 0; }
 }
- 
+
 /* ── Smooth momentum scroll globally ── */
 * { -webkit-overflow-scrolling: touch; }
- 
+
 /* ── Remove ugly mobile tap highlight everywhere ── */
 * { -webkit-tap-highlight-color: transparent; }
- 
+
 /* ── Prevent zoom on input focus (iOS) ── */
 @media (max-width: 768px) {
     input, select, textarea { font-size: 16px !important; }
@@ -419,7 +419,7 @@
 </style>
 </head>
 <body>
-<nav class="dh-nav">
+{{-- <nav class="dh-nav">
     <div class="dh-nav-inner">
         <a href="{{ route('home') }}">
             <img src="/frontend/img/dealshood.png" alt="DealsHood" style="height:45px;">
@@ -438,9 +438,9 @@
             </a>
         </div>
     </div>
-</nav>
+</nav> --}}
 {{-- ═══ NAVBAR ═══ --}}
-{{-- <nav class="dh-nav" style="position:sticky;top:0;">
+<nav class="dh-nav" style="position:sticky;top:0;">
     <div class="dh-nav-inner" style="position:relative;">
         <a href="{{ route('home') }}">
             <img src="/frontend/img/dealshood.png" alt="DealsHood" style="height:45px;">
@@ -456,7 +456,7 @@
             </a>
         </div>
     </div>
-</nav> --}}
+</nav>
 
 @php
 $palette = [
@@ -694,7 +694,7 @@ $palette = [
         </div>
     </div>
 </footer>
-{{-- @include('frontend.frontend-mobile') --}}
+@include('frontend.frontend-mobile')
 {{-- ═══ SCRIPTS ═══ --}}
 <script src="/frontend/js/core/popper.min.js"></script>
 <script src="/frontend/js/core/bootstrap.min.js"></script>
