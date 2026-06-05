@@ -12,7 +12,7 @@ use App\Models\PostView;
 use App\Models\Subcategory;
 use Illuminate\Http\Request;
 
-class FrontendController extends Controller
+class FrontEndController extends Controller
 {
     /* ════════════════════════════════════════════
        HOME
@@ -297,13 +297,13 @@ class FrontendController extends Controller
     public function favourites()
 {
     $query = \App\Models\Post::query()
-        ->with(['media', 'category', 'locality', 'likesData', 'viewsData'])
+        ->with(['media', 'locality', 'category', 'subcategory', 'likesData', 'viewsData'])
         ->where('status', 'published');
 
-    if (auth()->check()) {
+    if (auth()->user()) {
         // Logged-in user — fetch by user_id
         $query->whereHas('likesData', function ($q) {
-            $q->where('user_id', auth()->id());
+            $q->where('user_id', auth()->id())->orWhere('session_id', session()->getId());
         });
     } else {
         // Guest — fetch by session id
@@ -313,7 +313,6 @@ class FrontendController extends Controller
     }
 
     $posts = $query->latest()->paginate(12);
-
     return view('frontend.favourites', compact('posts'));
 }
 }

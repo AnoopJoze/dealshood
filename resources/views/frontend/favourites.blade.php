@@ -350,7 +350,7 @@
 
             {{-- Media --}}
             <div class="dh-card-media">
-                <a href="{{ route('post.detail', $post->slug) }}">
+                <a href="{{ $post->url }}">
                     @php $thumb = $post->getFirstMediaUrl('posts'); @endphp
                     @if($thumb)
                         <img src="{{ $thumb }}" alt="{{ $post->title }}" loading="lazy">
@@ -373,7 +373,7 @@
                     @endif
                 </div>
 
-                <a href="{{ route('post.detail', $post->slug) }}" class="dh-card-title">
+                <a href="{{ $post->url }}" class="dh-card-title">
                     {{ $post->title }}
                 </a>
 
@@ -390,7 +390,7 @@
                 </div>
 
                 <div class="dh-card-actions">
-                    <a href="{{ route('post.detail', $post->slug) }}" class="dh-btn dh-btn-primary">
+                    <a href="{{ $post->url }}" class="dh-btn dh-btn-primary">
                         <i class="bi bi-arrow-right-circle"></i> View Deal
                     </a>
                     @if($post->whatsapp_number)

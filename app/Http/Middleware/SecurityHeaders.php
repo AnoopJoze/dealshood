@@ -41,13 +41,8 @@ class SecurityHeaders
                 "https://cdnjs.cloudflare.com " .
                 "https://www.googletagmanager.com " .
                 "https://www.google-analytics.com",
-            "style-src 'self' 'unsafe-inline' " .
-                "https://cdn.jsdelivr.net " .
-                "https://cdnjs.cloudflare.com " .
-                "https://fonts.googleapis.com",
-            "font-src 'self' " .
-                "https://cdnjs.cloudflare.com " .
-                "https://fonts.gstatic.com",
+            "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com",
+            "font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com https://cdn.jsdelivr.net",
             "img-src 'self' data: blob: https: http:",
             "media-src 'self' blob: https:",
             "connect-src 'self' " .
