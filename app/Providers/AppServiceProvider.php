@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Models\Setting;
+use Illuminate\Support\Facades\View;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,5 +26,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         //
+            try {
+                View::share('siteSettings', Setting::allCached());
+            } catch (\Exception $e) {
+                // Fail silently during migrations / first install
+                View::share('siteSettings', []);
+            }
     }
 }

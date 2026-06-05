@@ -5,7 +5,8 @@ use App\Models\Category; use App\Models\Locality; use App\Models\Post;
 use App\Models\Subcategory; use App\Models\User;
 use Carbon\Carbon; use DataTables; use Illuminate\Http\Request; use Illuminate\Support\Str;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-
+use App\Mail\NewPostNotification;
+use Illuminate\Support\Facades\Mail;
 class PostController extends Controller
 {
     public function __construct()
@@ -160,7 +161,10 @@ public function ajaxStore(Request $request)
     if ($request->hasFile('video')) {
         $post->addMediaFromRequest('video')->toMediaCollection('videos');
     }
- 
+    if (!auth()->user()->hasAnyRole(['super-admin', 'admin'])) {
+            Mail::to(config('mail.admin_address', env('ADMIN_EMAIL')))
+                ->send(new NewPostNotification($post));
+        }
     return response()->json(['success' => true, 'data' => $post]);
 }
  

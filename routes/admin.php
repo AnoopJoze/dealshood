@@ -16,6 +16,7 @@ use App\Http\Controllers\SubCategoryController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\SettingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +26,10 @@ use App\Http\Controllers\PermissionController;
 
 Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
 
+    // ── Site Settings ──────────────────────────────────
+    Route::get ('settings',              [SettingController::class, 'index'])      ->name('admin.settings.index');
+    Route::post('settings',              [SettingController::class, 'update'])     ->name('admin.settings.update');
+    Route::post('settings/remove/{key}', [SettingController::class, 'removeFile'])->name('admin.settings.remove-file');
     // ── Core pages ────────────────────────────────────────────────────────────
     Route::get('/', [HomeController::class, 'home'])->name('admin.home');
     Route::get('dashboard', [HomeController::class, 'home'])->name('admin.dashboard');

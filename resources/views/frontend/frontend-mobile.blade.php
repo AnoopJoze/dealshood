@@ -271,11 +271,11 @@
         <span>Browse</span>
     </a>
 
-    <a href="{{ route('posts.listing') }}?sort=popular"
-       class="bot-nav-item {{ request()->get('sort')==='popular' ? 'active':'' }}">
-        <span class="bot-nav-icon"><i class="fas fa-fire"></i></span>
-        <span>Popular</span>
-    </a>
+    <a href="{{ route('favourites') }}"
+   class="bot-nav-item {{ request()->routeIs('favourites') ? 'active':'' }}">
+    <span class="bot-nav-icon"><i class="fas fa-heart"></i></span>
+    <span>Saved</span>
+</a>
 
     <a href="https://wa.me/918086087050?text=Hello%20I%20am%20interested%20in%20your%20listing"
        target="_blank" class="bot-nav-item bot-wa">

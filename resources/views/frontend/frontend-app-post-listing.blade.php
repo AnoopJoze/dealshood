@@ -22,6 +22,45 @@
     <meta property="og:url"         content="{{ $ogUrl }}">
     <meta name="twitter:card"       content="summary_large_image">
 
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="{{ setting('site_name', 'DealsHood') }}">
+<link rel="apple-touch-icon" href="/frontend/img/icons/icon-192x192.png">
+ 
+<script>
+// Register service worker
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('SW registered:', reg.scope))
+            .catch(err => console.log('SW failed:', err));
+    });
+}
+ 
+// PWA Install prompt
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    // Show install button if you have one
+    const installBtn = document.getElementById('pwaInstallBtn');
+    if (installBtn) installBtn.style.display = 'flex';
+});
+ 
+function installPWA() {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(choice => {
+        if (choice.outcome === 'accepted') {
+            const installBtn = document.getElementById('pwaInstallBtn');
+            if (installBtn) installBtn.style.display = 'none';
+        }
+        deferredPrompt = null;
+    });
+}
+</script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link href="/frontend/css/soft-design-system.css?v=1.1.0" rel="stylesheet">

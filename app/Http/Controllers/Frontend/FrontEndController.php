@@ -294,4 +294,26 @@ class FrontendController extends Controller
             ['bg'=>'#f8fafc','ic'=>'#475569','icon'=>'fa-laptop'],
         ];
     }
+    public function favourites()
+{
+    $query = \App\Models\Post::query()
+        ->with(['media', 'category', 'locality', 'likesData', 'viewsData'])
+        ->where('status', 'published');
+
+    if (auth()->check()) {
+        // Logged-in user — fetch by user_id
+        $query->whereHas('likesData', function ($q) {
+            $q->where('user_id', auth()->id());
+        });
+    } else {
+        // Guest — fetch by session id
+        $query->whereHas('likesData', function ($q) {
+            $q->where('session_id', session()->getId());
+        });
+    }
+
+    $posts = $query->latest()->paginate(12);
+
+    return view('frontend.favourites', compact('posts'));
+}
 }

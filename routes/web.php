@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\ContactController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -23,6 +24,13 @@ use Illuminate\Support\Facades\Route;
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\Tags\Url;
 
+Route::get('/sitemap.xml', function () {
+    $path = public_path('sitemap.xml');
+    if (!file_exists($path)) {
+        Artisan::call('sitemap:generate');
+    }
+    return response()->file($path, ['Content-Type' => 'application/xml']);
+});
 Route::get('/generate-sitemap', function () {
 
     $sitemap = Sitemap::create();
@@ -54,6 +62,10 @@ Route::group(['middleware' => 'guest'], function () {
 
 });
 
+// ── routes/web.php ────────────────────────────────────
+Route::get ('/contact', fn() => view('frontend.contact-us'))->name('contact');
+Route::post('/contact', [ContactController::class, 'send'])->name('contact.send')
+           ->middleware('throttle:3,1');
 Route::get('/login', function () {
     return view('session/login-session');
 })->name('login');

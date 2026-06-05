@@ -49,6 +49,12 @@ class RegisterController extends Controller
         $user->assignRole('user');
 
         Auth::login($user);
+        // If using a custom RegisterController, add this after creating the user:
+        $user->sendEmailVerificationNotification();
+        
+        // Then redirect to the verification notice instead of home:
+        return redirect()->route('verification.notice')
+            ->with('success', 'Account created! Please verify your email.');
 
         return redirect()->route('home')
                ->with('success', 'Welcome to DealsHood, ' . $user->name . '!');

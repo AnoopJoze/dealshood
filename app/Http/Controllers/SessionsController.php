@@ -23,6 +23,16 @@ class SessionsController extends Controller
         if(Auth::attempt($attributes))
         {
             session()->regenerate();
+            \App\Models\PostLike::where('session_id', session()->getId())
+                ->whereNull('user_id')
+                ->update(['user_id' => auth()->id()]);
+            // if (!auth()->user()->hasVerifiedEmail()) {
+            //     // Keep them logged in but send to verification notice
+            //     return redirect()->route('verification.notice')
+            //         ->with('info', 'Please verify your email before continuing.');
+            // }
+
+            // Otherwise proceed to normal redirect
             return redirect('admin/dashboard')->with(['success'=>'You are logged in.']);
         }
         else{

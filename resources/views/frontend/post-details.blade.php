@@ -63,6 +63,45 @@
     <meta name="twitter:image"       content="{{ $ogImage }}">
     <meta name="twitter:image:alt"   content="{{ $ogTitle }}">
 
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="{{ setting('site_name', 'DealsHood') }}">
+<link rel="apple-touch-icon" href="/frontend/img/icons/icon-192x192.png">
+ 
+<script>
+// Register service worker
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('SW registered:', reg.scope))
+            .catch(err => console.log('SW failed:', err));
+    });
+}
+ 
+// PWA Install prompt
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    // Show install button if you have one
+    const installBtn = document.getElementById('pwaInstallBtn');
+    if (installBtn) installBtn.style.display = 'flex';
+});
+ 
+function installPWA() {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(choice => {
+        if (choice.outcome === 'accepted') {
+            const installBtn = document.getElementById('pwaInstallBtn');
+            if (installBtn) installBtn.style.display = 'none';
+        }
+        deferredPrompt = null;
+    });
+}
+</script>
     {{-- Bootstrap Icons --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     {{-- Font Awesome --}}
@@ -203,7 +242,19 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         font-size: 1rem; line-height: 1.76;
         color: var(--ink-muted); font-weight: 300; margin-bottom: 34px;
     }
-    .dh-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.dh-actions {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    align-items: center;
+}
+.dh-actions .dh-btn {
+    flex: 1;
+    padding: 10px 12px;
+    font-size: .76rem;
+    white-space: nowrap;
+    justify-content: center;
+}
 
     /* Buttons */
     .dh-btn {
@@ -328,9 +379,19 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     .dh-contact-value { color: var(--ink-muted); font-weight: 300; }
     .dh-contact-value a { color: var(--accent); text-decoration: none; }
     .dh-contact-btns {
-        display: flex; flex-wrap: wrap; gap: 10px;
-        margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(0,0,0,.06);
-    }
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(0,0,0,.06);
+}
+.dh-cta-btn {
+    flex: 1;
+    padding: 11px 10px;
+    font-size: .78rem;
+    white-space: nowrap;
+    justify-content: center;
+    text-align: center;
+}
     .dh-cta-btn {
         display: inline-flex; align-items: center; gap: 7px;
         font-family: var(--font-sans); font-size: .8rem; font-weight: 500;
@@ -515,6 +576,11 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 /* ── Prevent zoom on input focus (iOS) ── */
 @media (max-width: 768px) {
     input, select, textarea { font-size: 16px !important; }
+}
+@media(max-width: 400px) {
+    .dh-actions .dh-btn  { font-size: .7rem; padding: 9px 8px; gap: 4px; }
+    .dh-cta-btn          { font-size: .72rem; padding: 10px 8px; gap: 4px; }
+    .dh-cta-btn i        { display: none; } /* hide icons on tiny screens to save space */
 }
 </style>
 </head>

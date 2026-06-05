@@ -7,6 +7,12 @@ $nav = [
         ],
     ],
     [
+        'label' => null,
+        'items' => [
+            ['label'=>'Settings','href'=>url('admin/settings'),'match'=>'admin/settings','icon'=>'fa fa-cog py-2','color'=>'#6366f1','bg'=>'#ede9fe','can'=>'dashboard.view'],
+        ],
+    ],
+    [
         'label' => 'Content',
         'items' => [
             ['label'=>'Posts',         'href'=>url('admin/posts'),         'match'=>'admin/posts*',         'icon'=>'fas fa-newspaper',      'color'=>'#0ea5e9','bg'=>'#e0f2fe','can'=>'posts.view'],

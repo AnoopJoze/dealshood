@@ -1,4 +1,25 @@
+# DealsHood — robots.txt
+# Place this file in your /public folder
+
 User-agent: *
 Allow: /
+Allow: /browse
+Allow: /post/
+Allow: /sitemap.xml
 
-Sitemap: https://yourdomain.com/sitemap.xml
+# Block admin and auth pages from crawlers
+Disallow: /admin
+Disallow: /admin/
+Disallow: /login
+Disallow: /register
+Disallow: /email/
+Disallow: /password/
+Disallow: /favourites
+Disallow: /session
+
+# Block query-string only pages to avoid duplicate content
+Disallow: /*?page=
+Disallow: /*?sort=
+
+# Sitemap location
+Sitemap: https://dealshood.com/sitemap.xml
