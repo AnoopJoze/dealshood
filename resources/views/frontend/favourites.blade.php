@@ -76,7 +76,7 @@
     }
     .page-hero::before {
         content:''; position:absolute; inset:0;
-        background:url('/frontend/img/office-dark.jpg') center/cover; opacity:.12;
+        background:url('/frontend/img/office-dark.jpg') center/cover; opacity:.52;
     }
     .page-hero-content { position:relative; z-index:1; }
     .hero-icon {
