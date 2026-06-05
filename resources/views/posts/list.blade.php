@@ -776,8 +776,10 @@ ClassicEditor.create(document.querySelector('#description'))
 Dropzone.autoDiscover = false;
 const myDropzone = new Dropzone('#postDropzone', {
     url: '{{ route("posts.mediaUpload") }}',
-    autoProcessQueue: false, parallelUploads: 5,
-    maxFilesize: 5, acceptedFiles: 'image/*',
+    autoProcessQueue: false,
+    parallelUploads: 5,
+    maxFilesize: 5,
+    acceptedFiles: 'image/*',
     headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
     sending: (file, xhr, fd) => fd.append('post_id', postId),
     success: function(file, res) {
@@ -785,6 +787,13 @@ const myDropzone = new Dropzone('#postDropzone', {
         this.removeFile(file);
     },
     error: (file, msg) => console.error(msg),
+    // ── ADD THIS ──
+    queuecomplete: function() {
+        if (pendingModalClose) {
+            pendingModalClose = false;
+            finishSave();
+        }
+    },
 });
 
 function appendImageThumb(id, url) {
@@ -943,6 +952,20 @@ $(document).on('click', '.editPost', function() {
     }).fail(() => Swal.fire('Error', 'Could not load post data.', 'error'));
 });
 
+// Flag to track whether modal should close after upload
+let pendingModalClose = false;
+
+// Close modal + refresh table + show success toast
+function finishSave() {
+    $('#postModal').modal('hide');
+    table.ajax.reload(null, false);
+    Swal.fire({
+        icon: 'success',
+        title: isEditMode ? 'Post updated!' : 'Post created!',
+        timer: 1500,
+        showConfirmButton: false
+    });
+}
 /* ── Save ─────────────────────────────────────────────────── */
 $('#savePost').on('click', function() {
     clearErrors();
@@ -978,12 +1001,15 @@ $('#savePost').on('click', function() {
         success: function(res) {
             if (!res.success) return;
             postId = res.data.id;
-            if (myDropzone.getQueuedFiles().length) myDropzone.processQueue();
-            $('#postModal').modal('hide');
-            table.ajax.reload(null, false);
-            Swal.fire({ icon:'success',
-                title: isEditMode ? 'Post updated!' : 'Post created!',
-                timer:1500, showConfirmButton:false });
+
+            if (myDropzone.getQueuedFiles().length > 0) {
+                // Upload files first — modal closes in queuecomplete
+                pendingModalClose = true;
+                myDropzone.processQueue();
+            } else {
+                // No files — close immediately
+                finishSave();
+            }
         },
         error: function(xhr) {
             if (xhr.status === 422) showErrors(xhr.responseJSON.errors ?? {});
