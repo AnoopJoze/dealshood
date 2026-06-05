@@ -4,7 +4,22 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="icon" type="image/png" href="/frontend/img/favicon.png">
-    @include('layouts.seo-head')
+    <title>DealsHood — Discover the Best Deals Near You</title>
+    @php
+        $ogImage = str_replace('http://', 'https://', url('/frontend/img/favicon.png'));
+        $ogTitle = 'DealsHood — Discover the Best Deals Near You';
+        $ogDesc  = 'Find great offers from your neighbourhood, every day.';
+        $ogUrl   = url()->current();
+    @endphp
+    <meta name="description"  content="{{ $ogDesc }}">
+    <link rel="canonical"     href="{{ $ogUrl }}">
+    <meta property="og:type"  content="website">
+    <meta property="og:title" content="{{ $ogTitle }}">
+    <meta property="og:description" content="{{ $ogDesc }}">
+    <meta property="og:url"   content="{{ $ogUrl }}">
+    <meta property="og:image" content="{{ $ogImage }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="{{ $ogImage }}">
 
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#0f172a">
