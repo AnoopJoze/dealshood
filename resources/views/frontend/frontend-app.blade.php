@@ -466,7 +466,7 @@
             </a>
         </div>
     </div>
-    <button id="pwaInstallBtn"
+    {{-- <button id="pwaInstallBtn"
         onclick="installPWA()"
         style="display:none;align-items:center;gap:6px;
                font-size:.75rem;font-weight:600;
@@ -475,9 +475,9 @@
                border-radius:100px;padding:8px 16px;
                cursor:pointer;transition:all .15s;">
     <i class="fas fa-download"></i> Install App
-</button>
+</button> --}}
 {{-- Android/Chrome banner --}}
-{{-- <div class="pwa-banner" id="pwaBanner" style="display:none;">
+<div class="pwa-banner" id="pwaBanner" style="display:none;">
     <div class="pwa-banner-icon">
         <img src="/frontend/img/icons/icon-192x192.png" alt="DealsHood">
     </div>
@@ -489,7 +489,7 @@
         <button class="pwa-install-btn" id="pwaInstallBtn">Install</button>
         <button class="pwa-dismiss-btn" id="pwaDismissBtn">✕</button>
     </div>
-</div> --}}
+</div>
 
 {{-- iOS Safari instruction sheet --}}
 <div class="pwa-backdrop" id="pwaBackdrop"></div>
