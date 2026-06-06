@@ -28,48 +28,6 @@
     <meta name="apple-mobile-web-app-title" content="{{ setting('site_name', 'DealsHood') }}">
     <link rel="apple-touch-icon" href="/frontend/img/icons/icon-192x192.png">
     
-    <script>
-    // Register service worker
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js')
-                .then(reg => console.log('SW registered:', reg.scope))
-                .catch(err => console.log('SW failed:', err));
-        });
-    }
-    
-    let deferredPrompt;
-
-window.addEventListener('beforeinstallprompt', e => {
-    e.preventDefault();
-    deferredPrompt = e;
-
-    // Show install buttons
-    const btn  = document.getElementById('pwaInstallBtn');
-    const btnM = document.getElementById('pwaInstallBtnMobile');
-    if (btn)  btn.style.display  = 'flex';
-    if (btnM) btnM.style.display = 'flex';
-});
-
-function installPWA() {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(choice => {
-        // Hide buttons after user responds
-        const btn  = document.getElementById('pwaInstallBtn');
-        const btnM = document.getElementById('pwaInstallBtnMobile');
-        if (btn)  btn.style.display  = 'none';
-        if (btnM) btnM.style.display = 'none';
-        deferredPrompt = null;
-    });
-}
-
-// Listen for successful install
-window.addEventListener('appinstalled', () => {
-    console.log('DealsHood installed as PWA');
-    deferredPrompt = null;
-});
-    </script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link href="/frontend/css/soft-design-system.css?v=1.1.0" rel="stylesheet">
@@ -391,6 +349,100 @@ window.addEventListener('appinstalled', () => {
     }
 
     * { -webkit-tap-highlight-color:transparent; -webkit-overflow-scrolling:touch; }
+    .pwa-banner {
+    position: fixed;
+    bottom: calc(var(--bot-nav-h, 60px) + env(safe-area-inset-bottom, 0px) + 8px);
+    left: 12px; right: 12px;
+    background: #0f172a;
+    border-radius: 16px;
+    padding: 14px 16px;
+    display: flex; align-items: center; gap: 12px;
+    z-index: 8000;
+    box-shadow: 0 8px 32px rgba(0,0,0,.35);
+    animation: slideUp .35s cubic-bezier(.4,0,.2,1) both;
+    max-width: 480px;
+    margin: 0 auto;
+}
+@keyframes slideUp {
+    from { opacity:0; transform:translateY(20px); }
+    to   { opacity:1; transform:translateY(0); }
+}
+.pwa-banner-icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    flex-shrink: 0; overflow: hidden;
+}
+.pwa-banner-icon img { width:100%; height:100%; object-fit:cover; }
+.pwa-banner-body { flex:1; min-width:0; }
+.pwa-banner-title {
+    font-size: .85rem; font-weight: 700; color: #fff;
+    margin-bottom: 2px;
+}
+.pwa-banner-sub {
+    font-size: .72rem; color: rgba(255,255,255,.55);
+}
+.pwa-banner-actions { display:flex; gap:7px; flex-shrink:0; }
+.pwa-install-btn {
+    background: #fff; color: #0f172a;
+    border: none; border-radius: 100px;
+    padding: 8px 16px; font-size: .78rem; font-weight: 700;
+    cursor: pointer; white-space: nowrap;
+    transition: background .15s;
+}
+.pwa-install-btn:hover { background: #f1f5f9; }
+.pwa-dismiss-btn {
+    background: rgba(255,255,255,.12); color: rgba(255,255,255,.7);
+    border: none; border-radius: 100px;
+    padding: 8px 12px; font-size: .78rem; font-weight: 600;
+    cursor: pointer; white-space: nowrap;
+    transition: background .15s;
+}
+.pwa-dismiss-btn:hover { background: rgba(255,255,255,.2); }
+
+/* iOS instruction sheet */
+.pwa-ios-sheet {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: #fff;
+    border-radius: 20px 20px 0 0;
+    padding: 24px 24px calc(24px + env(safe-area-inset-bottom, 0px));
+    z-index: 8000;
+    box-shadow: 0 -8px 40px rgba(0,0,0,.18);
+    transform: translateY(100%);
+    transition: transform .3s cubic-bezier(.4,0,.2,1);
+    max-width: 480px;
+    margin: 0 auto;
+}
+.pwa-ios-sheet.open { transform: translateY(0); }
+.pwa-ios-handle {
+    width: 36px; height: 4px; background: #e2e8f0;
+    border-radius: 2px; margin: 0 auto 20px;
+}
+.pwa-ios-steps { list-style: none; padding: 0; margin: 16px 0 0; }
+.pwa-ios-step {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid #f1f5f9;
+    font-size: .88rem; color: #374151;
+}
+.pwa-ios-step:last-child { border-bottom: none; }
+.pwa-ios-step-num {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: #0f172a; color: #fff;
+    font-size: .7rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+}
+.pwa-ios-icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: #f1f5f9; border-radius: 6px;
+    padding: 2px 7px; font-size: .8rem;
+    margin: 0 3px; vertical-align: middle;
+}
+.pwa-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.5);
+    z-index: 7999; display: none;
+}
+.pwa-backdrop.open { display: block; }
     </style>
 </head>
 <body>
@@ -773,6 +825,49 @@ $(document).on('click', '#loadMoreBtn', function () {
         }
     }).fail(()=> btn.text('Load More Deals').prop('disabled',false));
 });
+
+    <script>
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => console.log('SW registered:', reg.scope))
+                .catch(err => console.log('SW failed:', err));
+        });
+    }
+    
+    let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+
+    // Show install buttons
+    const btn  = document.getElementById('pwaInstallBtn');
+    const btnM = document.getElementById('pwaInstallBtnMobile');
+    if (btn)  btn.style.display  = 'flex';
+    if (btnM) btnM.style.display = 'flex';
+});
+
+function installPWA() {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(choice => {
+        // Hide buttons after user responds
+        const btn  = document.getElementById('pwaInstallBtn');
+        const btnM = document.getElementById('pwaInstallBtnMobile');
+        if (btn)  btn.style.display  = 'none';
+        if (btnM) btnM.style.display = 'none';
+        deferredPrompt = null;
+    });
+}
+
+// Listen for successful install
+window.addEventListener('appinstalled', () => {
+    console.log('DealsHood installed as PWA');
+    deferredPrompt = null;
+});
+    </script>
 </script>
 
 @include('frontend.location-popup', ['localities' => $localities])
