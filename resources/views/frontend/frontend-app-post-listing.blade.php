@@ -626,7 +626,7 @@
     <i class="fas fa-download"></i> Install App
 </button>
 {{-- Android/Chrome banner --}}
-<div class="pwa-banner" id="pwaBanner" style="display:none;">
+{{-- <div class="pwa-banner" id="pwaBanner" style="display:none;">
     <div class="pwa-banner-icon">
         <img src="/frontend/img/icons/icon-192x192.png" alt="DealsHood">
     </div>
@@ -638,7 +638,7 @@
         <button class="pwa-install-btn" id="pwaInstallBtn">Install</button>
         <button class="pwa-dismiss-btn" id="pwaDismissBtn">✕</button>
     </div>
-</div>
+</div> --}}
 
 {{-- iOS Safari instruction sheet --}}
 <div class="pwa-backdrop" id="pwaBackdrop"></div>
