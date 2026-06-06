@@ -896,37 +896,7 @@ $(document).on('click', '#loadMoreBtn', function () {
         });
     }
     
-    let deferredPrompt;
 
-window.addEventListener('beforeinstallprompt', e => {
-    e.preventDefault();
-    deferredPrompt = e;
-
-    // Show install buttons
-    const btn  = document.getElementById('pwaInstallBtn');
-    const btnM = document.getElementById('pwaInstallBtnMobile');
-    if (btn)  btn.style.display  = 'flex';
-    if (btnM) btnM.style.display = 'flex';
-});
-
-function installPWA() {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(choice => {
-        // Hide buttons after user responds
-        const btn  = document.getElementById('pwaInstallBtn');
-        const btnM = document.getElementById('pwaInstallBtnMobile');
-        if (btn)  btn.style.display  = 'none';
-        if (btnM) btnM.style.display = 'none';
-        deferredPrompt = null;
-    });
-}
-
-// Listen for successful install
-window.addEventListener('appinstalled', () => {
-    console.log('DealsHood installed as PWA');
-    deferredPrompt = null;
-});
 
 
 (function () {
