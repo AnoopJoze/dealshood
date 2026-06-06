@@ -900,77 +900,90 @@ $(document).on('click', '#loadMoreBtn', function () {
 
 
 (function () {
-    var STORAGE_KEY = 'dh_pwa_dismissed';
-    var dismissed   = localStorage.getItem(STORAGE_KEY);
-    if (dismissed) return; // user already dismissed — don't show again
-
-    var isIOS     = /iphone|ipad|ipod/i.test(navigator.userAgent);
-    var isSafari  = /safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent);
+    var STORAGE_KEY  = 'dh_pwa_dismissed';
+    var isIOS        = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    var isSafari     = /safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent);
     var isStandalone = window.navigator.standalone === true
                     || window.matchMedia('(display-mode: standalone)').matches;
 
-    // Already installed — don't show
+    // Already installed or dismissed — stop here
     if (isStandalone) return;
+    if (localStorage.getItem(STORAGE_KEY)) return;
 
     var deferredPrompt = null;
+    var bannerShown    = false;
 
-    // ── Android / Chrome ──────────────────────────────
+    function showBanner() {
+        if (bannerShown) return;
+        bannerShown = true;
+        document.getElementById('pwaBanner').style.display = 'flex';
+    }
+
+    function hideBanner() {
+        document.getElementById('pwaBanner').style.display = 'none';
+    }
+
+    // ── Capture the install prompt ────────────────────
     window.addEventListener('beforeinstallprompt', function (e) {
         e.preventDefault();
         deferredPrompt = e;
+        console.log('PWA: beforeinstallprompt captured ✓');
 
-        // Show banner after 3 seconds on page
-        setTimeout(function () {
-            document.getElementById('pwaBanner').style.display = 'flex';
-        }, 3000);
+        // Show banner after 3s
+        setTimeout(showBanner, 3000);
     });
 
+    // ── Install button click ──────────────────────────
     document.getElementById('pwaInstallBtn').addEventListener('click', function () {
-        if (!deferredPrompt) return;
-        document.getElementById('pwaBanner').style.display = 'none';
+        console.log('PWA: install clicked, prompt =', deferredPrompt);
+
+        if (!deferredPrompt) {
+            // Prompt not available — show browser-specific instruction
+            if (isIOS) {
+                hideBanner();
+                openIosSheet();
+            } else {
+                // Android/other — tell user how to install manually
+                hideBanner();
+                showManualInstruct();
+            }
+            return;
+        }
+
+        // Native prompt available — use it
+        hideBanner();
         deferredPrompt.prompt();
-        deferredPrompt.userChoice.then(function () {
+        deferredPrompt.userChoice.then(function (choice) {
+            console.log('PWA: user choice =', choice.outcome);
             deferredPrompt = null;
         });
     });
 
+    // ── Dismiss button ────────────────────────────────
     document.getElementById('pwaDismissBtn').addEventListener('click', function () {
-        document.getElementById('pwaBanner').style.display = 'none';
+        hideBanner();
         localStorage.setItem(STORAGE_KEY, '1');
     });
 
+    // ── Successfully installed ────────────────────────
     window.addEventListener('appinstalled', function () {
-        document.getElementById('pwaBanner').style.display = 'none';
+        console.log('PWA: installed successfully ✓');
+        hideBanner();
         deferredPrompt = null;
+        localStorage.setItem(STORAGE_KEY, '1');
     });
 
-    // ── iOS Safari — show manual instructions ─────────
+    // ── iOS Safari ────────────────────────────────────
     if (isIOS && isSafari) {
         setTimeout(function () {
-            document.getElementById('pwaIosSheet').classList.add('open');
-            document.getElementById('pwaBackdrop').classList.add('open');
+            openIosSheet();
         }, 3000);
     }
 
-    // ── Fallback: if no beforeinstallprompt after 5s
-    // show banner anyway with generic message (for Samsung browser etc.)
-    setTimeout(function () {
-        if (!deferredPrompt && !isIOS && !isStandalone) {
-            var banner = document.getElementById('pwaBanner');
-            if (banner.style.display === 'none' || !banner.style.display) {
-                // Only show on mobile
-                if (window.innerWidth <= 768) {
-                    banner.style.display = 'flex';
-                    // Override install button for manual flow
-                    document.getElementById('pwaInstallBtn').addEventListener('click', function () {
-                        banner.style.display = 'none';
-                        // Show generic instructions
-                        alert('To install: tap your browser menu → "Add to Home Screen"');
-                    }, { once: true });
-                }
-            }
-        }
-    }, 5000);
+    function openIosSheet() {
+        document.getElementById('pwaIosSheet').classList.add('open');
+        document.getElementById('pwaBackdrop').classList.add('open');
+    }
 
     window.closePwaIos = function () {
         document.getElementById('pwaIosSheet').classList.remove('open');
@@ -981,8 +994,33 @@ $(document).on('click', '#loadMoreBtn', function () {
     document.getElementById('pwaBackdrop').addEventListener('click', function () {
         window.closePwaIos();
     });
+
+    // ── Manual install instructions (non-iOS, no prompt) ──
+    function showManualInstruct() {
+        var ua = navigator.userAgent.toLowerCase();
+        var msg = '';
+
+        if (ua.includes('samsung'))
+            msg = 'Tap the ☰ menu → "Add page to" → "Home screen"';
+        else if (ua.includes('firefox'))
+            msg = 'Tap the ⋮ menu → "Install" or "Add to Home Screen"';
+        else if (ua.includes('opera'))
+            msg = 'Tap the ⋮ menu → "Add to Home Screen"';
+        else
+            msg = 'Open your browser menu → "Add to Home Screen"';
+
+        // Show a small toast instead of alert
+        var toast = document.createElement('div');
+        toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);'
+            + 'background:#0f172a;color:#fff;padding:12px 20px;border-radius:100px;'
+            + 'font-size:.82rem;font-weight:500;z-index:9999;white-space:nowrap;'
+            + 'box-shadow:0 4px 20px rgba(0,0,0,.3);';
+        toast.textContent = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 5000);
+    }
 })();
-</script></script>
+</script>
 
 @include('frontend.location-popup', ['localities' => $localities])
 
