@@ -582,6 +582,25 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     .dh-cta-btn          { font-size: .72rem; padding: 10px 8px; gap: 4px; }
     .dh-cta-btn i        { display: none; } /* hide icons on tiny screens to save space */
 }
+@media(max-width: 480px) {
+    .dh-contact-btns {
+        flex-direction: column;
+        gap: 8px;
+    }
+    .dh-cta-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+.dh-cta-map {
+    background: #f1f5f9;
+    color: var(--ink);
+    border: 1.5px solid rgba(0,0,0,.1);
+}
+.dh-cta-map:hover {
+    background: var(--surface-2);
+    color: var(--ink);
+}
 </style>
 </head>
 
@@ -787,7 +806,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                 @endif
                 @if($post->google_map_url)
                     <a href="{{$post->google_map_url}}"
-                       target="_blank" class="dh-cta-btn dh-cta-wa">
+                       target="_blank" class="dh-cta-btn dh-cta-map">
                         <i class="bi bi-geo-alt-fill"></i> Get Directions
                     </a>
                 @endif
