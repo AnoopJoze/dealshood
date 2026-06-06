@@ -69,7 +69,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="{{ setting('site_name', 'DealsHood') }}">
 <link rel="apple-touch-icon" href="/frontend/img/icons/icon-192x192.png">
- 
+
 <script>
 // Register service worker
 if ('serviceWorker' in navigator) {
@@ -79,7 +79,7 @@ if ('serviceWorker' in navigator) {
             .catch(err => console.log('SW failed:', err));
     });
 }
- 
+
 // PWA Install prompt
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt', e => {
@@ -89,7 +89,7 @@ window.addEventListener('beforeinstallprompt', e => {
     const installBtn = document.getElementById('pwaInstallBtn');
     if (installBtn) installBtn.style.display = 'flex';
 });
- 
+
 function installPWA() {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
@@ -590,6 +590,9 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     .dh-cta-btn {
         width: 100%;
         justify-content: center;
+    }
+    .dh-hero{
+        padding-top:10px !important;
     }
 }
 .dh-cta-map {
