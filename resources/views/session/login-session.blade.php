@@ -270,14 +270,6 @@
                 </button>
             </form>
 
-            <div class="divider">or</div>
-
-            <a href="https://wa.me/918086087050?text=Hello%2C+I+need+help+signing+in"
-               target="_blank" class="btn-wa">
-                <i class="fab fa-whatsapp" style="font-size:1rem;"></i>
-                Continue with WhatsApp
-            </a>
-
         </div>
     </div>
 
