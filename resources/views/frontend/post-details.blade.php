@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="apple-touch-icon" sizes="76x76" href="/frontend/img/apple-icon.png">
-    <link rel="icon" type="image/png" href="/frontend/img/favicon.png">
+    <link rel="icon" type="image/png" href="/frontend/img/favicon.ico">
     <title>{{ $post->title }} — DealsHood</title>
 
     {{-- ═══════════════════════════════════════════════
@@ -852,7 +852,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
             </div>
             <div class="dh-footer-bottom">
                 <p>All rights reserved. Copyright &copy; <span id="footerYear"></span>
-                    <a href="https://www.creative-tim.com" target="_blank">DealsHood</a>.
+                    <a href="{{ route('home') }}" target="_blank">DealsHood</a>.
                 </p>
             </div>
         </div>

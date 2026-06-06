@@ -3,10 +3,10 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="icon" type="image/png" href="/frontend/img/favicon.png">
+    <link rel="icon" type="image/png" href="/frontend/img/favicon.ico">
     <title>DealsHood — Discover the Best Deals Near You</title>
     @php
-        $ogImage = str_replace('http://', 'https://', url('/frontend/img/favicon.png'));
+        $ogImage = str_replace('http://', 'https://', url('/frontend/img/favicon.ico'));
         $ogTitle = 'DealsHood — Discover the Best Deals Near You';
         $ogDesc  = 'Find great offers from your neighbourhood, every day.';
         $ogUrl   = url()->current();
@@ -38,27 +38,37 @@
         });
     }
     
-    // PWA Install prompt
     let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', e => {
-        e.preventDefault();
-        deferredPrompt = e;
-        // Show install button if you have one
-        const installBtn = document.getElementById('pwaInstallBtn');
-        if (installBtn) installBtn.style.display = 'flex';
+
+window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+
+    // Show install buttons
+    const btn  = document.getElementById('pwaInstallBtn');
+    const btnM = document.getElementById('pwaInstallBtnMobile');
+    if (btn)  btn.style.display  = 'flex';
+    if (btnM) btnM.style.display = 'flex';
+});
+
+function installPWA() {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(choice => {
+        // Hide buttons after user responds
+        const btn  = document.getElementById('pwaInstallBtn');
+        const btnM = document.getElementById('pwaInstallBtnMobile');
+        if (btn)  btn.style.display  = 'none';
+        if (btnM) btnM.style.display = 'none';
+        deferredPrompt = null;
     });
-    
-    function installPWA() {
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then(choice => {
-            if (choice.outcome === 'accepted') {
-                const installBtn = document.getElementById('pwaInstallBtn');
-                if (installBtn) installBtn.style.display = 'none';
-            }
-            deferredPrompt = null;
-        });
-    }
+}
+
+// Listen for successful install
+window.addEventListener('appinstalled', () => {
+    console.log('DealsHood installed as PWA');
+    deferredPrompt = null;
+});
     </script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
@@ -404,6 +414,16 @@
             </a>
         </div>
     </div>
+    <button id="pwaInstallBtn"
+        onclick="installPWA()"
+        style="display:none;align-items:center;gap:6px;
+               font-size:.75rem;font-weight:600;
+               border:1.5px solid rgba(0,0,0,.1);
+               background:#fff;color:var(--ink);
+               border-radius:100px;padding:8px 16px;
+               cursor:pointer;transition:all .15s;">
+    <i class="fas fa-download"></i> Install App
+</button>
 </nav>
 
 @php

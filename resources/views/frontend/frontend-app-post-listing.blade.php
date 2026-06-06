@@ -4,10 +4,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="apple-touch-icon" sizes="76x76" href="/frontend/img/apple-icon.png">
-    <link rel="icon" type="image/png" href="/frontend/img/favicon.png">
+    <link rel="icon" type="image/png" href="/frontend/img/favicon.ico">
     <title>Browse Deals — DealsHood</title>
     @php
-        $ogImage = str_replace('http://', 'https://', url('/frontend/img/favicon.png'));
+        $ogImage = str_replace('http://', 'https://', url('/frontend/img/favicon.ico'));
         $ogTitle = 'Browse Deals — DealsHood';
         $ogDesc  = 'Find the best deals near you.';
         $ogUrl   = url()->current();

@@ -48,7 +48,7 @@
     <link rel="icon" href="{{ Storage::url(setting('site_favicon')) }}">
     <link rel="apple-touch-icon" href="{{ Storage::url(setting('site_favicon')) }}">
 @else
-    <link rel="icon" type="image/png" href="/frontend/img/favicon.png">
+    <link rel="icon" type="image/png" href="/frontend/img/favicon.ico">
 @endif
 
 {{-- Open Graph (WhatsApp, Facebook, Telegram) --}}

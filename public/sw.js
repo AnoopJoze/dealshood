@@ -9,7 +9,7 @@ const PRECACHE = [
     '/offline',
     '/frontend/css/soft-design-system.css',
     '/frontend/img/dealshood.png',
-    '/frontend/img/favicon.png',
+    '/frontend/img/favicon.ico',
 ];
 
 // ── Install: pre-cache shell assets ──────────────────
