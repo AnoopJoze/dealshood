@@ -94,26 +94,61 @@
 
     /* ── Location trigger button ── */
     .loc-trigger {
-        display:inline-flex; align-items:center; gap:9px;
-        background:rgba(255,255,255,.13); backdrop-filter:blur(14px);
-        -webkit-backdrop-filter:blur(14px);
-        border:1.5px solid rgba(255,255,255,.25); color:#fff;
-        border-radius:100px; padding:11px 20px 11px 13px;
-        font-size:.84rem; font-weight:600; cursor:pointer;
-        transition:all .18s; -webkit-tap-highlight-color:transparent; white-space:nowrap;
-    }
-    .loc-trigger:hover { background:rgba(255,255,255,.22); border-color:rgba(255,255,255,.5);
-                         transform:translateY(-1px); box-shadow:0 8px 28px rgba(0,0,0,.28); }
-    .loc-trigger:active { transform:scale(.97); }
-    .lt-pin { width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,.18);
-              display:flex; align-items:center; justify-content:center;
-              font-size:.7rem; flex-shrink:0; transition:background .15s; }
-    .loc-trigger:hover .lt-pin { background:rgba(255,255,255,.28); }
-    .lt-dot { width:8px; height:8px; border-radius:50%; background:#4ade80; flex-shrink:0;
-              display:none; box-shadow:0 0 0 2px rgba(74,222,128,.3); }
-    .loc-trigger.has-loc .lt-dot { display:block; }
-    .lt-label { flex:1; text-align:left; }
-    .lt-chevron { font-size:.58rem; opacity:.6; margin-left:4px; }
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surf);
+    border: 1.5px solid rgba(0,0,0,.1);
+    color: var(--ink);
+    border-radius: 100px;
+    padding: 8px 14px 8px 10px;
+    font-size: .78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .18s;
+    -webkit-tap-highlight-color: transparent;
+    white-space: nowrap;
+    max-width: 200px;
+    margin-left: auto;      /* ← pushes to right side */
+}
+.loc-trigger:hover {
+    background: var(--surf-2);
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateY(-1px);
+}
+.loc-trigger:active { transform: scale(.97); }
+
+/* Pin icon — small coloured circle */
+.lt-pin {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: .62rem; flex-shrink: 0; color: #fff;
+    transition: background .15s;
+}
+.loc-trigger:hover .lt-pin { background: #0c3166; }
+
+/* Active location dot */
+.lt-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%; background: #22c55e;
+    flex-shrink: 0; display: none;
+    box-shadow: 0 0 0 2px rgba(34,197,94,.25);
+}
+.loc-trigger.has-loc .lt-dot { display: block; }
+
+/* Label — truncate if long locality name */
+.lt-label {
+    flex: 1; text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 130px;
+}
+
+.lt-chevron { font-size: .55rem; opacity: .5; flex-shrink: 0; }
 
     .loc-pill { display:none; margin-top:9px; background:rgba(255,255,255,.12);
                 backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,.2);
@@ -314,41 +349,72 @@
        Grid fills the full panel width with 2 cols.
     ══════════════════════════════════════════ */
     @media(max-width:768px){
-       .dh-hero-panel {
-        padding:16px 12px 48px;
-        align-self:stretch;   /* keep it here too for specificity */
-    }
-    .dh-glass-grid {
-        max-width:100%;
-        width:100%;
-        gap:10px;
-    }
-    .dh-gtile {
-        padding:12px 14px;
-        font-size:.82rem;
-        gap:10px;
-        border-radius:12px;
-    }
-    .dh-gtile .gtile-icon {
-        width:36px; height:36px;
-        font-size:.85rem; border-radius:9px;
+    .dh-hero-panel {
+        padding: 12px 16px 44px;
+        align-self: stretch;
     }
 
-        /* Everything else unchanged */
-        .dh-hero-text  { padding:28px 24px 0; }
-        .dh-track { padding-left:16px; }
-        .dh-track .dh-card:last-child { margin-right:16px; }
-        .dh-grid { grid-template-columns:repeat(2,1fr); gap:12px; }
-        .dh-card-body { padding:12px 14px 14px; }
-        .dh-card-title { font-size:.88rem; }
-        .dh-card-desc  { display:none; }
-        .dh-sec-head   { margin-bottom:14px; }
-        .dh-sec-title  { font-size:1.15rem; }
-        .dh-more-btn   { width:100%; justify-content:center; }
-        .dh-footer-grid { grid-template-columns:1fr !important; gap:28px; }
-        .dh-footer { padding:36px 0 0; }
-        input,select,textarea { font-size:16px !important; }
+    .dh-glass-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        overflow-x: visible;
+        gap: 9px;
+        width: 100%;
+        max-width: 100%;
+        padding: 4px 0 12px;
+        margin: 0;
     }
+
+    /* Medium square — fixed height instead of aspect-ratio */
+    .dh-gtile {
+    flex: unset;
+    width: 70%;                  /* ← 80% of column width */
+    height: 80px;                /* ← fixed height */
+    aspect-ratio: unset;
+    margin: 0 auto;              /* ← centre the 80% tile in its grid cell */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 6px;
+    border-radius: 14px;
+    text-align: center;
+}
+
+    .dh-gtile .gtile-icon {
+        width: 32px; height: 32px;
+        border-radius: 9px;
+        font-size: .8rem;
+        flex-shrink: 0;
+    }
+
+    .dh-gtile .gtile-name {
+        white-space: normal;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        font-size: .6rem;
+        line-height: 1.2;
+        text-align: center;
+        width: 100%;
+    }
+
+    /* Everything else unchanged */
+    .dh-hero-text  { padding:28px 24px 0; }
+    .dh-track { padding-left:16px; }
+    .dh-track .dh-card:last-child { margin-right:16px; }
+    .dh-grid { grid-template-columns:repeat(2,1fr); gap:12px; }
+    .dh-card-body { padding:12px 14px 14px; }
+    .dh-card-title { font-size:.88rem; }
+    .dh-card-desc  { display:none; }
+    .dh-sec-head   { margin-bottom:14px; }
+    .dh-sec-title  { font-size:1.15rem; }
+    .dh-more-btn   { width:100%; justify-content:center; }
+    .dh-footer-grid { grid-template-columns:1fr !important; gap:28px; }
+    .dh-footer { padding:36px 0 0; }
+    input,select,textarea { font-size:16px !important; }
+}
 
     * { -webkit-tap-highlight-color:transparent; -webkit-overflow-scrolling:touch; }
     .pwa-banner {
@@ -445,6 +511,18 @@
     z-index: 7999; display: none;
 }
 .pwa-backdrop.open { display: block; }
+@media(max-width: 768px) {
+    .loc-trigger {
+        padding: 7px 10px 7px 8px;
+        font-size: .74rem;
+        max-width: 160px;
+    }
+    .lt-pin { width: 22px; height: 22px; font-size: .58rem; }
+    .lt-label { max-width: 90px; }
+}
+
+/* Hide loc-pill since it was in hero — no longer needed */
+.loc-pill { display: none !important; }
     </style>
 </head>
 <body>
@@ -454,6 +532,13 @@
         <a href="{{ route('home') }}">
             <img src="/frontend/img/dealshood.png" alt="DealsHood" style="height:45px;">
         </a>
+        <button class="loc-trigger" id="locTrigger" type="button"
+                onclick="window.openLocationPopup && window.openLocationPopup()">
+            <span class="lt-pin"><i class="fas fa-map-marker-alt"></i></span>
+            <span class="lt-dot"></span>
+            <span class="lt-label" id="locLabel">Choose your area</span>
+            <i class="fas fa-chevron-down lt-chevron"></i>
+        </button>
         <button class="dh-nav-toggle" id="navToggle" aria-label="Menu">
             <span></span><span></span><span></span>
         </button>
@@ -566,7 +651,7 @@ $palette = [
         <h1 class="dh-hero-title">Discover the best deals near you.</h1>
         {{-- <p class="dh-hero-sub" id="heroSub">Pick your area or browse by category below</p> --}}
 
-        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+        {{-- <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
             <button class="loc-trigger" id="locTrigger" type="button"
                     onclick="window.openLocationPopup && window.openLocationPopup()">
                 <span class="lt-pin"><i class="fas fa-map-marker-alt"></i></span>
@@ -583,7 +668,7 @@ $palette = [
                     <i class="fas fa-times"></i>
                 </button>
             </div> --}}
-        </div>
+        {{-- </div> --}}
     </div>
 
     <div class="dh-hero-panel">
@@ -799,15 +884,21 @@ let activeLocName = '';
 function setLocUI(slug, name) {
     activeLocSlug = slug || '';
     activeLocName = name || '';
+
     document.getElementById('locLabel').textContent = slug ? name : 'Choose your area';
-    slug ? document.getElementById('locTrigger').classList.add('has-loc')
-         : document.getElementById('locTrigger').classList.remove('has-loc');
-    const pill = document.getElementById('locPill');
-    document.getElementById('locPillName').textContent = name || '';
-    slug ? pill.classList.add('show') : pill.classList.remove('show');
-    document.getElementById('heroSub').textContent = slug
-        ? 'Showing deals in ' + name
-        : 'Pick your area or browse by category below';
+
+    slug
+        ? document.getElementById('locTrigger').classList.add('has-loc')
+        : document.getElementById('locTrigger').classList.remove('has-loc');
+
+    // Update hero subtitle if it exists
+    const heroSub = document.getElementById('heroSub');
+    if (heroSub) {
+        heroSub.textContent = slug
+            ? 'Showing deals in ' + name
+            : 'Pick your area or browse by category below';
+    }
+
     refreshLinks();
 }
 
