@@ -925,39 +925,47 @@ $(document).on('click', '#loadMoreBtn', function () {
 
     // ── Capture the install prompt ────────────────────
     window.addEventListener('beforeinstallprompt', function (e) {
-        e.preventDefault();
-        deferredPrompt = e;
-        console.log('PWA: beforeinstallprompt captured ✓');
+    // Don't call e.preventDefault() — let Chrome show its native prompt
+    deferredPrompt = e;
+    console.log('PWA: beforeinstallprompt captured ✓');
 
-        // Show banner after 3s
-        setTimeout(showBanner, 3000);
-    });
+    // Still show our custom banner after 3s as extra nudge
+    setTimeout(showBanner, 3000);
+});
 
     // ── Install button click ──────────────────────────
-    document.getElementById('pwaInstallBtn').addEventListener('click', function () {
-        console.log('PWA: install clicked, prompt =', deferredPrompt);
+   document.getElementById('pwaInstallBtn').addEventListener('click', async function () {
+    console.log('PWA: install clicked, prompt =', deferredPrompt);
 
-        if (!deferredPrompt) {
-            // Prompt not available — show browser-specific instruction
-            if (isIOS) {
-                hideBanner();
-                openIosSheet();
-            } else {
-                // Android/other — tell user how to install manually
-                hideBanner();
-                showManualInstruct();
-            }
-            return;
+    hideBanner();
+
+    if (!deferredPrompt) {
+        if (isIOS) {
+            openIosSheet();
+        } else {
+            showManualInstruct();
         }
+        return;
+    }
 
-        // Native prompt available — use it
-        hideBanner();
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then(function (choice) {
-            console.log('PWA: user choice =', choice.outcome);
-            deferredPrompt = null;
-        });
-    });
+    try {
+        // Show the native install dialog
+        await deferredPrompt.prompt();
+
+        // Wait for user response
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log('PWA: user choice =', outcome);
+
+        if (outcome === 'accepted') {
+            localStorage.setItem(STORAGE_KEY, '1');
+        }
+    } catch (err) {
+        console.error('PWA prompt error:', err);
+        showManualInstruct();
+    } finally {
+        deferredPrompt = null;
+    }
+});
 
     // ── Dismiss button ────────────────────────────────
     document.getElementById('pwaDismissBtn').addEventListener('click', function () {
