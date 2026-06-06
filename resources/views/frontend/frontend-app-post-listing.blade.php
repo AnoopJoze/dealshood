@@ -29,38 +29,6 @@
 <meta name="apple-mobile-web-app-title" content="{{ setting('site_name', 'DealsHood') }}">
 <link rel="apple-touch-icon" href="/frontend/img/icons/icon-192x192.png">
  
-<script>
-// Register service worker
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-            .then(reg => console.log('SW registered:', reg.scope))
-            .catch(err => console.log('SW failed:', err));
-    });
-}
- 
-// PWA Install prompt
-let deferredPrompt;
-window.addEventListener('beforeinstallprompt', e => {
-    e.preventDefault();
-    deferredPrompt = e;
-    // Show install button if you have one
-    const installBtn = document.getElementById('pwaInstallBtn');
-    if (installBtn) installBtn.style.display = 'flex';
-});
- 
-function installPWA() {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(choice => {
-        if (choice.outcome === 'accepted') {
-            const installBtn = document.getElementById('pwaInstallBtn');
-            if (installBtn) installBtn.style.display = 'none';
-        }
-        deferredPrompt = null;
-    });
-}
-</script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link href="/frontend/css/soft-design-system.css?v=1.1.0" rel="stylesheet">
@@ -494,6 +462,100 @@ function installPWA() {
 @media (max-width: 768px) {
     input, select, textarea { font-size: 16px !important; }
 }
+.pwa-banner {
+    position: fixed;
+    bottom: calc(var(--bot-nav-h, 60px) + env(safe-area-inset-bottom, 0px) + 8px);
+    left: 12px; right: 12px;
+    background: #0f172a;
+    border-radius: 16px;
+    padding: 14px 16px;
+    display: flex; align-items: center; gap: 12px;
+    z-index: 8000;
+    box-shadow: 0 8px 32px rgba(0,0,0,.35);
+    animation: slideUp .35s cubic-bezier(.4,0,.2,1) both;
+    max-width: 480px;
+    margin: 0 auto;
+}
+@keyframes slideUp {
+    from { opacity:0; transform:translateY(20px); }
+    to   { opacity:1; transform:translateY(0); }
+}
+.pwa-banner-icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    flex-shrink: 0; overflow: hidden;
+}
+.pwa-banner-icon img { width:100%; height:100%; object-fit:cover; }
+.pwa-banner-body { flex:1; min-width:0; }
+.pwa-banner-title {
+    font-size: .85rem; font-weight: 700; color: #fff;
+    margin-bottom: 2px;
+}
+.pwa-banner-sub {
+    font-size: .72rem; color: rgba(255,255,255,.55);
+}
+.pwa-banner-actions { display:flex; gap:7px; flex-shrink:0; }
+.pwa-install-btn {
+    background: #fff; color: #0f172a;
+    border: none; border-radius: 100px;
+    padding: 8px 16px; font-size: .78rem; font-weight: 700;
+    cursor: pointer; white-space: nowrap;
+    transition: background .15s;
+}
+.pwa-install-btn:hover { background: #f1f5f9; }
+.pwa-dismiss-btn {
+    background: rgba(255,255,255,.12); color: rgba(255,255,255,.7);
+    border: none; border-radius: 100px;
+    padding: 8px 12px; font-size: .78rem; font-weight: 600;
+    cursor: pointer; white-space: nowrap;
+    transition: background .15s;
+}
+.pwa-dismiss-btn:hover { background: rgba(255,255,255,.2); }
+
+/* iOS instruction sheet */
+.pwa-ios-sheet {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: #fff;
+    border-radius: 20px 20px 0 0;
+    padding: 24px 24px calc(24px + env(safe-area-inset-bottom, 0px));
+    z-index: 8000;
+    box-shadow: 0 -8px 40px rgba(0,0,0,.18);
+    transform: translateY(100%);
+    transition: transform .3s cubic-bezier(.4,0,.2,1);
+    max-width: 480px;
+    margin: 0 auto;
+}
+.pwa-ios-sheet.open { transform: translateY(0); }
+.pwa-ios-handle {
+    width: 36px; height: 4px; background: #e2e8f0;
+    border-radius: 2px; margin: 0 auto 20px;
+}
+.pwa-ios-steps { list-style: none; padding: 0; margin: 16px 0 0; }
+.pwa-ios-step {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid #f1f5f9;
+    font-size: .88rem; color: #374151;
+}
+.pwa-ios-step:last-child { border-bottom: none; }
+.pwa-ios-step-num {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: #0f172a; color: #fff;
+    font-size: .7rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+}
+.pwa-ios-icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: #f1f5f9; border-radius: 6px;
+    padding: 2px 7px; font-size: .8rem;
+    margin: 0 3px; vertical-align: middle;
+}
+.pwa-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.5);
+    z-index: 7999; display: none;
+}
+.pwa-backdrop.open { display: block; }
 </style>
 </head>
 <body>
@@ -553,6 +615,76 @@ function installPWA() {
             </a>
         </div>
     </div>
+    <button id="pwaInstallBtn"
+        onclick="installPWA()"
+        style="display:none;align-items:center;gap:6px;
+               font-size:.75rem;font-weight:600;
+               border:1.5px solid rgba(0,0,0,.1);
+               background:#fff;color:var(--ink);
+               border-radius:100px;padding:8px 16px;
+               cursor:pointer;transition:all .15s;">
+    <i class="fas fa-download"></i> Install App
+</button>
+{{-- Android/Chrome banner --}}
+<div class="pwa-banner" id="pwaBanner" style="display:none;">
+    <div class="pwa-banner-icon">
+        <img src="/frontend/img/icons/icon-192x192.png" alt="DealsHood">
+    </div>
+    <div class="pwa-banner-body">
+        <div class="pwa-banner-title">Install DealsHood</div>
+        <div class="pwa-banner-sub">Add to home screen for quick access</div>
+    </div>
+    <div class="pwa-banner-actions">
+        <button class="pwa-install-btn" id="pwaInstallBtn">Install</button>
+        <button class="pwa-dismiss-btn" id="pwaDismissBtn">✕</button>
+    </div>
+</div>
+
+{{-- iOS Safari instruction sheet --}}
+<div class="pwa-backdrop" id="pwaBackdrop"></div>
+<div class="pwa-ios-sheet" id="pwaIosSheet">
+    <div class="pwa-ios-handle"></div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
+        <img src="/frontend/img/icons/icon-72x72.png"
+             style="width:44px;height:44px;border-radius:10px;" alt="">
+        <div>
+            <div style="font-size:1rem;font-weight:800;color:#0f172a;">Install DealsHood</div>
+            <div style="font-size:.78rem;color:#64748b;">Add to your home screen</div>
+        </div>
+    </div>
+    <ul class="pwa-ios-steps">
+        <li class="pwa-ios-step">
+            <span class="pwa-ios-step-num">1</span>
+            <span>
+                Tap the <span class="pwa-ios-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+                        <polyline points="16 6 12 2 8 6"/>
+                        <line x1="12" y1="2" x2="12" y2="15"/>
+                    </svg>
+                    Share
+                </span>
+                button at the bottom of Safari
+            </span>
+        </li>
+        <li class="pwa-ios-step">
+            <span class="pwa-ios-step-num">2</span>
+            <span>
+                Scroll down and tap
+                <span class="pwa-ios-icon">＋ Add to Home Screen</span>
+            </span>
+        </li>
+        <li class="pwa-ios-step">
+            <span class="pwa-ios-step-num">3</span>
+            <span>Tap <strong>Add</strong> in the top right corner</span>
+        </li>
+    </ul>
+    <button onclick="closePwaIos()"
+            style="width:100%;margin-top:16px;padding:13px;
+                   background:#0f172a;color:#fff;border:none;
+                   border-radius:12px;font-size:.88rem;font-weight:700;cursor:pointer;">
+        Got it
+    </button>
 </nav>
 
 {{-- ─── Compact Hero ─── --}}
@@ -980,6 +1112,148 @@ $(document).on('click','.shareBtn',function(){
 
     $btnG.on('click', () => setView('grid'));
     $btnL.on('click', () => setView('list'));
+})();
+
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => console.log('SW registered:', reg.scope))
+                .catch(err => console.log('SW failed:', err));
+        });
+    }
+    
+
+
+
+(function () {
+    var STORAGE_KEY  = 'dh_pwa_dismissed';
+    var isIOS        = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    var isSafari     = /safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent);
+    var isStandalone = window.navigator.standalone === true
+                    || window.matchMedia('(display-mode: standalone)').matches;
+
+    // Already installed or dismissed — stop here
+    if (isStandalone) return;
+    if (localStorage.getItem(STORAGE_KEY)) return;
+
+    var deferredPrompt = null;
+    var bannerShown    = false;
+
+    function showBanner() {
+        if (bannerShown) return;
+        bannerShown = true;
+        document.getElementById('pwaBanner').style.display = 'flex';
+    }
+
+    function hideBanner() {
+        document.getElementById('pwaBanner').style.display = 'none';
+    }
+
+    // ── Capture the install prompt ────────────────────
+    window.addEventListener('beforeinstallprompt', function (e) {
+    // Don't call e.preventDefault() — let Chrome show its native prompt
+    deferredPrompt = e;
+    console.log('PWA: beforeinstallprompt captured ✓');
+
+    // Still show our custom banner after 3s as extra nudge
+    setTimeout(showBanner, 3000);
+});
+
+    // ── Install button click ──────────────────────────
+   document.getElementById('pwaInstallBtn').addEventListener('click', async function () {
+    console.log('PWA: install clicked, prompt =', deferredPrompt);
+
+    hideBanner();
+
+    if (!deferredPrompt) {
+        if (isIOS) {
+            openIosSheet();
+        } else {
+            showManualInstruct();
+        }
+        return;
+    }
+
+    try {
+        // Show the native install dialog
+        await deferredPrompt.prompt();
+
+        // Wait for user response
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log('PWA: user choice =', outcome);
+
+        if (outcome === 'accepted') {
+            localStorage.setItem(STORAGE_KEY, '1');
+        }
+    } catch (err) {
+        console.error('PWA prompt error:', err);
+        showManualInstruct();
+    } finally {
+        deferredPrompt = null;
+    }
+});
+
+    // ── Dismiss button ────────────────────────────────
+    document.getElementById('pwaDismissBtn').addEventListener('click', function () {
+        hideBanner();
+        localStorage.setItem(STORAGE_KEY, '1');
+    });
+
+    // ── Successfully installed ────────────────────────
+    window.addEventListener('appinstalled', function () {
+        console.log('PWA: installed successfully ✓');
+        hideBanner();
+        deferredPrompt = null;
+        localStorage.setItem(STORAGE_KEY, '1');
+    });
+
+    // ── iOS Safari ────────────────────────────────────
+    if (isIOS && isSafari) {
+        setTimeout(function () {
+            openIosSheet();
+        }, 3000);
+    }
+
+    function openIosSheet() {
+        document.getElementById('pwaIosSheet').classList.add('open');
+        document.getElementById('pwaBackdrop').classList.add('open');
+    }
+
+    window.closePwaIos = function () {
+        document.getElementById('pwaIosSheet').classList.remove('open');
+        document.getElementById('pwaBackdrop').classList.remove('open');
+        localStorage.setItem(STORAGE_KEY, '1');
+    };
+
+    document.getElementById('pwaBackdrop').addEventListener('click', function () {
+        window.closePwaIos();
+    });
+
+    // ── Manual install instructions (non-iOS, no prompt) ──
+    function showManualInstruct() {
+        var ua = navigator.userAgent.toLowerCase();
+        var msg = '';
+
+        if (ua.includes('samsung'))
+            msg = 'Tap the ☰ menu → "Add page to" → "Home screen"';
+        else if (ua.includes('firefox'))
+            msg = 'Tap the ⋮ menu → "Install" or "Add to Home Screen"';
+        else if (ua.includes('opera'))
+            msg = 'Tap the ⋮ menu → "Add to Home Screen"';
+        else
+            msg = 'Open your browser menu → "Add to Home Screen"';
+
+        // Show a small toast instead of alert
+        var toast = document.createElement('div');
+        toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);'
+            + 'background:#0f172a;color:#fff;padding:12px 20px;border-radius:100px;'
+            + 'font-size:.82rem;font-weight:500;z-index:9999;white-space:nowrap;'
+            + 'box-shadow:0 4px 20px rgba(0,0,0,.3);';
+        toast.textContent = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 5000);
+    }
 })();
 </script>
 
