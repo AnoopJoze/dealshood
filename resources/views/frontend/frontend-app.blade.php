@@ -169,50 +169,127 @@
        Grid: 2 columns, capped at 640px, centred.
        Tiles: horizontal (icon-left, text-right).
     ══════════════════════════════════════════ */
-    .dh-hero-panel {
-    position:relative; z-index:4;
-    width:100%;
-    align-self:stretch;   /* ← overrides parent align-items:center */
-    padding:20px 24px 60px;
-    animation:fadeUp .55s .25s both;
+    /* ── Category section ── */
+/* ── Category section — 2×2 grid, all visible ── */
+.dh-cat-sec {
+    /* background: #fff; */
+    border-bottom: 1px solid rgba(0,0,0,.06);
+    padding: 25px;
 }
-    .dh-glass-grid {
-        display:grid;
-        grid-template-columns:repeat(2, 1fr);
-        gap:12px;
-        width:100%;
-        max-width:640px;              /* desktop cap */
-        margin:0 auto;                /* centre on desktop */
-    }
 
-    .dh-gtile {
-        display:flex; flex-direction:row; align-items:center; gap:12px;
-        padding:14px 16px;
-        border-radius:14px; color:#fff;
-        font-size:.88rem; font-weight:700; line-height:1.3;
-        background:rgba(255,255,255,.1); backdrop-filter:blur(10px);
-        -webkit-backdrop-filter:blur(10px); border:1.5px solid rgba(255,255,255,.16);
-        transition:transform .2s, background .2s, box-shadow .2s, border-color .2s;
-        cursor:pointer; user-select:none; text-decoration:none;
-        width:100%; min-width:0;      /* allow shrinking */
-    }
-    .dh-gtile:hover { transform:translateY(-3px) scale(1.02); background:rgba(255,255,255,.2);
-                      border-color:rgba(255,255,255,.4); box-shadow:0 10px 28px rgba(0,0,0,.28); color:#fff; }
-    .dh-gtile:active { transform:scale(.97); }
+.dh-cat-scroll {
+    display: grid;
+    grid-template-columns: 1fr 1fr;   /* exactly 2 columns */
+    gap: 10px;
+    overflow: visible;                 /* no scroll */
+    padding: 0;
+}
 
-    .dh-gtile .gtile-icon {
-        width:42px; height:42px; border-radius:11px; flex-shrink:0;
-        display:flex; align-items:center; justify-content:center;
-        font-size:.95rem; background:rgba(255,255,255,.16); transition:transform .2s;
-    }
-    .dh-gtile:hover .gtile-icon { transform:scale(1.1); }
+/* Each chip */
+.dh-cat-chip {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 12px 14px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all .18s;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+    overflow: hidden;
+}
+.dh-cat-chip:hover {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+    transform: translateY(-2px);
+}
+.dh-cat-chip:active {
+    transform: scale(.96);
+    background: #dbeafe;
+}
+.dh-cat-chip.active {
+    background: #eff6ff;
+    border-color: var(--accent);
+}
+.dh-cat-chip.active .dh-cat-name {
+    color: var(--accent);
+}
 
-    .dh-gtile .gtile-name {
-        flex:1; min-width:0;
-        white-space:nowrap; 
-        /* overflow:hidden;  */
-        text-overflow:ellipsis;
+/* Icon */
+.dh-cat-icon {
+    width: 42px; height: 42px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; flex-shrink: 0;
+    transition: transform .2s;
+}
+.dh-cat-chip:hover .dh-cat-icon { transform: scale(1.1); }
+.dh-cat-chip.active .dh-cat-icon { transform: scale(1.08); }
+
+/* Name */
+.dh-cat-name {
+    font-size: .82rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.3;
+    white-space: normal;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+/* Ripple */
+.ripple-wrap {
+    position: absolute; inset: 0;
+    border-radius: 14px; overflow: hidden;
+    pointer-events: none;
+}
+@keyframes ripple { to { transform: scale(6); opacity: 0; } }
+.ripple-circle {
+    position: absolute; border-radius: 50%;
+    background: rgba(15,63,126,.15);
+    width: 20px; height: 20px;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%) scale(0);
+    animation: ripple .4s ease-out forwards;
+}
+
+/* Result bar */
+.dh-cat-result {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+}
+.dh-cat-result-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #22c55e; flex-shrink: 0;
+}
+.dh-cat-result-txt { font-size: .76rem; color: var(--ink-muted); flex: 1; }
+.dh-cat-result-count { font-size: .76rem; font-weight: 700; color: var(--accent); }
+
+/* Desktop — single row, centered */
+@media(min-width: 769px) {
+    .dh-cat-sec { padding: 16px 24px; }
+    .dh-cat-scroll {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        max-width: 640px;
+        margin: 0 auto;
     }
+    .dh-cat-chip {
+        flex: 0 0 auto;
+        width: 140px;
+    }
+}
 
     /* ── Sections ── */
     .dh-sec-head { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:24px; }
@@ -671,21 +748,26 @@ $palette = [
         {{-- </div> --}}
     </div>
 
-    <div class="dh-hero-panel">
-        <div class="dh-glass-grid" id="catGrid">
-            @foreach ($categories as $i => $cat)
-                @php $p = $palette[$i % count($palette)]; @endphp
-                <a href="{{ route('posts.listing', ['category_id' => $cat->slug]) }}"
-                   class="dh-gtile"
-                   data-base="{{ route('posts.listing', ['category_id' => $cat->slug]) }}">
-                    <span class="gtile-icon" style="background:{{ $p['bg'] }};color:{{ $p['ic'] }};">
-                        <i class="fas {{ $p['icon'] }}"></i>
-                    </span>
-                    <span class="gtile-name">{{ $cat->name }}</span>
-                </a>
-            @endforeach
-        </div>
+    
+<div class="dh-cat-sec">
+    <div class="dh-cat-scroll" id="catGrid">
+
+        @foreach ($categories as $i => $cat)
+            @php $p = $palette[$i % count($palette)]; @endphp
+            <a href="{{ route('posts.listing', ['category_id' => $cat->slug]) }}"
+               class="dh-cat-chip"
+               data-base="{{ route('posts.listing', ['category_id' => $cat->slug]) }}">
+                <div class="ripple-wrap"></div>
+                <div class="dh-cat-icon" style="background:{{ $p['bg'] }};">
+                    <i class="fas {{ $p['icon'] }}" style="color:{{ $p['ic'] }};"></i>
+                </div>
+                <span class="dh-cat-name">{{ $cat->name }}</span>
+            </a>
+        @endforeach
+
     </div>
+
+</div>
 
     <div class="dh-hero-wave">
         <svg viewBox="0 0 1440 56" fill="none">
@@ -693,6 +775,7 @@ $palette = [
         </svg>
     </div>
 </header>
+
 
 <section class="dh-carousel-sec">
     <div class="wrap">
@@ -1121,6 +1204,32 @@ $(document).on('click', '#loadMoreBtn', function () {
         setTimeout(() => toast.remove(), 5000);
     }
 })();
+$(document).on('click', '.dh-cat-chip', function(e) {
+    e.preventDefault();
+
+    // Active state
+    $('.dh-cat-chip').removeClass('active');
+    $(this).addClass('active');
+
+    // Ripple
+    const wrap = $(this).find('.ripple-wrap')[0];
+    const r = document.createElement('span');
+    r.className = 'ripple-circle';
+    wrap.appendChild(r);
+    setTimeout(() => r.remove(), 450);
+
+    // Result bar
+    const name = $(this).find('.dh-cat-name').text().trim();
+    $('#catResultTxt').text(
+        name === 'All Deals' ? 'Showing all deals' : 'Showing ' + name + ' deals'
+    );
+
+    // Navigate after ripple finishes
+    const base = $(this).data('base');
+    let href = base;
+    if (activeLocSlug) href += (href.includes('?') ? '&' : '?') + 'locality_id=' + activeLocSlug;
+    setTimeout(() => { window.location.href = href; }, 180);
+});
 </script>
 
 @include('frontend.location-popup', ['localities' => $localities])
