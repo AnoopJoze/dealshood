@@ -175,6 +175,7 @@
     /* background: #fff; */
     border-bottom: 1px solid rgba(0,0,0,.06);
     padding: 25px;
+    margin-bottom:70px;
 }
 
 .dh-cat-scroll {
