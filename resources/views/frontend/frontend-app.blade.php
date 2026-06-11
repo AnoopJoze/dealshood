@@ -29,7 +29,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="{{ setting('site_name', 'DealsHood') }}">
     <link rel="apple-touch-icon" href="/frontend/img/icons/icon-192x192.png">
-    
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link href="/frontend/css/soft-design-system.css?v=1.1.0" rel="stylesheet">
@@ -80,9 +80,10 @@
                background:var(--ink); display:flex; flex-direction:column;
                align-items:center; justify-content:center; }
     .dh-hero-bg { position:absolute; inset:0;
-                  background:url('/frontend/img/office-dark.jpg') center/cover no-repeat; opacity:.52; }
+                  background:url('/frontend/img/illustrations/IMG_4871.png') center/cover no-repeat; opacity:.52; }
     .dh-hero-overlay { position:absolute; inset:0;
-                       background:linear-gradient(160deg,rgba(13,13,13,.78) 0%,rgba(13,13,13,.32) 55%,rgba(15,63,126,.2) 100%); }
+                       /* background:linear-gradient(160deg,rgba(13,13,13,.78) 0%,rgba(13,13,13,.32) 55%,rgba(15,63,126,.2) 100%);  */
+                    }
     .dh-hero-wave { position:absolute; bottom:-1px; left:0; right:0; z-index:3; line-height:0; pointer-events:none; }
     .dh-hero-wave svg { display:block; width:100%; }
 
@@ -749,7 +750,7 @@ $palette = [
         {{-- </div> --}}
     </div>
 
-    
+
 <div class="dh-cat-sec">
     <div class="dh-cat-scroll" id="catGrid">
 
@@ -782,8 +783,8 @@ $palette = [
     <div class="wrap">
         <div class="dh-sec-head">
             <div>
-                <div class="dh-eyebrow">Popular</div>
-                <h2 class="dh-sec-title" id="carouselHeading">Top Deals by Category</h2>
+                {{-- <div class="dh-eyebrow">Popular</div>
+                <h2 class="dh-sec-title" id="carouselHeading">Top Deals by Category</h2> --}}
             </div>
             <a href="{{ route('posts.listing') }}" class="dh-view-all" id="carouselViewAll">
                 See all <i class="bi bi-arrow-right"></i>
@@ -802,7 +803,6 @@ $palette = [
                                     <i class="fas {{ $p['icon'] }}"></i>
                                 </span>
                                 {{ $cat->name }}
-                                <span class="cat-badge" style="background:{{ $p['bg'] }};color:{{ $p['ic'] }};">Popular</span>
                             </h3>
                             <div class="dh-carousel-controls">
                                 <a href="{{ route('posts.listing', ['category_id' => $cat->slug]) }}"
@@ -1072,7 +1072,7 @@ $(document).on('click', '#loadMoreBtn', function () {
                 .catch(err => console.log('SW failed:', err));
         });
     }
-    
+
 
 
 
