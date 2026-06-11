@@ -783,11 +783,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
                 <div class="dh-contact-row">
                     <span class="dh-contact-icon">🏢</span>
-                    <span class="dh-contact-label">{{ $user->company_name ?? 'N/A' }}</span>
-                </div>
-                <div class="dh-contact-row">
-                    <span class="dh-contact-icon">👤</span>
-                    <span class="dh-contact-label">{{ $post->name ?? 'Admin' }}</span>
+                    <span class="dh-contact-label">{{ $post->company_name ?? 'N/A' }}</span>
                 </div>
                 <div class="dh-contact-row">
                     <span class="dh-contact-icon">📍</span>

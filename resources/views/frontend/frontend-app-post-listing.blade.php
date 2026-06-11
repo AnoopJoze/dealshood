@@ -850,11 +850,11 @@ $paletteJson = json_encode($palette);
                 </div>
                 {{-- Grid / List toggle --}}
                 <div class="dh-view-toggle">
-                    <button class="dh-vbtn active" id="btnGrid" title="Grid view">
-                        <i class="bi bi-grid-3x3-gap-fill"></i>
-                    </button>
-                    <button class="dh-vbtn" id="btnList" title="List view">
+                    <button class="dh-vbtn active" id="btnList" title="List view">
                         <i class="bi bi-list-ul"></i>
+                    </button>
+                    <button class="dh-vbtn" id="btnGrid" title="Grid view">
+                        <i class="bi bi-grid-3x3-gap-fill"></i>
                     </button>
                 </div>
             </div>
