@@ -927,13 +927,13 @@ $paletteJson = json_encode($palette);
                 <p class="dh-footer-brand">DealsHood</p>
                 <p class="dh-footer-tag">Discover the best deals around you.</p>
                 <div class="dh-footer-social">
-                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    {{-- <a href="#"><i class="fab fa-facebook"></i></a> --}}
                     <a href="https://www.instagram.com/dealshood" target="_blank"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a>
+                    {{-- <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a> --}}
                 </div>
             </div>
-            <div>
+            {{-- <div>
                 <p class="dh-footer-col-title">Company</p>
                 <ul class="dh-footer-links">
                     <li><a href="#">About Us</a></li>
@@ -946,7 +946,7 @@ $paletteJson = json_encode($palette);
                     <li><a href="#">Contact Us</a></li>
                     <li><a href="#">Privacy Policy</a></li>
                 </ul>
-            </div>
+            </div> --}}
         </div>
         <div class="dh-footer-bottom">
             <p>&copy; <span id="footerYear"></span> <a href="#">DealsHood</a>. All rights reserved.</p>

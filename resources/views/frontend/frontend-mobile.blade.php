@@ -75,13 +75,20 @@
     .dh-nav-toggle,
     .dh-nav-actions { display: none !important; }
     /* Show page title in navbar on sub-pages */
+    @if(request()->routeIs('posts.listing'))
+    .dh-nav-page-title {
+        left: 35% !important;;
+    }
+    @endif
+
     .dh-nav-page-title {
         font-size: .88rem; font-weight: 700;
         color: var(--ink, #0d0d0d);
-        position: absolute; left: 35%; transform: translateX(-50%);
+        position: absolute; left: 50%; transform: translateX(-50%);
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         max-width: 55vw;
     }
+
     /* Back button */
     .dh-nav-back {
         display: flex; align-items: center; gap: 6px;

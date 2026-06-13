@@ -817,42 +817,40 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
     {{-- ═══════════════════════════════════════ FOOTER ════════════════════════════════════════ --}}
     <footer class="dh-footer">
-        <div class="dh-wrap">
-            <div class="dh-footer-grid">
-                <div>
-                    <img src="/frontend/img/dealshood.png" alt="DealsHood"
-                         style="height:34px;filter:brightness(0) invert(1);opacity:.8;">
-                    <p class="dh-footer-brand-name">DealsHood</p>
-                    <p class="dh-footer-tagline">Discover the best deals around you.</p>
-                    <div class="dh-footer-social">
-                        <a href="https://www.facebook.com/CreativeTim/" target="_blank"><i class="fab fa-facebook"></i></a>
-                        <a href="https://twitter.com/creativetim"        target="_blank"><i class="fab fa-twitter"></i></a>
-                        <a href="https://dribbble.com/creativetim"       target="_blank"><i class="fab fa-dribbble"></i></a>
-                        <a href="https://github.com/creativetimofficial"  target="_blank"><i class="fab fa-github"></i></a>
-                        <a href="https://www.youtube.com/channel/UCVyTG4sCw-rOvB9oHkzZD1w" target="_blank"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
-                <div>
-                    <p class="dh-footer-col-title">Company</p>
-                    <ul class="dh-footer-links">
-                        <li><a href="https://dealshood.com/" target="_blank">About Us</a></li>
-                        <li><a href="https://dealshood.com/"          target="_blank">Ads</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <p class="dh-footer-col-title">Help & Support</p>
-                    <ul class="dh-footer-links">
-                        <li><a href="https://dealshood.com/" target="_blank">Contact Us</a></li>
-                    </ul>
+    <div class="wrap">
+        <div class="dh-footer-grid">
+            <div>
+                <img src="/frontend/img/dealshood.png" alt="DealsHood"
+                     style="height:32px;filter:brightness(0) invert(1);opacity:.8;">
+                <p class="dh-footer-brand">DealsHood</p>
+                <p class="dh-footer-tag">Discover the best deals around you.</p>
+                <div class="dh-footer-social">
+                    {{-- <a href="#"><i class="fab fa-facebook"></i></a> --}}
+                    <a href="https://www.instagram.com/dealshood" target="_blank"><i class="fab fa-instagram"></i></a>
+                    {{-- <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a> --}}
                 </div>
             </div>
-            <div class="dh-footer-bottom">
-                <p>All rights reserved. Copyright &copy; <span id="footerYear"></span>
-                    <a href="{{ route('home') }}" target="_blank">DealsHood</a>.
-                </p>
+            {{-- <div>
+                <p class="dh-footer-col-title">Company</p>
+                <ul class="dh-footer-links">
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Advertise</a></li>
+                </ul>
             </div>
+            <div>
+                <p class="dh-footer-col-title">Support</p>
+                <ul class="dh-footer-links">
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div> --}}
         </div>
-    </footer>
+        <div class="dh-footer-bottom">
+            <p>&copy; <span id="footerYear"></span> <a href="#">DealsHood</a>. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
 
     {{-- ═══════════════════════════════════════ LIGHTBOX ═══════════════════════════════════════ --}}
     <div class="modal fade dh-lightbox" id="galleryLightbox" tabindex="-1">
