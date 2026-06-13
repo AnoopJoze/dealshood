@@ -807,6 +807,19 @@ $palette = [
 $paletteJson = json_encode($palette);
 @endphp
 
+{{-- ─── Keyword search ─── --}}
+<section class="dh-search-sec">
+    <div class="dh-wrap">
+        <div class="dh-search-row">
+            <input class="dh-search-input" type="text" id="keywordInput"
+                   placeholder="Search deals by keyword…"
+                   value="{{ request('keyword') }}" autocomplete="off">
+            <button class="dh-search-btn" id="searchBtn">
+                <i class="bi bi-search"></i> Search
+            </button>
+        </div>
+    </div>
+</section>
 {{-- ─── Subcategory chips (shown when category selected) ─── --}}
 <section class="dh-chips-sec" id="subcatSec"
          style="{{ request('category_id') && $subcategories->isNotEmpty() ? '' : 'display:none;' }}">
@@ -846,19 +859,6 @@ $paletteJson = json_encode($palette);
     </div>
 </section>
 
-{{-- ─── Keyword search ─── --}}
-<section class="dh-search-sec">
-    <div class="dh-wrap">
-        <div class="dh-search-row">
-            <input class="dh-search-input" type="text" id="keywordInput"
-                   placeholder="Search deals by keyword…"
-                   value="{{ request('keyword') }}" autocomplete="off">
-            <button class="dh-search-btn" id="searchBtn">
-                <i class="bi bi-search"></i> Search
-            </button>
-        </div>
-    </div>
-</section>
 
 {{-- ─── Posts section ─── --}}
 <section class="dh-posts-sec">

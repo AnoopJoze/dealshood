@@ -350,6 +350,9 @@
                     data-bs-toggle="modal" data-bs-target="#postModal">
                 <i class="fas fa-plus"></i> Add Post
             </button>
+            <a href="{{ route('posts.reorder') }}" class="ps-btn ps-btn-ghost">
+                <i class="fas fa-arrows-alt-v"></i> Reorder
+            </a>
         </div>
     </div>
 
@@ -541,6 +544,15 @@
                         <div class="col-md-4">
                             <label class="form-label">Expiry Date</label>
                             <input type="date" id="post_expiry_date" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Offer Percentage</label>
+                            <div class="input-group">
+                                <input type="number" id="post_offer_percentage" class="form-control"
+                                    placeholder="e.g. 20" min="0" max="100" step="0.01">
+                                <span class="input-group-text bg-light">%</span>
+                            </div>
+                            <small class="text-danger d-none" id="err_offer_percentage"></small>
                         </div>
                     </div>
                     <hr class="my-3" style="border-color:var(--border);">
@@ -825,6 +837,7 @@ var fieldTabMap = {
     category_id:'tab-basic', status:'tab-basic',
     company_name:'tab-location', phone_number:'tab-location', whatsapp_number:'tab-location',
     latitude:'tab-location', longitude:'tab-location',
+    offer_percentage: 'tab-basic',
     meta_title:'tab-seo', meta_description:'tab-seo', keywords:'tab-seo',
 };
 
@@ -874,6 +887,7 @@ function resetModal() {
     $('#modalMeta').addClass('d-none');
     $('#savePostText').html('<i class="fas fa-save"></i> Save Post');
     $('#post_id, #post_title, #post_expiry_date').val('');
+    $('#post_offer_percentage').val('');
     $('#post_category_id, #post_locality_id, #post_user_id').val('');
     $('#post_subcategory_id').html('<option value="">— Select Subcategory —</option>');
     $('#post_status').val('draft');
@@ -925,6 +939,7 @@ $(document).on('click', '.editPost', function() {
         $('#post_user_id').val(res.user_id);
         $('#post_locality_id').val(res.locality_id);
         $('#post_expiry_date').val(res.expiry_date ?? '');
+        $('#post_offer_percentage').val(res.offer_percentage ?? '');
         $('#post_is_featured').prop('checked', !!res.is_featured);
         $('#post_is_active').prop('checked', !!res.is_active);
         editorInstance.setData(res.description ?? '');
@@ -983,6 +998,7 @@ $('#savePost').on('click', function() {
             locality_id:$('#post_locality_id').val(),
             status:$('#post_status').val(),
             expiry_date:$('#post_expiry_date').val(),
+            offer_percentage: $('#post_offer_percentage').val(),
             is_featured:$('#post_is_featured').is(':checked')?1:0,
             is_active:$('#post_is_active').is(':checked')?1:0,
             description:editorInstance.getData(),

@@ -13,7 +13,7 @@ class PostController extends Controller
     {
         $this->middleware('can:posts.view')  ->only(['index','data','show','editData']);
         $this->middleware('can:posts.create')->only(['ajaxStore']);
-        $this->middleware('can:posts.edit')->only(['update','inlineUpdate','mediaUpload','mediaDelete']);
+        $this->middleware('can:posts.edit')->only(['update','inlineUpdate','mediaUpload','mediaDelete','reorder','saveOrder']);
         $this->middleware('can:posts.delete')->only(['destroy','restore','forceDelete','bulkTrash','bulkRestore','emptyTrash']);
     }
 
@@ -312,6 +312,7 @@ public function destroy(Post $post)
             'company_name'     => 'nullable|string|max:255',
             'phone_number'     => 'nullable|string|max:20',
             'whatsapp_number'  => 'nullable|string|max:20',
+            'offer_percentage' => 'nullable|numeric|min:0|max:100',
             // Media / SEO
             'video_url'        => 'nullable|string|max:500',
             'meta_title'       => 'nullable|string|max:255',
@@ -330,4 +331,46 @@ public function destroy(Post $post)
         $count = Post::withTrashed()->where('slug','like',"{$slug}%")->count();
         return $count ? "{$slug}-{$count}" : $slug;
     }
+    public function reorder(Request $request)
+{
+    $query = Post::with(['category','locality','media'])
+                  ->whereNull('deleted_at');
+
+    if (auth()->user()->hasRole('author')) {
+        $query->where('user_id', auth()->id());
+    }
+    if ($request->filled('category_id')) {
+        $query->where('category_id', $request->category_id);
+    }
+    if ($request->filled('locality_id')) {
+        $query->where('locality_id', $request->locality_id);
+    }
+    if ($request->filled('status')) {
+        $query->where('status', $request->status);
+    } else {
+        $query->where('status', 'published'); // default: only what shows on frontend
+    }
+
+    $posts = $query->orderBy('sort_order')->orderByDesc('created_at')->get();
+
+    return view('posts.reorder', [
+        'posts'      => $posts,
+        'categories' => Category::orderBy('name')->get(),
+        'localities' => Locality::orderBy('name')->get(),
+    ]);
+}
+
+public function saveOrder(Request $request)
+{
+    $request->validate([
+        'order'   => 'required|array',
+        'order.*' => 'integer|exists:posts,id',
+    ]);
+
+    foreach ($request->order as $index => $id) {
+        Post::where('id', $id)->update(['sort_order' => $index]);
+    }
+
+    return response()->json(['success' => true, 'message' => 'Post order saved.']);
+}
 }

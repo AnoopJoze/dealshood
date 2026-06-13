@@ -31,7 +31,7 @@
     .page-hero{background:linear-gradient(135deg,#0f172a,#0f3f7e);
                padding:48px 20px 56px;text-align:center;position:relative;overflow:hidden;}
     .page-hero::before{content:'';position:absolute;inset:0;
-                       background:url('/frontend/img/office-dark.jpg') center/cover;opacity:.12;}
+                       background:url('/frontend/img/illustrations/IMG_4871.png') center/cover;opacity:.12;}
     .hero-content{position:relative;z-index:1;}
     .hero-icon{width:60px;height:60px;border-radius:50%;margin:0 auto 16px;
                background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.2);

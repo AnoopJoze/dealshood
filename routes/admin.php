@@ -131,4 +131,6 @@ Route::prefix('posts')->name('posts.')->group(function () {
     Route::post('permissions/{id}/ajax-update',   [PermissionController::class, 'ajaxUpdate'])->name('permissions.ajaxUpdate');
     Route::resource('permissions', PermissionController::class)->only(['index', 'destroy']);
 
+    Route::get('posts_reorder', [PostController::class, 'reorder'])->name('posts.reorder');
+    Route::post('posts_reorder', [PostController::class, 'saveOrder'])->name('posts.saveOrder');
 });

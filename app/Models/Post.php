@@ -49,6 +49,9 @@ class Post extends Model implements HasMedia
         // Contact
         'phone_number',
         'whatsapp_number',
+        'company_name',
+        'offer_percentage',
+        'sort_order',
     ];
 
     /**

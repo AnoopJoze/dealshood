@@ -404,6 +404,11 @@
                         <i class="fas fa-eye" style="font-size:.6rem;"></i>
                         {{ number_format($post->views ?? 0) }} views
                     </span>
+                    @if ($post->offer_percentage)
+                        <span class="ps-status-pill" style="background:#fee2e2;color:#dc2626;">
+                            <i class="fas fa-tag" style="font-size:.62rem;"></i> {{ $post->offer_percentage }}% OFF
+                        </span>
+                    @endif
                 </div>
             </div>
         </div>
@@ -883,6 +888,14 @@
                             <label class="form-label">Expiry Date</label>
                             <input type="date" id="e_expiry_date" class="form-control"
                                    value="{{ $post->expiry_date ? \Carbon\Carbon::parse($post->expiry_date)->format('Y-m-d') : '' }}">
+                        </div><div class="col-md-4">
+                            <label class="form-label">Offer Percentage</label>
+                            <div class="input-group">
+                                <input type="number" id="e_offer_percentage" class="form-control"
+                                    value="{{ $post->offer_percentage }}" min="0" max="100" step="0.01">
+                                <span class="input-group-text bg-light">%</span>
+                            </div>
+                            <small class="text-danger d-none" id="e_err_offer_percentage"></small>
                         </div>
                     </div>
                     <hr style="border-color:var(--border);margin:1rem 0;">
@@ -1168,6 +1181,7 @@ function switchToTab(id) {
 var fieldTabMap = {
     title:'etab-basic', description:'etab-basic',
     category_id:'etab-basic', status:'etab-basic',
+    offer_percentage: 'etab-basic',
     latitude:'etab-location', longitude:'etab-location',
     meta_title:'etab-seo', meta_description:'etab-seo', keywords:'etab-seo',
 };
@@ -1263,6 +1277,7 @@ $('#saveEditPost').on('click', function() {
     fd.append('whatsapp_number', $('#e_whatsapp_number').val());
     fd.append('user_id',$('#e_user_id').val());
     fd.append('expiry_date',$('#e_expiry_date').val());
+    fd.append('offer_percentage', $('#e_offer_percentage').val());
     fd.append('is_featured',$('#e_is_featured').is(':checked')?1:0);
     fd.append('is_active',$('#e_is_active').is(':checked')?1:0);
     fd.append('country',$('#e_country').val()); fd.append('state',$('#e_state').val());

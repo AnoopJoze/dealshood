@@ -78,7 +78,7 @@
     .dh-nav-page-title {
         font-size: .88rem; font-weight: 700;
         color: var(--ink, #0d0d0d);
-        position: absolute; left: 50%; transform: translateX(-50%);
+        position: absolute; left: 35%; transform: translateX(-50%);
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         max-width: 55vw;
     }
