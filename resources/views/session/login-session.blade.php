@@ -27,7 +27,7 @@
 }
 .auth-left::before {
     content: ''; position: absolute; inset: 0;
-    background: url('/frontend/img/office-dark.jpg') center/cover no-repeat;
+    background: url('/frontend/img/illustrations/IMG_4871.png') center/cover no-repeat;
     opacity: .15;
 }
 /* floating circles */

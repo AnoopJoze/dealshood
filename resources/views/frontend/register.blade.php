@@ -34,7 +34,7 @@
     }
     .auth-left::before {
         content: ''; position: absolute; inset: 0;
-        background: url('/frontend/img/office-dark.jpg') center/cover no-repeat;
+        background: url('/frontend/img/illustrations/IMG_4871.png') center/cover no-repeat;
         opacity: .15;
     }
     .al-circle { position: absolute; border-radius: 50%; background: rgba(255,255,255,.04); }

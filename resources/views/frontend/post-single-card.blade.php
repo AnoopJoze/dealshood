@@ -43,7 +43,7 @@
                 <span class="dh-b dh-b-sub">{{ $post->subcategory->name }}</span>
             @endif
             @if($post->company_name)
-                <span class="dh-b dh-b-sub">{{ $post->company_name }}</span>
+                <span class="dh-b dh-b-company"><i class="fas fa-building"></i> {{ $post->company_name }}</span>
             @endif
         </div>
 

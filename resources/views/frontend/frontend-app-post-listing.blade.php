@@ -73,11 +73,70 @@
         .dh-nav-actions.open{display:flex;}
     }
 
+    /* ── Location trigger button ── */
+    .loc-trigger {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--surface);
+        border: 1.5px solid rgba(0,0,0,.1);
+        color: var(--ink);
+        border-radius: 100px;
+        padding: 8px 14px 8px 10px;
+        font-size: .78rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all .18s;
+        -webkit-tap-highlight-color: transparent;
+        white-space: nowrap;
+        max-width: 200px;
+    }
+    .loc-trigger:hover {
+        background: var(--surface-2);
+        border-color: var(--accent);
+        color: var(--accent);
+        transform: translateY(-1px);
+    }
+    .loc-trigger:active { transform: scale(.97); }
+    .lt-pin {
+        width: 24px; height: 24px;
+        border-radius: 50%;
+        background: var(--accent);
+        display: flex; align-items: center; justify-content: center;
+        font-size: .62rem; flex-shrink: 0; color: #fff;
+        transition: background .15s;
+    }
+    .loc-trigger:hover .lt-pin { background: #0c3166; }
+    .lt-dot {
+        width: 7px; height: 7px;
+        border-radius: 50%; background: #22c55e;
+        flex-shrink: 0; display: none;
+        box-shadow: 0 0 0 2px rgba(34,197,94,.25);
+    }
+    .loc-trigger.has-loc .lt-dot { display: block; }
+    .lt-label {
+        flex: 1; text-align: left;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 130px;
+    }
+    .lt-chevron { font-size: .55rem; opacity: .5; flex-shrink: 0; }
+    @media(max-width: 768px) {
+        .loc-trigger {
+            padding: 7px 10px 7px 8px;
+            font-size: .74rem;
+            max-width: 160px;
+        }
+        .lt-pin { width: 22px; height: 22px; font-size: .58rem; }
+        .lt-label { max-width: 90px; }
+    }
+
     /* ── Compact Hero ─────────────────────────────────── */
     .dh-hero{padding-top:var(--nav-h);position:relative;overflow:hidden;
              background:var(--ink);min-height:190px;display:flex;align-items:center;}
     .dh-hero-bg{position:absolute;inset:0;
-                background:url('/frontend/img/office-dark.jpg') center/cover no-repeat;opacity:.35;}
+                background:url('/frontend/img/illustrations/IMG_4871.png') center/cover no-repeat;opacity:.35;}
     .dh-hero-overlay{position:absolute;inset:0;
                      background:linear-gradient(160deg,rgba(13,13,13,.82) 0%,rgba(13,13,13,.4) 60%,rgba(15,63,126,.2) 100%);}
     .dh-hero-body{position:relative;z-index:2;width:100%;max-width:1180px;
@@ -300,6 +359,7 @@
     .dh-b-loc{background:var(--surface-2);color:var(--ink-muted);}
     .dh-b-cat{background:rgba(15,63,126,.08);color:var(--accent);}
     .dh-b-sub{background:rgba(59,130,246,.08);color:#1d4ed8;}
+    .dh-b-company{background:rgba(5,150,105,.08);color:#047857;}
     .dh-card-title{font-size:1rem;font-weight:700;color:var(--ink);line-height:1.35;
                     margin:0 0 8px;text-decoration:none;display:block;transition:color .15s;}
     .dh-card-title:hover{color:var(--accent);}
@@ -371,6 +431,13 @@
 /* ── PWA / app feel ── */
 @media (max-width: 768px) {
  
+    .dh-hero{
+        padding-top:0px !important;
+        min-height:100px;
+    }
+    .dh-hero-body{
+        padding: 10px 15px 10px;
+    }
     /* Scroll snap on hero category tiles */
     .dh-hero-panel .dh-glass-grid {
         flex-wrap: nowrap;
@@ -596,6 +663,14 @@
                 Browse Deals
             @endif
         </span>
+
+        <button class="loc-trigger {{ $activeLoc ? 'has-loc' : '' }}" id="locTrigger" type="button"
+                onclick="window.openLocationPopup && window.openLocationPopup()">
+            <span class="lt-pin"><i class="fas fa-map-marker-alt"></i></span>
+            <span class="lt-dot"></span>
+            <span class="lt-label" id="locLabel">{{ $activeLoc->name ?? 'Choose your area' }}</span>
+            <i class="fas fa-chevron-down lt-chevron"></i>
+        </button>
  
         {{-- REPLACE WITH --}}
         <a href="{{ route('home') }}" class="d-none d-md-block">
@@ -695,20 +770,17 @@
         <div class="dh-hero-eyebrow">DealsHood</div>
         <h1 class="dh-hero-title" id="heroTitle">
             @if ($activeCat && $activeLoc)
-                {{ $activeCat->name }} Deals in {{ $activeLoc->name }}
+                {{ $activeCat->name }}  in {{ $activeLoc->name }}
             @elseif ($activeCat)
-                {{ $activeCat->name }} Deals
+                {{ $activeCat->name }} 
             @elseif ($activeLoc)
-                Deals in {{ $activeLoc->name }}
+                  {{ $activeLoc->name }}
             @elseif (request('keyword'))
                 Results for "{{ request('keyword') }}"
             @else
-                Browse All Deals
+                Browse All
             @endif
         </h1>
-        <p class="dh-hero-sub" id="heroSub">
-            <span id="totalCount">{{ number_format($posts->total()) }}</span> deals found
-        </p>
     </div>
     <div class="dh-hero-wave">
         <svg viewBox="0 0 1440 56" fill="none">
@@ -734,41 +806,6 @@ $palette = [
 ];
 $paletteJson = json_encode($palette);
 @endphp
-
-{{-- ─── Locality chips ─── --}}
-<section class="dh-chips-sec">
-    <div class="dh-wrap">
-        <div class="dh-chips-head">
-            <span class="dh-chips-label">
-                <i class="fas fa-map-marker-alt"></i> Localities
-            </span>
-            @if (request('locality_id'))
-                <button class="dh-chips-clear" data-clear="locality_id">
-                    <i class="bi bi-x-circle"></i> Clear
-                </button>
-            @endif
-        </div>
-        <div class="dh-chips-row chips-scroll" id="locChips">
-            <span class="dh-chip {{ !request('locality_id') ? 'active':'' }}"
-                  data-filter="locality_id" data-val="">
-                <span class="chip-icon" style="background:rgba(0,0,0,.05);color:var(--accent);">
-                    <i class="fas fa-globe"></i>
-                </span>
-                All Areas
-            </span>
-            @foreach ($localities as $i => $loc)
-                @php $p = $palette[$i % count($palette)]; @endphp
-                <span class="dh-chip {{ request('locality_id') == $loc->slug ? 'active':'' }}"
-                      data-filter="locality_id" data-val="{{ $loc->slug }}">
-                    <span class="chip-icon" style="background:{{ $p['bg'] }};color:{{ $p['ic'] }};">
-                        <i class="fas fa-map-marker-alt"></i>
-                    </span>
-                    {{ $loc->name }}
-                </span>
-            @endforeach
-        </div>
-    </div>
-</section>
 
 {{-- ─── Subcategory chips (shown when category selected) ─── --}}
 <section class="dh-chips-sec" id="subcatSec"
@@ -839,10 +876,10 @@ $paletteJson = json_encode($palette);
                           data-sort="latest">
                         <i class="bi bi-clock"></i> Newest
                     </span>
-                    <span class="dh-sort-pill {{ request('sort') === 'popular' ? 'active':'' }}"
+                    {{-- <span class="dh-sort-pill {{ request('sort') === 'popular' ? 'active':'' }}"
                           data-sort="popular">
                         <i class="bi bi-eye"></i> Popular
-                    </span>
+                    </span> --}}
                     <span class="dh-sort-pill {{ request('sort') === 'trending' ? 'active':'' }}"
                           data-sort="trending">
                         <i class="bi bi-fire"></i> Trending
@@ -860,7 +897,7 @@ $paletteJson = json_encode($palette);
             </div>
         </div>
 
-        <div class="dh-grid" id="post-wrapper">
+        <div class="dh-grid list-view" id="post-wrapper">
             @forelse($posts as $post)
                 @include('frontend.post-single-card', ['post' => $post])
             @empty
@@ -967,6 +1004,26 @@ const filters = {
 };
 
 let isLoading = false;
+
+/* ─── Location trigger integration ─────────────── */
+function setLocUI(slug, name){
+    const label = document.getElementById('locLabel');
+    const trigger = document.getElementById('locTrigger');
+    if(label) label.textContent = slug ? name : 'Choose your area';
+    if(trigger) slug ? trigger.classList.add('has-loc') : trigger.classList.remove('has-loc');
+
+    filters.locality_id = slug || '';
+    filters.page = 1;
+    loadPosts(true);
+}
+
+function clearLoc(){
+    setLocUI('', '');
+    try { localStorage.setItem('dh_locality_v1', JSON.stringify({slug:'',name:'All Areas',ts:Date.now()})); } catch(e){}
+}
+window.setLocUI = setLocUI;
+window.clearLoc = clearLoc;
+
 
 /* Build URL from filters */
 function buildUrl(page){
@@ -1104,11 +1161,11 @@ $(document).on('click','.shareBtn',function(){
         try{ localStorage.setItem(STORAGE_KEY, mode); }catch(e){}
     }
 
-    // Restore saved preference
+    // Restore saved preference (default to list view)
     try{
         const saved = localStorage.getItem(STORAGE_KEY);
-        if(saved) setView(saved);
-    }catch(e){}
+        setView(saved || 'list');
+    }catch(e){ setView('list'); }
 
     $btnG.on('click', () => setView('grid'));
     $btnL.on('click', () => setView('list'));
@@ -1256,6 +1313,8 @@ $(document).on('click','.shareBtn',function(){
     }
 })();
 </script>
+
+@include('frontend.location-popup', ['localities' => $localities])
 
 </body>
 </html>
