@@ -61,6 +61,7 @@ class FrontEndController extends Controller
                 ->withCount(['likesData', 'sharesData'])
                 ->where('status', 'published')
                 ->when($localityId, fn($q) => $q->where('locality_id', $localityId))
+                ->orderBy('sort_order')
                 ->latest()
                 ->paginate(12);
 
@@ -92,6 +93,7 @@ class FrontEndController extends Controller
                       ->withCount('likesData')
                       ->withCount('sharesData')
                       ->where('status', 'published')
+                      ->orderBy('sort_order')
                       ->orderByDesc('views')
                       ->limit(10);
                 },
@@ -104,6 +106,7 @@ class FrontEndController extends Controller
         $posts = Post::with(['category', 'subcategory', 'locality'])
             ->withCount(['likesData', 'sharesData'])
             ->where('status', 'published')
+            ->orderBy('sort_order')
             ->latest()
             ->paginate(12);
 
@@ -150,7 +153,7 @@ class FrontEndController extends Controller
         match ($request->sort) {
             'popular'  => $query->orderByDesc('views'),
             'trending' => $query->orderByRaw('(views + likes_data_count + shares_data_count) DESC'),
-            default    => $query->latest(),
+            default    => $query->orderBy('sort_order')->latest(),
         };
 
         $posts = $query->paginate(12)->withQueryString();
@@ -199,6 +202,7 @@ class FrontEndController extends Controller
             ->where('category_id', $post->category_id)
             ->where('id', '!=', $post->id)
             ->where('status', 'published')
+            ->orderBy('sort_order')
             ->latest()
             ->limit(6)
             ->get();

@@ -604,6 +604,52 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     background: var(--surface-2);
     color: var(--ink);
 }
+/* ── Offer stamp (overlaps bottom-right of media) ── */
+.dh-media-col { position: relative; }
+
+.dh-offer-stamp {
+    position: absolute;
+    bottom: -16px;
+    right: 20px;
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #dc2626, #f97316);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    text-align: center;
+    box-shadow: 0 8px 22px rgba(220,38,38,.35), 0 0 0 4px var(--white);
+    z-index: 6;
+    transform: rotate(-8deg);
+}
+.dh-offer-stamp .pct {
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: -.02em;
+}
+.dh-offer-stamp .lbl {
+    font-size: .56rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    margin-top: 1px;
+    opacity: .9;
+}
+
+@media (max-width: 768px) {
+    .dh-offer-stamp {
+        width: 62px;
+        height: 62px;
+        bottom: -12px;
+        right: 14px;
+    }
+    .dh-offer-stamp .pct { font-size: 1rem; }
+    .dh-offer-stamp .lbl { font-size: .5rem; }
+}
 </style>
 </head>
 
@@ -716,7 +762,6 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                 {{-- MEDIA COLUMN --}}
                 <div class="dh-media-col">
                     <div class="dh-media-card">
-
                         @if($video)
                             <span class="dh-media-badge">▶ Video</span>
                             <video controls><source src="{{ $video }}"></video>
@@ -762,6 +807,12 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                         @endif
 
                     </div>
+                    @if ($post->offer_percentage)
+                        <div class="dh-offer-stamp">
+                            <span class="pct">{{ rtrim(rtrim(number_format($post->offer_percentage, 2), '0'), '.') }}%</span>
+                            <span class="lbl">Off</span>
+                        </div>
+                    @endif
                 </div>
 
             </div>

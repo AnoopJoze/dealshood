@@ -623,6 +623,24 @@
     z-index: 7999; display: none;
 }
 .pwa-backdrop.open { display: block; }
+.badge-offer {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: linear-gradient(135deg, #dc2626, #f97316);
+    color: #fff;
+    font-size: .72rem;
+    font-weight: 800;
+    letter-spacing: .02em;
+    padding: 5px 11px;
+    border-radius: 8px 8px 8px 2px;
+    box-shadow: 0 3px 10px rgba(220,38,38,.3);
+    z-index: 5;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.badge-offer i { font-size: .65rem; }
 </style>
 </head>
 <body>

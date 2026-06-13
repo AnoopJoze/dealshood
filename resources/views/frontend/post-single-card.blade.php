@@ -26,6 +26,11 @@
         @if($post->is_featured)
             <span class="badge-feat">⭐ Featured</span>
         @endif
+    @if($post->offer_percentage)
+        <span class="badge-offer">
+            <i class="fas fa-tag"></i> {{ rtrim(rtrim(number_format($post->offer_percentage, 2), '0'), '.') }}% OFF
+        </span>
+    @endif
     </div>
 
     {{-- Body --}}
