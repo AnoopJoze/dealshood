@@ -1078,9 +1078,13 @@ $(document).on('click', '.forceDeletePost', function() {
     }).then(r => {
         if (!r.isConfirmed) return;
         $.ajax({
-            url:'{{ url("admin/posts") }}/' + id + '/force-delete', type:'POST',
+            url:'{{ url("admin/posts") }}/' + id, type:'POST',
             data:{ _token:'{{ csrf_token() }}', _method:'DELETE' },
-            success: res => { if (res.success) { table.ajax.reload(null,false); toastSuccess(res.message); } }
+            success: res => { if (res.success) { table.ajax.reload(null,false); toastSuccess(res.message); } },
+            error: function(xhr) {
+                console.error(xhr.status, xhr.responseText);
+                Swal.fire('Error', xhr.responseJSON?.message || 'Delete failed (HTTP ' + xhr.status + ')', 'error');
+            }
         });
     });
 });

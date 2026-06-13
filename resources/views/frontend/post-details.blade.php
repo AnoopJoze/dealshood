@@ -882,7 +882,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                 <p class="dh-footer-brand">DealsHood</p>
                 <p class="dh-footer-tag">Discover the best deals around you.</p>
                 <div class="dh-footer-social">
-                    {{-- <a href="#"><i class="fab fa-facebook"></i></a> --}}
+                    <a href="https://www.facebook.com/share/1DA56kRCJp"><i class="fab fa-facebook"></i></a>
                     <a href="https://www.instagram.com/dealshood" target="_blank"><i class="fab fa-instagram"></i></a>
                     {{-- <a href="#"><i class="fab fa-twitter"></i></a>
                     <a href="#"><i class="fab fa-youtube"></i></a> --}}

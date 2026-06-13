@@ -1337,10 +1337,13 @@ $('#deletePostBtn').on('click', function() {
             data:{ _token:'{{ csrf_token() }}', _method:'DELETE' },
             success: res => {
                 if (res.success) {
-                    Swal.fire({ icon:'success', title:'Moved to trash!',
-                        timer:1200, showConfirmButton:false })
+                    Swal.fire({ icon:'success', title:'Moved to trash!', timer:1200, showConfirmButton:false })
                         .then(() => window.location.href = '{{ route("posts.index") }}');
                 }
+            },
+            error: function(xhr) {
+                console.error(xhr.status, xhr.responseText);
+                Swal.fire('Error', xhr.responseJSON?.message || 'Delete failed (HTTP ' + xhr.status + ')', 'error');
             }
         });
     });
