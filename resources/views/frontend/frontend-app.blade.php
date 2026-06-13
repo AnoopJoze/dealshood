@@ -8,7 +8,7 @@
     <link rel="shortcut icon" href="/frontend/img/iconsfavicon.ico" />
     <title>DealsHood — Discover the Best Deals Near You</title>
     @php
-        $ogImage = str_replace('http://', 'https://', url('/frontend/img/favicon.ico'));
+        $ogImage = str_replace('http://', 'https://', url('/frontend/img/favicon.png'));
         $ogTitle = 'DealsHood — Discover the Best Deals Near You';
         $ogDesc  = 'Find great offers from your neighbourhood, every day.';
         $ogUrl   = url()->current();
