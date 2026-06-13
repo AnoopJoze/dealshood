@@ -95,7 +95,7 @@ class FrontEndController extends Controller
                       ->where('status', 'published')
                       ->orderBy('sort_order')
                       ->orderByDesc('views')
-                      ->limit(10);
+                      ->limit(5);
                 },
             ])
             ->whereHas('posts', fn($q) => $q->where('status', 'published'))
@@ -108,7 +108,7 @@ class FrontEndController extends Controller
             ->where('status', 'published')
             ->orderBy('sort_order')
             ->latest()
-            ->paginate(12);
+            ->paginate(5);
 
         return view('frontend.frontend-app', compact(
             'posts', 'categories', 'categoryCarousels', 'localities'

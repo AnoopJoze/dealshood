@@ -325,7 +325,7 @@
 @endsection
 @push('js')
 <script src="{{ asset('assets') }}/DataTables/datatables.min.js"></script>
-<script src="{{ asset('assets') }}/js/sweetalert2.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 $(function () {
     var activeType='', saveTimeout=null;
