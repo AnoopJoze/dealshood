@@ -7,7 +7,7 @@
     <link rel="icon" type="image/png" href="/frontend/img/favicon.ico">
     <title>Browse Deals — DealsHood</title>
     @php
-        $ogImage = str_replace('http://', 'https://', url('/frontend/img/icons/icon-512x512.png'));
+        $ogImage = str_replace('http://', 'https://', url('/frontend/img/dealshood.png'));
         $ogTitle = 'Browse Deals — DealsHood';
         $ogDesc  = 'Find the best deals near you.';
         $ogUrl   = url()->current();
