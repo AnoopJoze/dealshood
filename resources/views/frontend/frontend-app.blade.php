@@ -620,6 +620,13 @@
     gap: 4px;
 }
 .badge-offer i { font-size: .65rem; }
+
+@media (max-width: 768px) {
+    .dh-nav-toggle,
+    .dh-nav-actions {
+        display: none !important;
+    }
+}
     </style>
 </head>
 <body>

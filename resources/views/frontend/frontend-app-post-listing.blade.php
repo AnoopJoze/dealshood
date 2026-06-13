@@ -641,6 +641,12 @@
     gap: 4px;
 }
 .badge-offer i { font-size: .65rem; }
+@media (max-width: 768px) {
+    .dh-nav-toggle,
+    .dh-nav-actions {
+        display: none !important;
+    }
+}
 </style>
 </head>
 <body>
@@ -681,7 +687,11 @@
                 Browse Deals
             @endif
         </span>
-
+ 
+        {{-- REPLACE WITH --}}
+        <a href="{{ route('home') }}" class="d-none d-md-block">
+            <img src="/frontend/img/dealshood.png" alt="DealsHood" style="height:45px;">
+        </a>
         <button class="loc-trigger {{ $activeLoc ? 'has-loc' : '' }}" id="locTrigger" type="button"
                 onclick="window.openLocationPopup && window.openLocationPopup()">
             <span class="lt-pin"><i class="fas fa-map-marker-alt"></i></span>
@@ -689,11 +699,6 @@
             <span class="lt-label" id="locLabel">{{ $activeLoc->name ?? 'Choose your area' }}</span>
             <i class="fas fa-chevron-down lt-chevron"></i>
         </button>
- 
-        {{-- REPLACE WITH --}}
-        <a href="{{ route('home') }}" class="d-none d-md-block">
-            <img src="/frontend/img/dealshood.png" alt="DealsHood" style="height:45px;">
-        </a>
         <div class="dh-nav-actions" style="display:flex;align-items:center;gap:10px;">
             <a href="{{ route('home') }}" class="dh-btn-nav" style="background:#f1f5f9;color:var(--ink);">
                 <i class="bi bi-house"></i> Home
