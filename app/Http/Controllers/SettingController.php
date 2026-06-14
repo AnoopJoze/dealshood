@@ -39,6 +39,7 @@ class SettingController extends Controller
             'site_logo'        => 'nullable|image|mimes:png,jpg,jpeg,svg,webp|max:2048',
             'site_favicon'     => 'nullable|image|mimes:png,ico,svg|max:512',
             'og_image'         => 'nullable|image|mimes:png,jpg,jpeg,webp|max:3072',
+            'banner_image' => 'nullable|image|mimes:png,jpg,jpeg,webp|max:5120',
         ]);
 
         // ── Text fields ──────────────────────────────────
@@ -61,7 +62,7 @@ class SettingController extends Controller
         Setting::set('admin_email_notify', $request->has('admin_email_notify') ? '1' : '0');
 
         // ── File uploads ─────────────────────────────────
-        foreach (['site_logo', 'site_favicon', 'og_image'] as $fileField) {
+        foreach (['site_logo', 'site_favicon', 'og_image', 'banner_image'] as $fileField) {
             if ($request->hasFile($fileField)) {
                 // Delete old file
                 $old = Setting::get($fileField);
@@ -82,7 +83,7 @@ class SettingController extends Controller
     // Remove a specific file (logo/favicon/og_image)
     public function removeFile(Request $request, string $key)
     {
-        abort_unless(in_array($key, ['site_logo','site_favicon','og_image']), 400);
+        abort_unless(in_array($key, ['site_logo','site_favicon','og_image','banner_image']), 400);
 
         $path = Setting::get($key);
         if ($path && Storage::disk('public')->exists($path)) {
