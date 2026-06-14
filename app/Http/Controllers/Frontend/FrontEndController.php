@@ -253,7 +253,8 @@ class FrontEndController extends Controller
     {
         $category = Category::where('slug', $categorySlug)->firstOrFail();
         return response()->json(
-            Subcategory::where('category_id', $category->id)->select('slug', 'name')->get()
+            Subcategory::where('category_id', $category->id)->select('slug', 'name')
+    ->orderBy('sort_order')->get()
         );
     }
 

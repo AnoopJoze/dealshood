@@ -83,6 +83,39 @@ class SubCategoryController extends Controller
 
     public function getByCategory($id)
     {
-        return Subcategory::where('category_id',$id)->where('is_active',true)->orderBy('name')->select('id','name')->get();
+        return Subcategory::where('category_id',$id)->where('is_active',true)
+    ->orderBy('sort_order')->orderBy('name')->select('id','name')->get();
     }
+    public function reorder(Request $request)
+{
+    $query = Subcategory::with('category')
+                        ->whereNull('deleted_at'); // remove if no SoftDeletes
+
+    if ($request->filled('category_id')) {
+        $query->where('category_id', $request->category_id);
+    }
+
+    $subcategories = $query->orderBy('sort_order')
+                           ->orderBy('name')
+                           ->get();
+
+    return view('subcategories.reorder', [
+        'subcategories' => $subcategories,
+        'categories'    => Category::orderBy('name')->get(),
+    ]);
+}
+
+public function saveOrder(Request $request)
+{
+    $request->validate([
+        'order'   => 'required|array',
+        'order.*' => 'integer|exists:subcategories,id',
+    ]);
+
+    foreach ($request->order as $index => $id) {
+        Subcategory::where('id', $id)->update(['sort_order' => $index]);
+    }
+
+    return response()->json(['success' => true, 'message' => 'Subcategory order saved.']);
+}
 }

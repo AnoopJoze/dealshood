@@ -133,4 +133,7 @@ Route::prefix('posts')->name('posts.')->group(function () {
 
     Route::get('posts_reorder', [PostController::class, 'reorder'])->name('posts.reorder');
     Route::post('posts_reorder', [PostController::class, 'saveOrder'])->name('posts.saveOrder');
+    Route::get('subcategories_reorder',  [SubCategoryController::class, 'reorder'])  ->name('subcategories.reorder');
+    Route::post('subcategories_reorder', [SubCategoryController::class, 'saveOrder'])->name('subcategories.saveOrder');
+
 });

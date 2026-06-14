@@ -202,6 +202,9 @@
             <button class="ps-btn ps-btn-primary" data-bs-toggle="modal" data-bs-target="#subcategoryModal">
                 <i class="fas fa-plus"></i> Add Subcategory
             </button>
+            <a href="{{ route('subcategories.reorder') }}" class="ps-btn ps-btn-ghost">
+                <i class="fas fa-arrows-alt-v"></i> Reorder
+            </a>
         </div>
     </div>
 
