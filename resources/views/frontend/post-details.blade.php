@@ -10,10 +10,31 @@
     $siteName = setting('site_name', 'DealsHood');
 
     /* ── OG image ─────────────────────────────────── */
+    /* ── OG image — must be absolute HTTPS, publicly accessible ── */
     $ogImage = $post->getFirstMediaUrl('posts');
-    if (!$ogImage) $ogImage = asset('frontend/img/default.jpg');
-    if (!str_starts_with($ogImage, 'http')) $ogImage = url($ogImage);
+
+    // Fallback to default
+    if (!$ogImage) {
+        $ogImage = url('/frontend/img/default.jpg');
+    }
+
+    // Make absolute if relative
+    if (!str_starts_with($ogImage, 'http')) {
+        $ogImage = url($ogImage);
+    }
+
+    // Force HTTPS — WhatsApp blocks HTTP images
     $ogImage = str_replace('http://', 'https://', $ogImage);
+
+    // Strip query strings that can confuse crawlers (Spatie sometimes adds ?v=xxx)
+    $ogImage = strtok($ogImage, '?');
+    $ogImageExt  = strtolower(pathinfo(parse_url($ogImage, PHP_URL_PATH), PATHINFO_EXTENSION));
+    $ogImageMime = match($ogImageExt) {
+        'png'  => 'image/png',
+        'webp' => 'image/webp',
+        'gif'  => 'image/gif',
+        default => 'image/jpeg',
+    };
 
     /* ── Core fields ──────────────────────────────── */
     $ogTitle       = $post->meta_title       ?: $post->title;
@@ -74,7 +95,7 @@
 <meta property="og:url"              content="{{ $canonical }}">
 <meta property="og:image"            content="{{ $ogImage }}">
 <meta property="og:image:secure_url" content="{{ $ogImage }}">
-<meta property="og:image:type"       content="image/jpeg">
+<meta property="og:image:type" content="{{ $ogImageMime }}">
 <meta property="og:image:width"      content="1200">
 <meta property="og:image:height"     content="630">
 <meta property="og:image:alt"        content="{{ $ogTitle }}">
