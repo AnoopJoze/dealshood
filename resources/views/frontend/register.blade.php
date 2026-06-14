@@ -27,7 +27,7 @@
 
     /* Left panel */
     .auth-left {
-        background: linear-gradient(160deg, #0a0f1e 0%, #0f3f7e 60%, #1e40af 100%);
+        background: linear-gradient(160deg, #0a0f1e 0%);
         position: relative; overflow: hidden;
         display: flex; flex-direction: column;
         justify-content: center; padding: 60px 52px;

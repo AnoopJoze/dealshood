@@ -5,29 +5,82 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="apple-touch-icon" sizes="76x76" href="/frontend/img/apple-icon.png">
     <link rel="icon" type="image/png" href="/frontend/img/favicon.ico">
-    <title>Browse Deals — DealsHood</title>
-    @php
-        $ogImage = str_replace('http://', 'https://', url('/frontend/img/dealshood.png'));
-        $ogTitle = 'Browse Deals — DealsHood';
-        $ogDesc  = 'Find the best deals near you.';
-        $ogUrl   = url()->current();
-        $activeCat = $categories->firstWhere('slug', request('category_id'));
-        $activeLoc = $localities->firstWhere('slug', request('locality_id'));
-    @endphp
-    <meta name="description" content="{{ $ogDesc }}">
-    <link rel="canonical" href="{{ $ogUrl }}">
-    <meta property="og:title"       content="{{ $ogTitle }}">
-    <meta property="og:description" content="{{ $ogDesc }}">
-    <meta property="og:image"       content="{{ $ogImage }}">
-    <meta property="og:url"         content="{{ $ogUrl }}">
-    <meta name="twitter:card"       content="summary_large_image">
+     @php
+    /* ── Site settings ──────────────────────────────── */
+    $siteName    = setting('site_name', 'DealsHood');
+    $siteTagline = setting('site_tagline', 'Discover the Best Deals Near You');
+    $siteDesc    = setting('site_description',
+        'Find the best local deals, offers and classifieds near you. Browse by category or locality.');
+    $siteUrl     = url('/');
+    $ogUrl       = url()->current();
 
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#0f172a">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="{{ setting('site_name', 'DealsHood') }}">
-<link rel="apple-touch-icon" href="/frontend/img/icons/icon-192x192.png">
+    /* ── OG image ───────────────────────────────────── */
+    $ogImage = setting('og_image')
+        ? str_replace('http://', 'https://', url(setting('og_image')))
+        : str_replace('http://', 'https://', url('/frontend/img/dealshood.png'));
+
+    /* ── Dynamic keywords from categories + localities ─ */
+    $catNames = $categories->pluck('name')->take(10)->implode(', ');
+    $locNames = $localities->pluck('name')->take(8)->implode(', ');
+    $keywords = trim($catNames . ($locNames ? ', ' . $locNames : ''))
+        . ', deals, offers, classifieds, local deals';
+
+    /* ── Dynamic description enriched with top data ─── */
+    $topCats  = $categories->take(4)->pluck('name')->implode(', ');
+    $topLocs  = $localities->take(4)->pluck('name')->implode(', ');
+    $richDesc = $siteDesc;
+    if ($topCats) $richDesc .= ' Categories include ' . $topCats . '.';
+    if ($topLocs) $richDesc .= ' Available in ' . $topLocs . ' and more.';
+
+    /* ── Canonical & alternates ─────────────────────── */
+    $canonical = $siteUrl;
+    $activeCat = $categories->firstWhere('slug', request('category_id'));
+    $activeLoc = $localities->firstWhere('slug', request('locality_id'));
+    @endphp
+
+    <title>{{ $siteName }} — {{ $siteTagline }}</title>
+
+    {{-- ── Core SEO ─────────────────────────────────────── --}}
+    <meta name="description"        content="{{ Str::limit($richDesc, 160) }}">
+    <meta name="keywords"           content="{{ $keywords }}">
+    <meta name="robots"             content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="author"             content="{{ $siteName }}">
+    <link rel="canonical"           href="{{ $canonical }}">
+
+    {{-- ── Open Graph ──────────────────────────────────── --}}
+    <meta property="og:site_name"   content="{{ $siteName }}">
+    <meta property="og:type"        content="website">
+    <meta property="og:locale"      content="en_US">
+    <meta property="og:title"       content="{{ $siteName }} — {{ $siteTagline }}">
+    <meta property="og:description" content="{{ Str::limit($richDesc, 200) }}">
+    <meta property="og:url"         content="{{ $canonical }}">
+    <meta property="og:image"               content="{{ $ogImage }}">
+    <meta property="og:image:secure_url"    content="{{ $ogImage }}">
+    <meta property="og:image:type"          content="image/png">
+    <meta property="og:image:width"         content="1200">
+    <meta property="og:image:height"        content="630">
+    <meta property="og:image:alt"           content="{{ $siteName }} — {{ $siteTagline }}">
+
+    {{-- ── Twitter / X Card ────────────────────────────── --}}
+    <meta name="twitter:card"        content="summary_large_image">
+    <meta name="twitter:title"       content="{{ $siteName }} — {{ $siteTagline }}">
+    <meta name="twitter:description" content="{{ Str::limit($richDesc, 160) }}">
+    <meta name="twitter:image"       content="{{ $ogImage }}">
+    <meta name="twitter:image:alt"   content="{{ $siteName }} — {{ $siteTagline }}">
+
+    {{-- ── PWA / Mobile ────────────────────────────────── --}}
+    <link rel="manifest"                        href="/manifest.json">
+    <meta name="theme-color"                    content="#0f172a">
+    <meta name="mobile-web-app-capable"         content="yes">
+    <meta name="apple-mobile-web-app-capable"   content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title"     content="{{ $siteName }}">
+    <link rel="apple-touch-icon"                href="/frontend/img/icons/icon-192x192.png">
+
+    {{-- ── Favicons ─────────────────────────────────────── --}}
+    <link rel="icon"       type="image/png"    href="/frontend/img/favicon.ico">
+    <link rel="icon"       type="image/svg+xml" href="/frontend/img/icons/favicon.svg">
+    <link rel="shortcut icon"                  href="/frontend/img/icons/favicon.ico">
  
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
@@ -1336,7 +1389,77 @@ $(document).on('click','.shareBtn',function(){
     }
 })();
 </script>
+{{-- ── Structured Data: WebSite (enables Google Sitelinks Search) ── --}}
+<script type="application/ld+json">
+{!! json_encode([
+    '@context'        => 'https://schema.org',
+    '@type'           => 'WebSite',
+    'name'            => $siteName,
+    'description'     => $richDesc,
+    'url'             => $siteUrl,
+    'logo'            => $ogImage,
+    'potentialAction' => [
+        '@type'       => 'SearchAction',
+        'target'      => [
+            '@type'       => 'EntryPoint',
+            'urlTemplate' => url('/listing') . '?keyword={search_term_string}',
+        ],
+        'query-input' => 'required name=search_term_string',
+    ],
+], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+</script>
 
+{{-- ── Structured Data: LocalBusiness / Organization ─────────────── --}}
+<script type="application/ld+json">
+{!! json_encode([
+    '@context'  => 'https://schema.org',
+    '@type'     => ['Organization', 'LocalBusiness'],
+    'name'      => $siteName,
+    'url'       => $siteUrl,
+    'logo'      => $ogImage,
+    'image'     => $ogImage,
+    'description' => $siteDesc,
+    'sameAs'    => array_filter([
+        'https://www.instagram.com/dealshood',
+        'https://www.facebook.com/share/1DA56kRCJp',
+    ]),
+], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+</script>
+
+{{-- ── Structured Data: ItemList of categories ───────────────────── --}}
+<script type="application/ld+json">
+{!! json_encode([
+    '@context'        => 'https://schema.org',
+    '@type'           => 'ItemList',
+    'name'            => 'Deal Categories on ' . $siteName,
+    'description'     => 'Browse deals by category on ' . $siteName,
+    'numberOfItems'   => $categories->count(),
+    'itemListElement' => $categories->map(fn($cat, $i) => [
+        '@type'    => 'ListItem',
+        'position' => $i + 1,
+        'name'     => $cat->name,
+        'url'      => route('posts.listing', ['category_id' => $cat->slug]),
+    ])->values()->all(),
+], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+</script>
+
+{{-- ── Structured Data: ItemList of localities ───────────────────── --}}
+@if ($localities->count())
+<script type="application/ld+json">
+{!! json_encode([
+    '@context'        => 'https://schema.org',
+    '@type'           => 'ItemList',
+    'name'            => 'Areas Served by ' . $siteName,
+    'numberOfItems'   => $localities->count(),
+    'itemListElement' => $localities->map(fn($loc, $i) => [
+        '@type'    => 'ListItem',
+        'position' => $i + 1,
+        'name'     => $loc->name,
+        'url'      => route('posts.listing', ['locality_id' => $loc->slug]),
+    ])->values()->all(),
+], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+</script>
+@endif
 @include('frontend.location-popup', ['localities' => $localities])
 
 </body>
