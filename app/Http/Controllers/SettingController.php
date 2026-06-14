@@ -68,7 +68,7 @@ class SettingController extends Controller
                 if ($old && Storage::disk('public')->exists($old)) {
                     Storage::disk('public')->delete($old);
                 }
-                $path = $request->file($fileField)->store('settings', 'public');
+                $path = $request->file($fileField)->store('settings_docs', 'public');
                 Setting::set($fileField, $path);
             }
         }

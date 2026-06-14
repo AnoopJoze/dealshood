@@ -1,6 +1,12 @@
 <?php
+
 namespace App\Http\Controllers;
-use App\Models\Subcategory; use App\Models\Category; use Illuminate\Http\Request; use Illuminate\Support\Str; use Carbon\Carbon; use DataTables;
+use App\Models\Subcategory; 
+use App\Models\Category; 
+use Illuminate\Http\Request; 
+use Illuminate\Support\Str; 
+use Carbon\Carbon; 
+use DataTables;
 
 class SubCategoryController extends Controller
 {

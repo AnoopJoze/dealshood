@@ -6,69 +6,118 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="apple-touch-icon" sizes="76x76" href="/frontend/img/apple-icon.png">
     <link rel="icon" type="image/png" href="/frontend/img/favicon.ico">
-    <title>{{ $post->title }} — DealsHood</title>
-
-    {{-- ═══════════════════════════════════════════════
-         SEO & SOCIAL META
-         WhatsApp, Telegram, Facebook all read og:image.
-         Rules:
-           • Must be absolute HTTPS URL
-           • Min 300×300px  (1200×630 recommended)
-           • Must be publicly accessible (no auth)
-           • og:image:width / height must be present
-    ═══════════════════════════════════════════════ --}}
     @php
-        /* --- OG image ---------------------------------------------------- */
-        $ogImage = $post->getFirstMediaUrl('posts');
-        if (!$ogImage) { $ogImage = asset('frontend/img/default.jpg'); }
-        // Force absolute + HTTPS
-        if (!str_starts_with($ogImage, 'http')) { $ogImage = url($ogImage); }
-        $ogImage = str_replace('http://', 'https://', $ogImage);
+    $siteName = setting('site_name', 'DealsHood');
 
-        /* --- Other OG fields --------------------------------------------- */
-        $ogTitle       = $post->meta_title       ?: $post->title;
-        $ogDescription = $post->meta_description ?: Str::limit(strip_tags($post->description), 160);
-        $ogUrl         = url()->current();
-    @endphp
+    /* ── OG image ─────────────────────────────────── */
+    $ogImage = $post->getFirstMediaUrl('posts');
+    if (!$ogImage) $ogImage = asset('frontend/img/default.jpg');
+    if (!str_starts_with($ogImage, 'http')) $ogImage = url($ogImage);
+    $ogImage = str_replace('http://', 'https://', $ogImage);
 
-    <meta name="description"  content="{{ $ogDescription }}">
-    <meta name="keywords"     content="{{ $post->keywords }}">
-    <link rel="canonical"     href="{{ $ogUrl }}">
+    /* ── Core fields ──────────────────────────────── */
+    $ogTitle       = $post->meta_title       ?: $post->title;
+    $ogDescription = $post->meta_description ?: Str::limit(strip_tags($post->description ?? ''), 160);
+    $ogUrl         = url()->current();
 
-    {{-- Open Graph (WhatsApp / Facebook / Telegram / LinkedIn) --}}
-    <meta property="og:site_name"        content="DealsHood">
-    <meta property="og:type"             content="article">
-    <meta property="og:title"            content="{{ $ogTitle }}">
-    <meta property="og:description"      content="{{ $ogDescription }}">
-    <meta property="og:url"              content="{{ $ogUrl }}">
-    <meta property="og:image"            content="{{ $ogImage }}">
-    <meta property="og:image:secure_url" content="{{ $ogImage }}">
-    <meta property="og:image:type"       content="image/jpeg">
-    <meta property="og:image:width"      content="1200">
-    <meta property="og:image:height"     content="630">
-    <meta property="og:image:alt"        content="{{ $ogTitle }}">
-    <meta property="og:locale"           content="en_US">
+    /* ── Keywords — merge post keywords + category + locality + subcategory ── */
+    $kwParts = array_filter([
+        $post->keywords,
+        $post->category?->name,
+        $post->subcategory?->name,
+        $post->locality?->name,
+        $post->company_name,
+        $siteName,
+        'deals', 'offers', 'classifieds',
+    ]);
+    $ogKeywords = implode(', ', $kwParts);
 
-    {{-- Article meta --}}
-    <meta property="article:published_time" content="{{ $post->created_at->toIso8601String() }}">
-    <meta property="article:modified_time"  content="{{ $post->updated_at->toIso8601String() }}">
-    @if($post->category)
-    <meta property="article:section"        content="{{ $post->category->name }}">
-    @endif
+    /* ── Richer description — append location/category context ── */
+    $richDesc = $ogDescription;
+    $ctxParts = array_filter([
+        $post->category?->name    ? 'Category: ' . $post->category->name       : null,
+        $post->subcategory?->name ? $post->subcategory->name                   : null,
+        $post->locality?->name    ? 'in ' . $post->locality->name              : null,
+        $post->company_name       ? 'by ' . $post->company_name                : null,
+        $post->offer_percentage   ? rtrim(rtrim(number_format($post->offer_percentage,2),'0'),'.') . '% off' : null,
+        $post->expiry_date && !\Carbon\Carbon::parse($post->expiry_date)->isPast()
+            ? 'Valid until ' . \Carbon\Carbon::parse($post->expiry_date)->format('d M Y')
+            : null,
+    ]);
+    if ($ctxParts) $richDesc .= ' — ' . implode(', ', $ctxParts) . '.';
+    $richDesc = Str::limit($richDesc, 200);
 
-    {{-- Twitter Card (iMessage / Slack / Discord also use these) --}}
-    <meta name="twitter:card"        content="summary_large_image">
-    <meta name="twitter:title"       content="{{ $ogTitle }}">
-    <meta name="twitter:description" content="{{ $ogDescription }}">
-    <meta name="twitter:image"       content="{{ $ogImage }}">
-    <meta name="twitter:image:alt"   content="{{ $ogTitle }}">
+    /* ── Canonical ────────────────────────────────── */
+    $canonical = route('post-details', [
+        'locality'    => $post->locality?->slug    ?? 'na',
+        'category'    => $post->category?->slug    ?? 'na',
+        'subcategory' => $post->subcategory?->slug ?? 'na',
+        'slug'        => $post->slug,
+    ]);
+@endphp
 
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#0f172a">
-<meta name="mobile-web-app-capable" content="yes">
+<title>{{ $ogTitle }} — {{ $siteName }}</title>
+
+{{-- ── Core SEO ──────────────────────────────────────── --}}
+<meta name="description"  content="{{ $richDesc }}">
+<meta name="keywords"     content="{{ $ogKeywords }}">
+<meta name="robots"       content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+<meta name="author"       content="{{ $post->company_name ?: $siteName }}">
+<link rel="canonical"     href="{{ $canonical }}">
+
+{{-- ── Open Graph ────────────────────────────────────── --}}
+<meta property="og:site_name"        content="{{ $siteName }}">
+<meta property="og:type"             content="article">
+<meta property="og:locale"           content="en_US">
+<meta property="og:title"            content="{{ $ogTitle }}">
+<meta property="og:description"      content="{{ $richDesc }}">
+<meta property="og:url"              content="{{ $canonical }}">
+<meta property="og:image"            content="{{ $ogImage }}">
+<meta property="og:image:secure_url" content="{{ $ogImage }}">
+<meta property="og:image:type"       content="image/jpeg">
+<meta property="og:image:width"      content="1200">
+<meta property="og:image:height"     content="630">
+<meta property="og:image:alt"        content="{{ $ogTitle }}">
+
+{{-- ── Article meta ──────────────────────────────────── --}}
+<meta property="article:published_time" content="{{ $post->created_at->toIso8601String() }}">
+<meta property="article:modified_time"  content="{{ $post->updated_at->toIso8601String() }}">
+@if ($post->category)
+<meta property="article:section"        content="{{ $post->category->name }}">
+@endif
+@if ($post->subcategory)
+<meta property="article:tag"            content="{{ $post->subcategory->name }}">
+@endif
+@if ($post->locality)
+<meta property="article:tag"            content="{{ $post->locality->name }}">
+@endif
+
+{{-- ── Twitter / X Card ──────────────────────────────── --}}
+<meta name="twitter:card"        content="summary_large_image">
+<meta name="twitter:title"       content="{{ $ogTitle }}">
+<meta name="twitter:description" content="{{ $richDesc }}">
+<meta name="twitter:image"       content="{{ $ogImage }}">
+<meta name="twitter:image:alt"   content="{{ $ogTitle }}">
+
+{{-- ── Geo meta (helps local SEO) ───────────────────── --}}
+@if ($post->locality)
+<meta name="geo.region"       content="{{ $post->locality->name }}">
+<meta name="geo.placename"    content="{{ $post->locality->name }}">
+@endif
+@if ($post->latitude && $post->longitude)
+<meta name="geo.position"     content="{{ $post->latitude }};{{ $post->longitude }}">
+<meta name="ICBM"             content="{{ $post->latitude }}, {{ $post->longitude }}">
+@endif
+
+{{-- ── PWA / Mobile ──────────────────────────────────── --}}
+<link rel="manifest"                              href="/manifest.json">
+<meta name="theme-color"                          content="#0f172a">
+<meta name="mobile-web-app-capable"               content="yes">
+<meta name="apple-mobile-web-app-capable"         content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="{{ setting('site_name', 'DealsHood') }}">
-<link rel="apple-touch-icon" href="/frontend/img/icons/icon-192x192.png">
+<meta name="apple-mobile-web-app-title"           content="{{ $siteName }}">
+<link rel="apple-touch-icon"                      href="/frontend/img/icons/icon-192x192.png">
+<link rel="icon" type="image/png"                 href="/frontend/img/favicon.ico">
 
 <script>
 // Register service worker
@@ -1037,22 +1086,35 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     </script>
 
     <script type="application/ld+json">
-    {!! json_encode([
-        '@context'      => 'https://schema.org',
-        '@type'         => 'Article',
-        'headline'      => $ogTitle,
-        'description'   => $ogDescription,
-        'image'         => $ogImage,
-        'url'           => $ogUrl,
-        'datePublished' => $post->created_at->toIso8601String(),
-        'dateModified'  => $post->updated_at->toIso8601String(),
-        'publisher'     => [
-            '@type' => 'Organization',
-            'name'  => 'DealsHood',
-            'url'   => url('/'),
+{!! json_encode([
+    '@context'      => 'https://schema.org',
+    '@type'         => 'Article',
+    'headline'      => $ogTitle,
+    'description'   => $ogDescription,
+    'image'         => $ogImage,
+    'url'           => $canonical,
+    'datePublished' => $post->created_at->toIso8601String(),
+    'dateModified'  => $post->updated_at->toIso8601String(),
+    'author'        => [
+        '@type' => 'Organization',
+        'name'  => $post->company_name ?: $siteName,
+    ],
+    'publisher'     => [
+        '@type' => 'Organization',
+        'name'  => $siteName,
+        'url'   => url('/'),
+        'logo'  => [
+            '@type' => 'ImageObject',
+            'url'   => url('/frontend/img/dealshood.png'),
         ],
-    ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
-    </script>
+    ],
+    'about'         => $post->category ? [
+        '@type' => 'Thing',
+        'name'  => $post->category->name,
+    ] : null,
+    'keywords'      => $ogKeywords,
+], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+</script>
     @if($post->phone_number || $post->whatsapp_number)
 <div class="mobile-cta-bar" id="mobileCta">
     @if($post->phone_number)
@@ -1071,5 +1133,100 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 document.body.classList.add('has-cta-bar');
 </script>
 @endif
+{{-- ── Structured Data: Product/Offer (best type for a deal/listing) ── --}}
+<script type="application/ld+json">
+{!! json_encode(array_filter([
+    '@context'    => 'https://schema.org',
+    '@type'       => 'Product',
+    'name'        => $post->title,
+    'description' => $ogDescription,
+    'image'       => [$ogImage],
+    'url'         => $canonical,
+    'brand'       => $post->company_name ? [
+        '@type' => 'Brand',
+        'name'  => $post->company_name,
+    ] : null,
+    'offers' => [
+        '@type'         => 'Offer',
+        'url'           => $canonical,
+        'priceCurrency' => 'AED',
+        'availability'  => ($post->expiry_date && \Carbon\Carbon::parse($post->expiry_date)->isPast())
+            ? 'https://schema.org/OutOfStock'
+            : 'https://schema.org/InStock',
+        'validThrough'  => $post->expiry_date
+            ? \Carbon\Carbon::parse($post->expiry_date)->toIso8601String()
+            : null,
+        'seller' => [
+            '@type' => 'Organization',
+            'name'  => $post->company_name ?: $siteName,
+        ],
+    ],
+    'category' => $post->category?->name,
+]), JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+</script>
+
+{{-- ── Structured Data: LocalBusiness (if contact info present) ────── --}}
+@if ($post->company_name || $post->phone_number || $post->locality)
+<script type="application/ld+json">
+{!! json_encode(array_filter([
+    '@context'  => 'https://schema.org',
+    '@type'     => 'LocalBusiness',
+    'name'      => $post->company_name ?: $post->title,
+    'url'       => $canonical,
+    'image'     => $ogImage,
+    'description' => $ogDescription,
+    'telephone' => $post->phone_number  ?: null,
+    'address'   => ($post->locality || $post->city || $post->country) ? array_filter([
+        '@type'           => 'PostalAddress',
+        'addressLocality' => $post->locality?->name ?: $post->city,
+        'addressRegion'   => $post->state  ?: null,
+        'addressCountry'  => $post->country ?: null,
+    ]) : null,
+    'geo' => ($post->latitude && $post->longitude) ? [
+        '@type'     => 'GeoCoordinates',
+        'latitude'  => $post->latitude,
+        'longitude' => $post->longitude,
+    ] : null,
+    'hasMap' => $post->google_map_url ?: null,
+]), JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+</script>
+@endif
+
+{{-- ── Structured Data: BreadcrumbList ─────────────────────────────── --}}
+<script type="application/ld+json">
+{!! json_encode([
+    '@context'        => 'https://schema.org',
+    '@type'           => 'BreadcrumbList',
+    'itemListElement' => array_values(array_filter([
+        [
+            '@type'    => 'ListItem',
+            'position' => 1,
+            'name'     => $siteName,
+            'item'     => url('/'),
+        ],
+        $post->category ? [
+            '@type'    => 'ListItem',
+            'position' => 2,
+            'name'     => $post->category->name,
+            'item'     => route('posts.listing', ['category_id' => $post->category->slug]),
+        ] : null,
+        $post->subcategory ? [
+            '@type'    => 'ListItem',
+            'position' => 3,
+            'name'     => $post->subcategory->name,
+            'item'     => route('posts.listing', [
+                'category_id'    => $post->category?->slug ?? 'na',
+                'subcategory_id' => $post->subcategory->slug,
+            ]),
+        ] : null,
+        [
+            '@type'    => 'ListItem',
+            'position' => $post->subcategory ? 4 : ($post->category ? 3 : 2),
+            'name'     => $post->title,
+            'item'     => $canonical,
+        ],
+    ])),
+], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+</script>
 </body>
 </html>
