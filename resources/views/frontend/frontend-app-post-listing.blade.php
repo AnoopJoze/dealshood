@@ -36,6 +36,9 @@
     $canonical = $siteUrl;
     $activeCat = $categories->firstWhere('slug', request('category_id'));
     $activeLoc = $localities->firstWhere('slug', request('locality_id'));
+    $heroBannerUrl = !empty(setting('banner_image'))
+        ? Storage::url(setting('banner_image'))
+        : '/frontend/img/illustrations/IMG_4871.png';
     @endphp
 
     <title>{{ $siteName }} — {{ $siteTagline }}</title>
@@ -189,7 +192,7 @@
     .dh-hero{padding-top:var(--nav-h);position:relative;overflow:hidden;
              background:var(--ink);min-height:190px;display:flex;align-items:center;}
     .dh-hero-bg{position:absolute;inset:0;
-                background:url('/frontend/img/illustrations/IMG_4871.png') center/cover no-repeat;opacity:.35;}
+                opacity:.35;}
     .dh-hero-overlay{position:absolute;inset:0;
                      background:linear-gradient(160deg,rgba(13,13,13,.82) 0%,rgba(13,13,13,.4) 60%,rgba(15,63,126,.2) 100%);}
     .dh-hero-body{position:relative;z-index:2;width:100%;max-width:1180px;
@@ -840,7 +843,7 @@
 
 {{-- ─── Compact Hero ─── --}}
 <header class="dh-hero">
-    <div class="dh-hero-bg"></div>
+    <div class="dh-hero-bg" style="background-image:url('{{ $heroBannerUrl }}');background-size:cover;background-position:center;"></div>
     <div class="dh-hero-overlay"></div>
     <div class="dh-hero-body">
         <div class="dh-hero-eyebrow">DealsHood</div>

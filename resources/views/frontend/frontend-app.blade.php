@@ -35,6 +35,10 @@
 
     /* ── Canonical & alternates ─────────────────────── */
     $canonical = $siteUrl;
+
+    $heroBannerUrl = !empty(setting('banner_image'))
+        ? Storage::url(setting('banner_image'))
+        : '/frontend/img/illustrations/IMG_4871.png';
     @endphp
 
     <title>{{ $siteName }} — {{ $siteTagline }}</title>
@@ -131,7 +135,7 @@
                background:var(--ink); display:flex; flex-direction:column;
                align-items:center; justify-content:center; }
     .dh-hero-bg { position:absolute; inset:0;
-                  background:url('/frontend/img/illustrations/IMG_4871.png') center/cover no-repeat; opacity:.52; }
+                  opacity:.52; }
     .dh-hero-overlay { position:absolute; inset:0;
                        /* background:linear-gradient(160deg,rgba(13,13,13,.78) 0%,rgba(13,13,13,.32) 55%,rgba(15,63,126,.2) 100%);  */
                     }
@@ -799,7 +803,7 @@ $palette = [
 @endphp
 
 <header class="dh-hero">
-    <div class="dh-hero-bg" id="heroBg"></div>
+    <div class="dh-hero-bg" id="heroBg" style="background-image:url('{{ $heroBannerUrl }}');background-size:cover;background-position:center;"></div>
     <div class="dh-hero-overlay"></div>
 
     <div class="dh-hero-text">

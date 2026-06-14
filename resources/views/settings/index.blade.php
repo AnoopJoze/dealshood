@@ -150,7 +150,77 @@
 
         </div>
     </div>
+{{-- ── Hero Banner ── --}}
+<div class="card border-0 shadow-sm mb-4" style="border-radius:16px;">
+    <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span style="width:30px;height:30px;border-radius:8px;background:#fef3c7;
+                         color:#d97706;display:flex;align-items:center;justify-content:center;font-size:.8rem;">
+                <i class="fas fa-image"></i>
+            </span>
+            <h6 class="mb-0 fw-bold">Hero Banner Image</h6>
+        </div>
+        <p class="text-muted mb-0" style="font-size:.78rem;padding-left:38px;">
+            Displayed as the background image on the home page hero section.
+        </p>
+    </div>
+    <div class="card-body px-4 pt-3 pb-4">
 
+        {{-- Current banner preview --}}
+        @if(!empty($settings['banner_image']))
+            <div class="mb-3 position-relative" style="border-radius:12px;overflow:hidden;max-height:200px;">
+                <img src="{{ Storage::url($settings['banner_image']) }}"
+                     alt="Banner"
+                     id="bannerPreview"
+                     style="width:100%;height:200px;object-fit:cover;display:block;border-radius:12px;">
+                <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.5),transparent);
+                            border-radius:12px;pointer-events:none;"></div>
+                <div style="position:absolute;bottom:10px;left:12px;color:#fff;font-size:.72rem;font-weight:600;">
+                    <i class="fas fa-check-circle me-1" style="color:#22c55e;"></i> Current banner
+                </div>
+                <form method="POST"
+                      action="{{ route('admin.settings.remove-file','banner_image') }}"
+                      class="d-inline"
+                      style="position:absolute;top:10px;right:10px;">
+                    @csrf
+                    <button type="submit"
+                            class="btn btn-sm"
+                            style="background:rgba(0,0,0,.5);color:#fff;border:1px solid rgba(255,255,255,.3);
+                                   border-radius:100px;font-size:.72rem;padding:4px 12px;backdrop-filter:blur(4px);"
+                            onclick="return confirm('Remove banner image?')">
+                        <i class="fas fa-times me-1"></i> Remove
+                    </button>
+                </form>
+            </div>
+        @else
+            {{-- Empty state / preview target --}}
+            <div id="bannerPreviewWrap"
+                 style="border:2px dashed #e2e8f0;border-radius:12px;height:160px;
+                        display:flex;flex-direction:column;align-items:center;justify-content:center;
+                        background:#f8fafc;margin-bottom:1rem;transition:border-color .2s;">
+                <i class="fas fa-image" style="font-size:2rem;color:#cbd5e1;margin-bottom:8px;"></i>
+                <span style="font-size:.78rem;color:#94a3b8;">No banner image set</span>
+                <span style="font-size:.7rem;color:#cbd5e1;margin-top:4px;">Preview will appear here</span>
+            </div>
+            <img id="bannerPreview"
+                 src=""
+                 alt="Banner preview"
+                 style="display:none;width:100%;height:200px;object-fit:cover;
+                        border-radius:12px;margin-bottom:1rem;">
+        @endif
+
+        <input type="file"
+               name="banner_image"
+               id="bannerImageInput"
+               class="form-control form-control-sm"
+               accept="image/png,image/jpeg,image/webp">
+        <div class="form-text">
+            Recommended: 1920×800px or wider. JPG / PNG / WEBP. Max 5MB.
+            <br>This replaces <code>/frontend/img/illustrations/IMG_4871.png</code> used in the hero.
+        </div>
+
+    </div>
+</div>
     {{-- ── SEO & Meta ── --}}
     <div class="card border-0 shadow-sm mb-4" style="border-radius:16px;">
         <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
@@ -508,6 +578,23 @@ document.getElementById('maintenanceMode')?.addEventListener('change', function(
             this.checked = false;
         }
     }
+});
+/* ── Banner image live preview ── */
+document.getElementById('bannerImageInput')?.addEventListener('change', function () {
+    if (!this.files[0]) return;
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        const preview = document.getElementById('bannerPreview');
+        const wrap    = document.getElementById('bannerPreviewWrap');
+        if (preview) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+        }
+        if (wrap) {
+            wrap.style.display = 'none';
+        }
+    };
+    reader.readAsDataURL(this.files[0]);
 });
 </script>
 
