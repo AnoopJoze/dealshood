@@ -20,7 +20,7 @@ class FrontEndController extends Controller
     public function home(Request $request)
     {
         $categories = Category::withCount(['posts' => fn($q) => $q->where('status', 'published')])
-            ->orderByDesc('posts_count')
+            //->orderByDesc('posts_count')
             ->get();
         $localities = Locality::whereHas('posts', function ($q) {
             $q->where('status', 'published');
