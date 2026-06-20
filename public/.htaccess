@@ -4,6 +4,10 @@
     </IfModule>
 
     RewriteEngine On
+    
+    RewriteCond %{HTTP_HOST} ^dealshood\.in$ [OR]
+    RewriteCond %{HTTP_HOST} ^www\.dealshood\.in$
+    RewriteRule ^(.*)$ https://dealshood.com/$1 [R=301,L]
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
