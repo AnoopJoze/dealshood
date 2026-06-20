@@ -399,6 +399,30 @@
 <script>
 let padCurrentStep = 1;
 
+/* ── Guard against bfcache restore flashing the modal open ──
+   If the user opened this modal, then navigated away and hit
+   Back, the browser can restore the page from cache with the
+   .open classes still applied — causing a visible pop-then-hide
+   flash before other JS finishes running. Force-reset instantly,
+   with transitions disabled, on every page load/bfcache restore. ── */
+window.addEventListener('pageshow', function (e) {
+    const sheet    = document.getElementById('postAdSheet');
+    const backdrop = document.getElementById('postAdBackdrop');
+    const success  = document.getElementById('postAdSuccess');
+    if (!sheet || !backdrop) return;
+
+    sheet.style.transition = 'none';
+    sheet.classList.remove('open');
+    backdrop.classList.remove('open');
+    if (success) success.style.display = 'none';
+    document.body.style.overflow = '';
+
+    // Re-enable the transition on the next frame so future opens animate normally
+    requestAnimationFrame(() => {
+        sheet.style.transition = '';
+    });
+});
+
 function openPostAdModal() {
     document.getElementById('postAdSheet').classList.add('open');
     document.getElementById('postAdBackdrop').classList.add('open');
