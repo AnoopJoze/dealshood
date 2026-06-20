@@ -129,7 +129,8 @@ class FrontEndController extends Controller
 
         if ($request->filled('category_id')) {
             $cat           = Category::where('slug', $request->category_id)->first();
-            $subcategories = $cat ? $cat->subcategories()->get() : collect();
+            $subcategories = $cat ? $cat->subcategories()
+                ->orderBy('sort_order')->get() : collect();
         }
 
         $query = Post::with(['category', 'subcategory', 'locality'])

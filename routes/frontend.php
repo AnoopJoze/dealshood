@@ -36,7 +36,8 @@ Route::get('/', [FrontEndController::class, 'home'])->name('home');
 Route::get('/dealshood-ads-details/{locality}/{category}/{subcategory}/{slug}', [FrontEndController::class, 'postDetail'])->name('post-details');
 Route::get('/dealshood-ads', [FrontEndController::class, 'listing'])
     ->name('posts.listing');
-
+Route::post('/submit-ad', [App\Http\Controllers\Frontend\AdSubmissionController::class, 'store'])
+     ->name('ad.submit');
 Route::get('/get-subcategories/{categoryId}', [FrontEndController::class, 'getSubcategories']);
 
     Route::post('/posts/{id}/like', [FrontEndController::class, 'like']);
