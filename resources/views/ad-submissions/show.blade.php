@@ -188,7 +188,7 @@
 @endsection
 
 @push('js')
-<script src="{{ asset('assets') }}/js/sweetalert2.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.umd.js"></script>
 <script>
 Fancybox.bind('[data-fancybox="submission-gallery"]', { Toolbar: { display: ['close'] } });
