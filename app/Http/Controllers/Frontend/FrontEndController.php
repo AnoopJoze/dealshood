@@ -22,35 +22,32 @@ class FrontEndController extends Controller
         $categories = Category::withCount(['posts' => fn($q) => $q->where('status', 'published')])
             //->orderByDesc('posts_count')
             ->get();
-        $localities = Locality::whereHas('posts', function ($q) {
-            $q->where('status', 'published');
-        })->orderBy('name')->get();
+        $localities = Locality::withPostsTree();
 
         /* ── AJAX: locality chip was clicked ─────────────────────────── */
         if ($request->ajax()) {
             $localitySlug = $request->input('filter_locality'); // null = all areas
-            $localityId   = null;
+            $localityIds  = [];
 
             if ($localitySlug) {
-                $loc        = Locality::where('slug', $localitySlug)->first();
-                $localityId = $loc?->id;
+                $localityIds = Locality::descendantIdsForSlug($localitySlug);
             }
 
             /* Carousels — top-N posts per category filtered by locality */
             $carouselCats = Category::with([
-                    'posts' => function ($q) use ($localityId) {
+                    'posts' => function ($q) use ($localityIds) {
                         $q->with(['locality', 'subcategory'])
                           ->withCount('likesData')
                           ->withCount('sharesData')
                           ->where('status', 'published')
-                          ->when($localityId, fn($q) => $q->where('locality_id', $localityId))
+                          ->when(!empty($localityIds), fn($q) => $q->whereIn('locality_id', $localityIds))
                           ->orderByDesc('views')
                           ->limit(10);
                     },
                 ])
-                ->whereHas('posts', function ($q) use ($localityId) {
+                ->whereHas('posts', function ($q) use ($localityIds) {
                     $q->where('status', 'published')
-                      ->when($localityId, fn($q) => $q->where('locality_id', $localityId));
+                    ->when(!empty($localityIds), fn($q) => $q->whereIn('locality_id', $localityIds));
                 })
                 ->withCount(['posts' => fn($q) => $q->where('status', 'published')])
                 ->orderByDesc('posts_count')
@@ -60,7 +57,7 @@ class FrontEndController extends Controller
             $posts = Post::with(['category', 'subcategory', 'locality'])
                 ->withCount(['likesData', 'sharesData'])
                 ->where('status', 'published')
-                ->when($localityId, fn($q) => $q->where('locality_id', $localityId))
+                ->when(!empty($localityIds), fn($q) => $q->whereIn('locality_id', $localityIds))
                 ->orderBy('sort_order')
                 ->latest()
                 ->paginate(12);
@@ -120,9 +117,7 @@ class FrontEndController extends Controller
     ════════════════════════════════════════════ */
     public function listing(Request $request)
     {
-        $localities = Locality::whereHas('posts', function ($q) {
-            $q->where('status', 'published');
-        })->orderBy('name')->get();
+        $localities = Locality::withPostsTree();
         $categories    = Category::withCount(['posts' => fn($q) => $q->where('status', 'published')])
                             ->orderByDesc('posts_count')->get();
         $subcategories = collect();
@@ -144,7 +139,8 @@ class FrontEndController extends Controller
             $query->whereHas('subcategory', fn($q) => $q->where('slug', $request->subcategory_id));
         }
         if ($request->filled('locality_id')) {
-            $query->whereHas('locality', fn($q) => $q->where('slug', $request->locality_id));
+            $localityIds = Locality::descendantIdsForSlug($request->locality_id);
+            $query->whereIn('locality_id', $localityIds);
         }
         if ($request->filled('keyword')) {
             $kw = $request->keyword;
