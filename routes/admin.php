@@ -17,6 +17,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\AdSubmissionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,7 +49,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
 
     /* ── Users ─────────────────────────────────────── */
 Route::prefix('users')->name('users.')->group(function () {
- 
+
     // Standard CRUD (existing)
     Route::get('/',                       [UserController::class, 'index'])->name('index');
     Route::post('/data',                  [UserController::class, 'getlist'])->name('getlist');
@@ -56,12 +57,12 @@ Route::prefix('users')->name('users.')->group(function () {
     Route::get('/{id}/edit-data',         [UserController::class, 'editData'])->name('editData');
     Route::post('/{id}/ajax-update',      [UserController::class, 'ajaxUpdate'])->name('ajaxUpdate');
     Route::get('/{id}',                   [UserController::class, 'show'])->name('show');
- 
+
     // Soft-delete
     Route::delete('/{id}',               [UserController::class, 'destroy'])->name('destroy');
     Route::post('/{id}/restore',          [UserController::class, 'restore'])->name('restore');
     Route::delete('/{id}/force-delete',   [UserController::class, 'forceDelete'])->name('forceDelete');
- 
+
     // Bulk
     Route::post('/bulk-trash',            [UserController::class, 'bulkTrash'])->name('bulkTrash');
     Route::post('/bulk-restore',          [UserController::class, 'bulkRestore'])->name('bulkRestore');
@@ -94,7 +95,7 @@ Route::prefix('users')->name('users.')->group(function () {
 
     /* ── Posts ─────────────────────────────────────── */
 Route::prefix('posts')->name('posts.')->group(function () {
- 
+
     // Standard CRUD (existing)
     Route::get('/',                       [PostController::class, 'index'])->name('index');
     Route::post('/data',                   [PostController::class, 'data'])->name('data');
@@ -105,12 +106,12 @@ Route::prefix('posts')->name('posts.')->group(function () {
     Route::post('/inline-update',         [PostController::class, 'inlineUpdate'])->name('inlineUpdate');
     Route::post('/media/upload',          [PostController::class, 'mediaUpload'])->name('mediaUpload');
     Route::delete('/media/{id}',          [PostController::class, 'mediaDelete'])->name('mediaDelete');
- 
+
     // Soft-delete
     Route::delete('/{post}',             [PostController::class, 'destroy'])->name('destroy');
     Route::post('/{id}/restore',          [PostController::class, 'restore'])->name('restore');
     Route::delete('/{id}/force-delete',   [PostController::class, 'forceDelete'])->name('forceDelete');
- 
+
     // Bulk
     Route::post('/bulk-trash',            [PostController::class, 'bulkTrash'])->name('bulkTrash');
     Route::post('/bulk-restore',          [PostController::class, 'bulkRestore'])->name('bulkRestore');
@@ -136,4 +137,13 @@ Route::prefix('posts')->name('posts.')->group(function () {
     Route::get('subcategories_reorder',  [SubCategoryController::class, 'reorder'])  ->name('subcategories.reorder');
     Route::post('subcategories_reorder', [SubCategoryController::class, 'saveOrder'])->name('subcategories.saveOrder');
 
+/* ── Ad Submissions ────────────────────────────── */
+Route::prefix('ad-submissions')->name('ad-submissions.')->group(function () {
+    Route::get('/',                   [AdSubmissionController::class, 'index'])->name('index');
+    Route::post('/data',              [AdSubmissionController::class, 'data'])->name('data');
+    Route::get('/{submission}',       [AdSubmissionController::class, 'show'])->name('show');
+    Route::post('/{submission}/approve', [AdSubmissionController::class, 'approve'])->name('approve');
+    Route::post('/{submission}/reject',  [AdSubmissionController::class, 'reject'])->name('reject');
+    Route::delete('/{submission}',    [AdSubmissionController::class, 'destroy'])->name('destroy');
+});
 });

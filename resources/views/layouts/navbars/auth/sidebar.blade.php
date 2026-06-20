@@ -16,6 +16,7 @@ $nav = [
         'label' => 'Content',
         'items' => [
             ['label'=>'Posts',         'href'=>url('admin/posts'),         'match'=>'admin/posts*',         'icon'=>'fas fa-newspaper',      'color'=>'#0ea5e9','bg'=>'#e0f2fe','can'=>'posts.view'],
+            ['label'=>'Ad Submissions','href'=>url('admin/ad-submissions'),'match'=>'admin/ad-submissions*','icon'=>'fas fa-inbox',          'color'=>'#dc2626','bg'=>'#fef2f2','can'=>'posts.view','badge'=>true],
             ['label'=>'Categories',    'href'=>url('admin/categories'),    'match'=>'admin/categories*',    'icon'=>'fas fa-tags',           'color'=>'#f59e0b','bg'=>'#fef3c7','can'=>'categories.view'],
             ['label'=>'Subcategories', 'href'=>url('admin/subcategories'), 'match'=>'admin/subcategories*', 'icon'=>'fas fa-sitemap',        'color'=>'#f97316','bg'=>'#fff7ed','can'=>'subcategories.view'],
             ['label'=>'Localities',    'href'=>url('admin/localities'),    'match'=>'admin/localities*',    'icon'=>'fas fa-map-marker-alt', 'color'=>'#10b981','bg'=>'#d1fae5','can'=>'localities.view'],
@@ -91,15 +92,27 @@ $nav = [
                 @endif
 
                 @foreach ($visibleItems as $item)
-                    @php $active = Request::is($item['match']); @endphp
+                    @php
+                        $active = Request::is($item['match']);
+                        $pendingBadgeCount = !empty($item['badge'])
+                            ? \App\Models\AdSubmission::where('status', 'pending')->count()
+                            : 0;
+                    @endphp
                     <div class="dh-nav-item">
                         <a href="{{ $item['href'] }}" class="dh-nav-link {{ $active ? 'active' : '' }}">
                             <span class="dh-nav-icon"
-                                  style="background:{{ $active ? 'rgba(255,255,255,.15)' : $item['bg'] }};
-                                         color:{{ $active ? '#fff' : $item['color'] }};">
+                                style="background:{{ $active ? 'rgba(255,255,255,.15)' : $item['bg'] }};
+                                        color:{{ $active ? '#fff' : $item['color'] }};">
                                 <i class="{{ $item['icon'] }}"></i>
                             </span>
                             <span>{{ $item['label'] }}</span>
+                            @if ($pendingBadgeCount > 0)
+                                <span style="margin-left:auto;background:{{ $active ? 'rgba(255,255,255,.25)' : '#dc2626' }};
+                                            color:#fff;font-size:.62rem;font-weight:700;
+                                            padding:1px 7px;border-radius:100px;line-height:1.5;">
+                                    {{ $pendingBadgeCount }}
+                                </span>
+                            @endif
                         </a>
                     </div>
                 @endforeach

@@ -1382,6 +1382,6 @@ $(document).on('click', '.dh-cat-chip', function(e) {
 </script>
 @endif
 @include('frontend.location-popup', ['localities' => $localities])
-
+@include('frontend.post-ad-modal')
 </body>
 </html>
