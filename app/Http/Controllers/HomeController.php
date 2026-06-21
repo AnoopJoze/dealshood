@@ -80,7 +80,7 @@ class HomeController extends Controller
         if (!$isAuthor) {
             try {
                 $gaTotals = $analytics->getTotals();
-                $gaChartData = $analytics->getSummary();
+                $gaChartData = collect($analytics->getSummary());
             } catch (\Throwable $e) {
                 \Log::warning('GA fetch failed: '.$e->getMessage());
             }
