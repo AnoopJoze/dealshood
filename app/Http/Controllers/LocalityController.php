@@ -4,7 +4,7 @@ use App\Models\Locality; use Illuminate\Http\Request; use Illuminate\Support\Str
 
 class LocalityController extends Controller
 {
-    const TYPES = ['country','state','city','area'];
+    const TYPES = ['country','state','district','city','area'];
 
     public function __construct()
     {
@@ -17,7 +17,7 @@ class LocalityController extends Controller
     public function index()
     {
         $localities = Locality::orderBy('type')->orderBy('name')->get();
-        $stats = ['total'=>Locality::count(),'active'=>Locality::where('is_active',true)->count(),'inactive'=>Locality::where('is_active',false)->count(),'country'=>Locality::where('type','country')->count(),'state'=>Locality::where('type','state')->count(),'city'=>Locality::where('type','city')->count(),'area'=>Locality::where('type','area')->count()];
+        $stats = ['total'=>Locality::count(),'active'=>Locality::where('is_active',true)->count(),'inactive'=>Locality::where('is_active',false)->count(),'country'=>Locality::where('type','country')->count(),'state'=>Locality::where('type','state')->count(),'district'=>Locality::where('type','district')->count(),'city'=>Locality::where('type','city')->count(),'area'=>Locality::where('type','area')->count()];
         return view('localities.list', compact('localities','stats'));
     }
 
@@ -67,7 +67,7 @@ class LocalityController extends Controller
 
     public function ajaxStore(Request $request)
     {
-        $request->validate(['name'=>'required|string|max:255','type'=>'required|in:country,state,city,area','parent_id'=>'nullable|exists:localities,id']);
+        $request->validate(['name'=>'required|string|max:255','type'=>'required|in:country,state,district,city,area','parent_id'=>'nullable|exists:localities,id']);
         $loc = Locality::create(['name'=>$request->name,'slug'=>Str::slug($request->name),'type'=>$request->type,'parent_id'=>$request->parent_id?:null,'is_active'=>true]);
         return response()->json(['success'=>true,'message'=>'Locality created.','data'=>$loc]);
     }

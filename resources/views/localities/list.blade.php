@@ -164,6 +164,7 @@
     border-color:var(--accent); box-shadow:0 0 0 3px rgba(99,102,241,.1);
 }
 .ps-modal .modal-footer { padding:.9rem 1.4rem; border-top:1px solid var(--border); }
+.type-badge-district { background:#fff7ed; color:#c2410c; }
 </style>
 @endpush
 
@@ -193,8 +194,8 @@
         <div class="ps-kpi">
             <div class="ps-kpi-icon" style="background:#fce7f3;"><i class="fas fa-layer-group" style="color:#db2777;"></i></div>
             <div>
-                <div class="ps-kpi-val" style="font-size:1rem;">{{ $stats['country'] }}/{{ $stats['state'] }}/{{ $stats['city'] }}/{{ $stats['area'] }}</div>
-                <div class="ps-kpi-lbl">C / S / C / A</div>
+                <div class="ps-kpi-val" style="font-size:1rem;">{{ $stats['country'] }}/{{ $stats['state'] }}/{{ $stats['district'] }}/{{ $stats['city'] }}/{{ $stats['area'] }}</div>
+                <div class="ps-kpi-lbl">C / S / D / C / A</div>
             </div>
         </div>
     </div>
@@ -240,6 +241,7 @@
             <span class="active" data-type=""><i class="fas fa-globe"></i> All</span>
             <span data-type="country" style="background:#dbeafe;color:#1d4ed8;border-color:#bfdbfe;"><i class="fas fa-flag"></i> Country <strong>{{ $stats['country'] }}</strong></span>
             <span data-type="state" style="background:#d1fae5;color:#059669;border-color:#a7f3d0;"><i class="fas fa-map"></i> State <strong>{{ $stats['state'] }}</strong></span>
+            <span data-type="district" style="background:#fff7ed;color:#c2410c;border-color:#fed7aa;"><i class="fas fa-road"></i> District <strong>{{ $stats['district'] }}</strong></span>
             <span data-type="city" style="background:#fef3c7;color:#d97706;border-color:#fde68a;"><i class="fas fa-city"></i> City <strong>{{ $stats['city'] }}</strong></span>
             <span data-type="area" style="background:#fce7f3;color:#db2777;border-color:#fbcfe8;"><i class="fas fa-map-pin"></i> Area <strong>{{ $stats['area'] }}</strong></span>
         </div>
@@ -287,7 +289,7 @@
                 <div class="mb-3">
                     <label class="form-label">Type <span class="text-danger">*</span></label>
                     <div class="d-flex gap-2 flex-wrap">
-                        @foreach (['country'=>['primary','#dbeafe','#1d4ed8'],'state'=>['success','#d1fae5','#059669'],'city'=>['warning','#fef3c7','#d97706'],'area'=>['danger','#fce7f3','#db2777']] as $t => [$cls,$bg,$tc])
+                        @foreach (['country'=>['primary','#dbeafe','#1d4ed8'],'state'=>['success','#d1fae5','#059669'],'district'=>['warning','#fff7ed','#c2410c'],'city'=>['warning','#fef3c7','#d97706'],'area'=>['danger','#fce7f3','#db2777']] as $t => [$cls,$bg,$tc])
                         <div class="form-check d-none"><input class="form-check-input" type="radio" name="locality_type_radio" id="type_{{ $t }}" value="{{ $t }}"></div>
                         <label for="type_{{ $t }}" class="type-pill-btn ps-btn ps-btn-ghost" data-value="{{ $t }}"
                                style="font-size:.75rem;padding:.38rem .9rem;">{{ ucfirst($t) }}</label>
