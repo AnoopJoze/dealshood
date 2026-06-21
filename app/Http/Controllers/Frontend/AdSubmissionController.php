@@ -38,10 +38,10 @@ class AdSubmissionController extends Controller
             }
         }
 
-        Mail::to($submission->email)->send(new AdSubmissionReceived($submission));
+        // Mail::to($submission->email)->send(new AdSubmissionReceived($submission));
 
-        $adminEmail = 'dealshood71@gmail.com';
-        Mail::to($adminEmail)->send(new AdSubmissionAdminNotify($submission));
+        // $adminEmail = 'dealshood71@gmail.com';
+        // Mail::to($adminEmail)->send(new AdSubmissionAdminNotify($submission));
 
         return response()->json([
             'success' => true,

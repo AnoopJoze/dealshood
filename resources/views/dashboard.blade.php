@@ -327,6 +327,93 @@
 </div>
 
 {{-- ══════════════════════════════════════════════
+     ROW 1.5 — Google Analytics
+══════════════════════════════════════════════ --}}
+@if ($gaTotals)
+<div class="row g-3 mb-4">
+
+    <div class="col-xl-3 col-md-6">
+        <div class="kpi-card">
+            <div class="d-flex align-items-start justify-content-between">
+                <div>
+                    <div class="kpi-val">{{ number_format($gaTotals['users']) }}</div>
+                    <div class="kpi-lbl">GA Users (28d)</div>
+                </div>
+                <div class="kpi-icon" style="background:#fee2e2;">
+                    <i class="fab fa-google" style="color:#dc2626;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="kpi-card">
+            <div class="d-flex align-items-start justify-content-between">
+                <div>
+                    <div class="kpi-val">{{ number_format($gaTotals['sessions']) }}</div>
+                    <div class="kpi-lbl">Sessions (28d)</div>
+                </div>
+                <div class="kpi-icon" style="background:#dbeafe;">
+                    <i class="fas fa-chart-line" style="color:#1d4ed8;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="kpi-card">
+            <div class="d-flex align-items-start justify-content-between">
+                <div>
+                    <div class="kpi-val">{{ number_format($gaTotals['pageviews']) }}</div>
+                    <div class="kpi-lbl">Pageviews (28d)</div>
+                </div>
+                <div class="kpi-icon" style="background:#d1fae5;">
+                    <i class="fas fa-eye" style="color:#059669;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="kpi-card">
+            <div class="d-flex align-items-start justify-content-between">
+                <div>
+                    <div class="kpi-val">{{ gmdate('i:s', $gaTotals['avgDuration']) }}</div>
+                    <div class="kpi-lbl">Avg Session Duration</div>
+                </div>
+                <div class="kpi-icon" style="background:#ede9fe;">
+                    <i class="fas fa-clock" style="color:#7c3aed;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-12">
+        <div class="dash-card">
+            <div class="dash-card-header">
+                <p class="dash-card-title">Google Analytics — Last 7 Days</p>
+                <div class="d-flex gap-3">
+                    <span style="font-size:.72rem;color:var(--muted);display:flex;align-items:center;gap:5px;">
+                        <span style="width:10px;height:10px;border-radius:50%;background:#6366f1;display:inline-block;"></span>Users
+                    </span>
+                    <span style="font-size:.72rem;color:var(--muted);display:flex;align-items:center;gap:5px;">
+                        <span style="width:10px;height:10px;border-radius:50%;background:#059669;display:inline-block;"></span>Pageviews
+                    </span>
+                </div>
+            </div>
+            <div class="dash-card-body">
+                <div style="position:relative;height:240px;">
+                    <canvas id="gaLineChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endif
+{{-- ══════════════════════════════════════════════
      ROW 2 — Line chart + Donut
 ══════════════════════════════════════════════ --}}
 <div class="row g-3 mb-4">
@@ -723,6 +810,37 @@ window.addEventListener('load', function () {
         });
     })();
 
+    // ── Google Analytics line chart ─────────────────────
+    @if ($gaTotals)
+    (function(){
+        var el = document.getElementById('gaLineChart');
+        if (!el) return;
+        var ctx = el.getContext('2d');
+        var g1  = ctx.createLinearGradient(0,0,0,240);
+        g1.addColorStop(0,'rgba(99,102,241,.25)'); g1.addColorStop(1,'rgba(99,102,241,.0)');
+        var g2  = ctx.createLinearGradient(0,0,0,240);
+        g2.addColorStop(0,'rgba(5,150,105,.2)'); g2.addColorStop(1,'rgba(5,150,105,.0)');
+
+        new Chart(ctx, {
+            type:'line',
+            data:{
+                labels: @json($gaChartData->pluck('date')),
+                datasets:[
+                    { label:'Users', data:@json($gaChartData->pluck('users')),
+                      borderColor:'#6366f1', borderWidth:2.5, backgroundColor:g1,
+                      fill:true, tension:.4, pointRadius:3, pointBackgroundColor:'#6366f1' },
+                    { label:'Pageviews', data:@json($gaChartData->pluck('pageviews')),
+                      borderColor:'#059669', borderWidth:2, backgroundColor:g2,
+                      fill:true, tension:.4, pointRadius:3, pointBackgroundColor:'#059669' },
+                ],
+            },
+            options:{ responsive:true, maintainAspectRatio:false,
+                plugins:{ legend:{display:false} },
+                interaction:{ intersect:false, mode:'index' },
+                scales:baseScale },
+        });
+    })();
+    @endif
 });
 </script>
 @endpush
