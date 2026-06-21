@@ -326,14 +326,14 @@
             Showing <strong>{{ number_format($posts->total()) }}</strong>
             saved deal{{ $posts->total() !== 1 ? 's' : '' }}
         </p>
-        <div class="sort-row">
+        {{-- <div class="sort-row">
             <span class="sort-pill active" data-sort="latest">
                 <i class="bi bi-clock"></i> Latest
             </span>
             <span class="sort-pill" data-sort="popular">
                 <i class="bi bi-eye"></i> Popular
             </span>
-        </div>
+        </div> --}}
     </div>
     @endif
 

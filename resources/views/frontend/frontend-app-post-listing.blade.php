@@ -1464,6 +1464,6 @@ $(document).on('click','.shareBtn',function(){
 </script>
 @endif
 @include('frontend.location-popup', ['localities' => $localities])
-
+@include('frontend.post-ad-modal')
 </body>
 </html>
