@@ -1034,6 +1034,8 @@ $paletteJson = json_encode($palette);
 </footer>
 
 @include('frontend.frontend-mobile')
+
+@include('frontend.post-ad-modal')
 <style>
 @media(max-width: 768px) {
     #post-wrapper {
@@ -1464,6 +1466,5 @@ $(document).on('click','.shareBtn',function(){
 </script>
 @endif
 @include('frontend.location-popup', ['localities' => $localities])
-@include('frontend.post-ad-modal')
 </body>
 </html>
