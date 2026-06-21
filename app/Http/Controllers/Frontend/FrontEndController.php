@@ -25,7 +25,7 @@ class FrontEndController extends Controller
         $localities = Locality::withPostsTree();
 
         /* ── AJAX: locality chip was clicked ─────────────────────────── */
-        if ($request->ajax()) {
+        if ($request->ajax() || $request->wantsJson()) {
             $localitySlug = $request->input('filter_locality'); // null = all areas
             $localityIds  = [];
 
@@ -155,7 +155,7 @@ class FrontEndController extends Controller
 
         $posts = $query->paginate(12)->withQueryString();
 
-        if ($request->ajax()) {
+        if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'html'      => view('frontend.post-cards', compact('posts'))->render(),
                 'next_page' => $posts->nextPageUrl(),
