@@ -995,6 +995,8 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     </div>
 
 @include('frontend.frontend-mobile')
+
+@include('frontend.post-ad-modal')
     {{-- ═══════════════════════════════════════ SCRIPTS ════════════════════════════════════════ --}}
     <script src="/frontend/js/core/popper.min.js"></script>
     <script src="/frontend/js/core/bootstrap.min.js"></script>
