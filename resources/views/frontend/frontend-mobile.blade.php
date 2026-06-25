@@ -289,6 +289,11 @@
         <span class="bot-nav-icon"><i class="fab fa-whatsapp"></i></span>
         <span>Contact</span>
     </a>
+    <a type="button" id="dhShareBtn"
+        class="bot-nav-item">
+    <span class="bot-nav-icon"><i class="fas fa-share-nodes"></i></span>
+    <span>Share</span>
+</a>
 </nav>
 
 {{-- Filter backdrop (for mobile bottom-sheet filter) --}}
@@ -324,4 +329,40 @@ document.getElementById('filterBackdrop')?.addEventListener('click', function ()
   gtag('js', new Date());
 
   gtag('config', 'G-1905M4BG0P');
+  /* ── Bottom Nav Share ── */
+(function () {
+    const btn = document.getElementById('dhShareBtn');
+    if (!btn) return;
+
+    btn.addEventListener('click', async function () {
+        const shareData = {
+            title: document.title,
+            text:  'Find the best local deals near you!',
+            url:   window.location.origin
+        };
+
+        if (navigator.share) {
+            try { await navigator.share(shareData); } catch (e) { /* cancelled */ }
+        } else {
+            try {
+                await navigator.clipboard.writeText(shareData.url);
+                // Flash feedback
+                const icon  = btn.querySelector('.bot-nav-icon');
+                const label = btn.querySelector('span:last-child');
+                const prevIcon  = icon.innerHTML;
+                const prevLabel = label.textContent;
+                icon.innerHTML   = '<i class="fas fa-check" style="color:#16a34a;"></i>';
+                label.textContent = 'Copied!';
+                label.style.color = '#16a34a';
+                setTimeout(() => {
+                    icon.innerHTML    = prevIcon;
+                    label.textContent = prevLabel;
+                    label.style.color = '';
+                }, 2200);
+            } catch {
+                prompt('Copy this link:', shareData.url);
+            }
+        }
+    });
+})();
 </script>
