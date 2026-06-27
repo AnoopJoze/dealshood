@@ -726,6 +726,10 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         display: none !important;
     }
 }
+
+.post-ad-fab {
+    bottom: calc(var(--bot-nav-h, 60px) + env(safe-area-inset-bottom, 0px) + 75px);
+}
 </style>
 </head>
 
