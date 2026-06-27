@@ -7,24 +7,16 @@
 <div class="dh-carousel-block">
     <div class="dh-carousel-head">
         <h3 class="dh-carousel-title">
-            <span style="width:34px;height:34px;border-radius:9px;flex-shrink:0;
-                         display:flex;align-items:center;justify-content:center;
-                         font-size:.85rem;background:{{ $p['bg'] }};color:{{ $p['ic'] }};">
+            <span class="dh-cat-badge-icon" style="background:{{ $p['bg'] }};color:{{ $p['ic'] }};">
                 <i class="fas {{ $p['icon'] }}"></i>
             </span>
             {{ $cat->name }}
-            {{-- <span class="cat-badge" style="background:{{ $p['bg'] }};color:{{ $p['ic'] }};">Popular</span> --}}
         </h3>
         <div class="dh-carousel-controls">
-            {{-- <a href="{{ route('posts.listing', ['category_id' => $cat->slug]) }}"
-               class="dh-view-all me-1">
-                See all {{ number_format($cat->posts_count) }}
-                <i class="bi bi-arrow-right"></i>
-            </a> --}}
-            <button class="dh-c-btn c-prev" data-target="cr-ajax-{{ $cat->id }}">
+            <button class="dh-c-btn c-prev" data-target="cr-ajax-{{ $cat->id }}" aria-label="Previous">
                 <i class="bi bi-chevron-left"></i>
             </button>
-            <button class="dh-c-btn c-next" data-target="cr-ajax-{{ $cat->id }}">
+            <button class="dh-c-btn c-next" data-target="cr-ajax-{{ $cat->id }}" aria-label="Next">
                 <i class="bi bi-chevron-right"></i>
             </button>
         </div>
