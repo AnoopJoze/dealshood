@@ -1072,21 +1072,16 @@ function clearLoc() {
 }
 
 function refreshLinks() {
-    document.querySelectorAll('#catGrid .dh-gtile[data-base]').forEach(el => {
+    document.querySelectorAll('#catGrid .dh-cat-chip[data-base]').forEach(el => {
         let href = el.dataset.base;
         if (activeLocSlug) href += (href.includes('?') ? '&' : '?') + 'locality_id=' + activeLocSlug;
         el.href = href;
     });
     const base = LISTING_URL + (activeLocSlug ? '?locality_id=' + activeLocSlug : '');
-    document.getElementById('carouselViewAll').href = base;
-    document.getElementById('latestViewAll').href   = base;
-    document.querySelectorAll('#carouselContent a.dh-view-all').forEach(el => {
-        const m = el.href.match(/category_id=([^&]+)/);
-        let href = LISTING_URL;
-        if (m) href += '?category_id=' + m[1];
-        if (activeLocSlug) href += (m ? '&' : '?') + 'locality_id=' + activeLocSlug;
-        el.href = href;
-    });
+    const cvAll = document.getElementById('carouselViewAll');
+    if (cvAll) cvAll.href = base;
+    const lvAll = document.getElementById('latestViewAll');
+    if (lvAll) lvAll.href = base;
 }
 
 function reloadContent() {
