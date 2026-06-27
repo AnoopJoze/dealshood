@@ -885,11 +885,11 @@ $palette = [
                                 {{ $cat->name }}
                             </h3>
                             <div class="dh-carousel-controls">
-                                <a href="{{ route('posts.listing', ['category_id' => $cat->slug]) }}"
+                                {{-- <a href="{{ route('posts.listing', ['category_id' => $cat->slug]) }}"
                                    class="dh-view-all me-1">
                                     See all {{ number_format($cat->posts_count) }}
                                     <i class="bi bi-arrow-right"></i>
-                                </a>
+                                </a> --}}
                                 <button class="dh-c-btn c-prev" data-target="cr-{{ $cat->id }}">
                                     <i class="bi bi-chevron-left"></i>
                                 </button>
