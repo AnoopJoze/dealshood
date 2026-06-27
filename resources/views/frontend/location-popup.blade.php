@@ -526,13 +526,16 @@ console.log('localities loaded:', window._dhLocalities);
     }
 
     /* ── Apply to page ── */
+    /* ── Apply to page ── */
     function applyLocality(slug, name, reload) {
         const lbl = document.getElementById('locLabel');
         if (lbl) lbl.textContent = name || 'All Areas';
-        const locBtn = document.getElementById('locBtn');
-        if (locBtn) slug ? locBtn.classList.add('has-loc') : locBtn.classList.remove('has-loc');
+        const locTrigger = document.getElementById('locTrigger');
+        if (locTrigger) slug ? locTrigger.classList.add('has-loc') : locTrigger.classList.remove('has-loc');
         try {
-            if (typeof setLocUI    === 'function') setLocUI(slug, name);
+            // Pass skipReload=true so setLocUI only updates the UI, not triggers loadPosts
+            // reloadContent handles the actual reload separately
+            if (typeof setLocUI === 'function') setLocUI(slug, name, true);
             if (reload && typeof reloadContent === 'function') reloadContent();
         } catch(e) {}
     }

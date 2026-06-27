@@ -140,16 +140,23 @@ class FrontEndController extends Controller
             ->where('parent_id', 2)
             ->pluck('id');
 
-        $localities = Locality::withPostsTree()
-            ->where(function($q) use ($districtIds) {
-                $q->whereIn('id', $districtIds)                // the districts
-                ->orWhereIn('parent_id', $districtIds)       // their cities
-                ->orWhereIn('parent_id', function($sub) use ($districtIds) {
-                    $sub->select('id')
-                        ->from('localities')
-                        ->whereIn('parent_id', $districtIds); // cities' areas
-                });
-            });
+        $allLocalities = Locality::withPostsTree();
+
+        $localities = $allLocalities->filter(function($l) use ($districtIds,$allLocalities) {
+            // keep districts under state 2, plus their cities and areas
+            if ($l->type === 'district') {
+                return $districtIds->contains($l->id);
+            }
+            if ($l->type === 'city') {
+                return $districtIds->contains($l->parent_id);
+            }
+            if ($l->type === 'area') {
+                // parent is a city — check if that city's parent is one of our districts
+                $city = $allLocalities->firstWhere('id', $l->parent_id);
+                return $city && $districtIds->contains($city->parent_id);
+            }
+            return false;
+        })->values();
         $categories    = Category::withCount(['posts' => fn($q) => $q->where('status', 'published')])
                             ->orderByDesc('posts_count')->get();
         $subcategories = collect();

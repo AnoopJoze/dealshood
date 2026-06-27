@@ -84,7 +84,7 @@
     <link rel="icon"       type="image/png"    href="/frontend/img/favicon.ico">
     <link rel="icon"       type="image/svg+xml" href="/frontend/img/icons/favicon.svg">
     <link rel="shortcut icon"                  href="/frontend/img/icons/favicon.ico">
- 
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link href="/frontend/css/soft-design-system.css?v=1.1.0" rel="stylesheet">
@@ -486,7 +486,7 @@
     @keyframes dotPulse{0%,80%,100%{opacity:.2;transform:scale(.75);}40%{opacity:1;transform:scale(1);}}
 /* ── PWA / app feel ── */
 @media (max-width: 768px) {
- 
+
     .dh-hero{
         padding-top:0px !important;
         min-height:100px;
@@ -506,11 +506,11 @@
     }
     .dh-hero-panel .dh-glass-grid::-webkit-scrollbar { display: none; }
     .dh-gtile { scroll-snap-align: start; flex-shrink: 0; }
- 
+
     /* Hero height tighter on mobile */
     .dh-hero-panel { padding: 20px 0 52px; }
     .dh-hero-text  { padding: 28px 24px 0; }
- 
+
     /* Carousels scroll snap */
     .dh-track {
         scroll-snap-type: x mandatory;
@@ -519,7 +519,7 @@
     }
     .dh-track .dh-card { scroll-snap-align: start; }
     .dh-track .dh-card:last-child { margin-right: 16px; }
- 
+
     /* Latest deals — 2-col grid on small phones, 1-col on very small */
     .dh-grid {
         grid-template-columns: repeat(2,1fr);
@@ -528,26 +528,26 @@
     @media (max-width: 380px) {
         .dh-grid { grid-template-columns: 1fr; }
     }
- 
+
     /* Card body tighter */
     .dh-card-body { padding: 12px 14px 14px; }
     .dh-card-title { font-size: .88rem; }
     .dh-card-desc  { display: none; } /* hide on mobile to save space */
- 
+
     /* Section heading tighter */
     .dh-sec-head   { margin-bottom: 14px; }
     .dh-sec-title  { font-size: 1.15rem; }
- 
+
     /* Listing chips label hidden */
     .dh-chips-label .label-text { display: none; }
- 
+
     /* Listing toolbar — stack on tiny screens */
     .dh-toolbar {
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
     }
- 
+
     /* Sort pills — scroll, don't wrap */
     .dh-sort-pills {
         flex-wrap: nowrap;
@@ -557,30 +557,30 @@
         padding-bottom: 2px;
     }
     .dh-sort-pills::-webkit-scrollbar { display: none; }
- 
+
     /* Post detail hero taller */
     .dh-hero.detail-hero { min-height: 60vw; }
- 
+
     /* Post detail description font */
     .dh-content-body { font-size: .94rem; line-height: 1.78; }
- 
+
     /* Reading progress bar */
     #reading-progress { height: 2px; }
- 
+
     /* Load more button full width */
     .dh-more-btn { width: 100%; justify-content: center; }
- 
+
     /* Footer — single column */
     .dh-footer-grid { grid-template-columns: 1fr !important; gap: 28px; }
     .dh-footer { padding: 36px 0 0; }
 }
- 
+
 /* ── Smooth momentum scroll globally ── */
 * { -webkit-overflow-scrolling: touch; }
- 
+
 /* ── Remove ugly mobile tap highlight everywhere ── */
 * { -webkit-tap-highlight-color: transparent; }
- 
+
 /* ── Prevent zoom on input focus (iOS) ── */
 @media (max-width: 768px) {
     input, select, textarea { font-size: 16px !important; }
@@ -735,7 +735,7 @@
             <i class="fas fa-chevron-left"></i>
             <span class="d-none d-sm-inline">Home</span>
         </a>
- 
+
         <span class="dh-nav-page-title">
             @if(request('category_id'))
                 {{ optional($activeCat)->name ?? 'Deals' }}
@@ -743,7 +743,7 @@
                 Browse Deals
             @endif
         </span>
- 
+
         {{-- REPLACE WITH --}}
         <a href="{{ route('home') }}" class="d-none d-md-block">
             <img src="/frontend/img/dealshood.png" alt="DealsHood" style="height:45px;">
@@ -851,7 +851,7 @@
             @if ($activeCat && $activeLoc)
                 {{ $activeCat->name }}  in {{ $activeLoc->name }}
             @elseif ($activeCat)
-                {{ $activeCat->name }} 
+                {{ $activeCat->name }}
             @elseif ($activeLoc)
                   {{ $activeLoc->name }}
             @elseif (request('keyword'))
@@ -1087,7 +1087,7 @@ const filters = {
 let isLoading = false;
 
 /* ─── Location trigger integration ─────────────── */
-function setLocUI(slug, name){
+function setLocUI(slug, name, skipReload){
     const label = document.getElementById('locLabel');
     const trigger = document.getElementById('locTrigger');
     if(label) label.textContent = slug ? name : 'Choose your area';
@@ -1095,8 +1095,19 @@ function setLocUI(slug, name){
 
     filters.locality_id = slug || '';
     filters.page = 1;
+
+    if (!skipReload) loadPosts(true);
+}
+function reloadContent() {
+    filters.page = 1;
     loadPosts(true);
 }
+window.reloadContent = reloadContent;
+function reloadContent() {
+    filters.page = 1;
+    loadPosts(true);
+}
+window.reloadContent = reloadContent;
 
 function clearLoc(){
     setLocUI('', '');
@@ -1260,7 +1271,7 @@ $(document).on('click','.shareBtn',function(){
                 .catch(err => console.log('SW failed:', err));
         });
     }
-    
+
 
 
 
