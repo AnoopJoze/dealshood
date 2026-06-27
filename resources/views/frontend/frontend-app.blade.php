@@ -898,6 +898,9 @@
     font-size: 10px;
     white-space: nowrap;
 }
+.dh-card-meta{
+    gap:0px !important;
+}
 </style>
 </head>
 <body>
