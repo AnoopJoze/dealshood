@@ -887,6 +887,17 @@
     .dh-track .dh-card-media img,
     .dh-track .dh-card-media video { height: 148px; }
 }
+/* ── Fix meta row alignment in carousel ── */
+.dh-track .dh-card-meta {
+    flex-wrap: nowrap;
+    align-items: center;
+}
+.dh-track .dh-card .dh-meta-time {
+    margin-left: auto;
+    flex-shrink: 0;
+    font-size: 10px;
+    white-space: nowrap;
+}
 </style>
 </head>
 <body>
