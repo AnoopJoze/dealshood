@@ -538,7 +538,7 @@ console.log('localities loaded:', window._dhLocalities);
     }
 
     /* ── Boot ── */
-    const stored   = (() => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e) { return null; } })();
+    const stored    = (() => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e) { return null; } })();
     const forceOpen = new URLSearchParams(location.search).has('choose-area');
 
     goToDistricts('in');   // initial render
@@ -546,9 +546,12 @@ console.log('localities loaded:', window._dhLocalities);
     if (!stored || forceOpen) {
         setTimeout(openPopup, 320);
     } else {
-        if (stored.slug !== undefined) applyLocality(stored.slug, stored.name, true);
+        if (stored.slug !== undefined) {
+            window.addEventListener('load', function () {
+                applyLocality(stored.slug, stored.name, true);
+            });
+        }
     }
-
     /* External trigger */
     document.addEventListener('click', function (e) {
         if (e.target.closest('[data-open-location-picker]')) openPopup();
