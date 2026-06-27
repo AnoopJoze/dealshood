@@ -683,6 +683,211 @@
     }
 }
     </style>
+    {{-- ═══════════════════════════════════════════════════
+     DROP THIS <style> BLOCK into frontend-app.blade.php
+     Replace / merge with existing carousel CSS rules.
+     Search for ".dh-carousel-sec" and replace that block.
+═══════════════════════════════════════════════════ --}}
+<style>
+/* ── Carousel section wrapper ──────────────────── */
+.dh-carousel-sec {
+    padding: 28px 0 8px;
+    background: var(--surf);
+}
+
+.dh-carousel-block {
+    margin-bottom: 36px;
+}
+.dh-carousel-block:last-child { margin-bottom: 0; }
+
+/* ── Carousel header ───────────────────────────── */
+.dh-carousel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    padding: 0 2px;
+}
+.dh-carousel-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.dh-cat-badge-icon {
+    width: 34px; height: 34px;
+    border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .82rem;
+}
+.dh-carousel-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.dh-c-btn {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(0,0,0,.1);
+    background: #fff;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .75rem;
+    color: var(--ink-muted);
+    transition: all .15s;
+    -webkit-tap-highlight-color: transparent;
+    flex-shrink: 0;
+}
+.dh-c-btn:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+.dh-c-btn:active { transform: scale(.92); }
+
+/* ── Track outer (fade edges) ──────────────────── */
+.dh-track-outer {
+    position: relative;
+    /* Negative margin so cards bleed to edge on mobile */
+    margin: 0 -24px;
+    padding: 0 24px;
+}
+/* Fade-out right edge */
+.dh-track-outer::after {
+    content: '';
+    position: absolute;
+    right: 0; top: 0; bottom: 4px;
+    width: 60px;
+    pointer-events: none;
+    z-index: 2;
+    background: linear-gradient(to left, var(--surf) 10%, transparent);
+}
+
+/* ── Scrollable track ──────────────────────────── */
+.dh-track {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    padding: 4px 24px 16px;
+    /* Smooth momentum on iOS */
+    -webkit-overflow-scrolling: touch;
+    /* Snap to cards */
+    scroll-snap-type: x mandatory;
+    /* Hide scrollbar everywhere */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    /* Smooth arrow-button scrolling */
+    scroll-behavior: smooth;
+    /* Allow grab cursor for drag */
+    cursor: grab;
+    user-select: none;
+}
+.dh-track::-webkit-scrollbar { display: none; }
+.dh-track.is-dragging {
+    cursor: grabbing;
+    scroll-behavior: auto; /* disable smooth during drag for 1:1 feel */
+}
+
+/* ── Cards inside track ────────────────────────── */
+.dh-track .dh-card {
+    flex: 0 0 260px;
+    scroll-snap-align: start;
+    /* Slight scale-up on hover for desktop */
+    transition: transform .2s, box-shadow .2s;
+}
+.dh-track .dh-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--sh-md);
+}
+/* Prevent click-through during drag */
+.dh-track.is-dragging .dh-card { pointer-events: none; }
+
+/* ── Card image height in carousel ──────────────── */
+.dh-track .dh-card-media img,
+.dh-track .dh-card-media video {
+    height: 170px;
+}
+.dh-track .dh-card-media .ratio { height: 170px; }
+
+/* ── Compact card body in carousel ─────────────── */
+.dh-track .dh-card-body {
+    padding: 12px 14px 14px;
+}
+.dh-track .dh-card-title {
+    font-size: .88rem;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+.dh-track .dh-card-desc { display: none; } /* hide desc in carousel */
+.dh-track .dh-card-meta { margin-bottom: 10px; }
+.dh-track .dh-card-actions .dh-btn {
+    padding: 7px 12px;
+    font-size: .72rem;
+}
+
+/* ── Mobile tweaks ──────────────────────────────── */
+@media (max-width: 640px) {
+    .dh-track .dh-card {
+        flex: 0 0 220px;
+    }
+    .dh-track .dh-card-media img,
+    .dh-track .dh-card-media video {
+        height: 148px;
+    }
+    .dh-track-outer {
+        margin: 0 -16px;
+        padding: 0 16px;
+    }
+    .dh-track {
+        padding: 4px 16px 14px;
+        gap: 12px;
+    }
+    /* Wider first card peek — shows half the next card */
+    .dh-track .dh-card { flex: 0 0 75vw; max-width: 260px; }
+}
+
+/* ── Spinner ────────────────────────────────────── */
+.sec-spinner { text-align: center; padding: 40px 0; }
+.sec-spinner span {
+    display: inline-block; width: 9px; height: 9px;
+    border-radius: 50%; background: var(--accent);
+    margin: 0 3px;
+    animation: dotPulse 1.2s infinite both;
+}
+.sec-spinner span:nth-child(2) { animation-delay: .2s; }
+.sec-spinner span:nth-child(3) { animation-delay: .4s; }
+/* ── Equal height cards in carousel ── */
+.dh-track {
+    align-items: stretch;  /* stretch all cards to tallest */
+}
+.dh-track .dh-card {
+    flex: 0 0 260px;
+    display: flex;
+    flex-direction: column;
+    height: auto;          /* let stretch handle it */
+}
+.dh-track .dh-card-media img,
+.dh-track .dh-card-media video {
+    height: 170px;
+    object-fit: cover;
+}
+.dh-track .dh-card-body {
+    flex: 1;               /* body grows to fill remaining height */
+    display: flex;
+    flex-direction: column;
+}
+.dh-track .dh-card-actions {
+    margin-top: auto;      /* pins actions to bottom */
+}
+
+@media (max-width: 640px) {
+    .dh-track .dh-card { flex: 0 0 75vw; max-width: 260px; }
+    .dh-track .dh-card-media img,
+    .dh-track .dh-card-media video { height: 148px; }
+}
+</style>
 </head>
 <body>
 
@@ -1010,35 +1215,102 @@ window.addEventListener('scroll', function () {
     if (heroBg) heroBg.style.transform = 'translateY(' + (scrollY * .25) + 'px)';
 }, { passive: true });
 
-function makeDraggable(el) {
-    if (!el) return;
-    let isDown=false, startX=0, sl=0, wasDragged=false;
-    el.addEventListener('mousedown', e => { isDown=true; wasDragged=false; startX=e.pageX-el.offsetLeft; sl=el.scrollLeft; el.style.cursor='grabbing'; });
-    el.addEventListener('mouseleave', () => { isDown=false; el.style.cursor=''; el.classList.remove('is-dragging','dragging'); });
-    el.addEventListener('mouseup',    () => { isDown=false; el.style.cursor=''; el.classList.remove('is-dragging','dragging'); setTimeout(()=>wasDragged=false,50); });
-    el.addEventListener('mousemove', e => {
-        if(!isDown) return; e.preventDefault();
-        const walk=(e.pageX-el.offsetLeft-startX)*1.4;
-        if(Math.abs(walk)>6){ wasDragged=true; el.classList.add('is-dragging','dragging'); }
-        el.scrollLeft=sl-walk;
-    });
-    el.addEventListener('click', e=>{ if(wasDragged){ e.preventDefault(); e.stopPropagation(); } }, true);
-    let tx=0,ts=0;
-    el.addEventListener('touchstart', e=>{ tx=e.touches[0].pageX; ts=el.scrollLeft; },{passive:true});
-    el.addEventListener('touchmove',  e=>{ el.scrollLeft=ts+(tx-e.touches[0].pageX); },{passive:true});
-}
-function initDrag() {
-    document.querySelectorAll('.dh-track:not([data-drag])').forEach(el => {
-        el.setAttribute('data-drag','1'); makeDraggable(el);
-    });
-}
-initDrag();
+// /* ── Smooth drag-to-scroll for every .dh-track ───── */
+// function makeDraggable(el) {
+//     if (!el) return;
 
-$(document).on('click', '.c-prev,.c-next', function () {
-    const $t = $('#' + $(this).data('target'));
-    if (!$t.length) return;
-    const w = $t.find('.dh-card').first().outerWidth(true) || 300;
-    $t[0].scrollBy({ left: $(this).hasClass('c-prev') ? -w*2 : w*2, behavior:'smooth' });
+//     let isDown = false, startX = 0, scrollLeft = 0, wasDragged = false;
+//     let velX = 0, lastX = 0, lastT = 0, rafId = null;
+
+//     /* ── Mouse ── */
+//     el.addEventListener('mousedown', e => {
+//         isDown    = true;
+//         wasDragged = false;
+//         startX    = e.pageX - el.offsetLeft;
+//         scrollLeft = el.scrollLeft;
+//         lastX     = e.pageX;
+//         lastT     = Date.now();
+//         velX      = 0;
+//         el.classList.add('is-dragging');
+//         cancelAnimationFrame(rafId);
+//     });
+//     el.addEventListener('mouseleave', () => {
+//         if (!isDown) return;
+//         isDown = false;
+//         el.classList.remove('is-dragging');
+//         startMomentum(el);
+//     });
+//     el.addEventListener('mouseup', () => {
+//         isDown = false;
+//         el.classList.remove('is-dragging');
+//         startMomentum(el);
+//         setTimeout(() => wasDragged = false, 50);
+//     });
+//     el.addEventListener('mousemove', e => {
+//         if (!isDown) return;
+//         e.preventDefault();
+//         const x    = e.pageX - el.offsetLeft;
+//         const walk = (x - startX) * 1.2;
+//         if (Math.abs(walk) > 5) wasDragged = true;
+
+//         const now = Date.now();
+//         velX = (e.pageX - lastX) / (now - lastT || 1); // px per ms
+//         lastX = e.pageX;
+//         lastT = now;
+
+//         el.scrollLeft = scrollLeft - walk;
+//     });
+//     /* Block click after drag */
+//     el.addEventListener('click', e => {
+//         if (wasDragged) { e.preventDefault(); e.stopPropagation(); }
+//     }, true);
+
+//     /* ── Touch (native, momentum handled by OS) ── */
+//     let tx = 0, ts = 0;
+//     el.addEventListener('touchstart', e => {
+//         tx = e.touches[0].pageX;
+//         ts = el.scrollLeft;
+//         cancelAnimationFrame(rafId); // stop any ongoing momentum
+//     }, { passive: true });
+//     el.addEventListener('touchmove', e => {
+//         el.scrollLeft = ts + (tx - e.touches[0].pageX);
+//     }, { passive: true });
+
+//     /* ── Momentum (mouse only) ── */
+//     function startMomentum(track) {
+//         if (Math.abs(velX) < 0.05) return;
+//         let v = velX * 14; // initial momentum speed
+
+//         function step() {
+//             if (Math.abs(v) < 0.5) return;
+//             track.scrollLeft -= v;
+//             v *= 0.88; // friction
+//             rafId = requestAnimationFrame(step);
+//         }
+//         rafId = requestAnimationFrame(step);
+//     }
+// }
+
+// function initDrag() {
+//     document.querySelectorAll('.dh-track:not([data-drag])').forEach(el => {
+//         el.setAttribute('data-drag', '1');
+//         makeDraggable(el);
+//     });
+// }
+// initDrag();
+
+/* ── Arrow buttons — vanilla JS, no jQuery needed ── */
+document.addEventListener('click', function (e) {
+    const btn = e.target.closest('.c-prev, .c-next');
+    if (!btn) return;
+    const track = document.getElementById(btn.dataset.target);
+    if (!track) return;
+    const card = track.querySelector('.dh-card');
+    const cardW = card ? (card.offsetWidth + 14) : 260;
+    const dir   = btn.classList.contains('c-prev') ? -1 : 1;
+    track.style.scrollBehavior = 'smooth';
+    track.scrollBy({ left: dir * cardW * 2 });
+    setTimeout(() => track.style.scrollBehavior = '', 500);
 });
 
 let activeLocSlug = '';
