@@ -50,7 +50,7 @@ class FrontEndController extends Controller
                     ->when(!empty($localityIds), fn($q) => $q->whereIn('locality_id', $localityIds));
                 })
                 ->withCount(['posts' => fn($q) => $q->where('status', 'published')])
-                ->orderByDesc('posts_count')
+                ->orderBy('id', 'asc')
                 ->get();
 
             /* Latest posts filtered by locality */
@@ -97,7 +97,7 @@ class FrontEndController extends Controller
             ])
             ->whereHas('posts', fn($q) => $q->where('status', 'published'))
             ->withCount(['posts' => fn($q) => $q->where('status', 'published')])
-            ->orderByDesc('posts_count')
+            ->orderBy('id', 'asc')
             ->get();
 
         $posts = Post::with(['category', 'subcategory', 'locality'])

@@ -330,7 +330,7 @@
      ROW 1.5 — Google Analytics
 ══════════════════════════════════════════════ --}}
 @if ($gaTotals)
-<div class="row g-3 mb-4">
+{{-- <div class="row g-3 mb-4">
 
     <div class="col-xl-3 col-md-6">
         <div class="kpi-card">
@@ -411,7 +411,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> --}}
 @endif
 {{-- ══════════════════════════════════════════════
      ROW 2 — Line chart + Donut

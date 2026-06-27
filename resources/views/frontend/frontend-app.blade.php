@@ -866,9 +866,9 @@ $palette = [
                 {{-- <div class="dh-eyebrow">Popular</div>
                 <h2 class="dh-sec-title" id="carouselHeading">Top Deals by Category</h2> --}}
             </div>
-            <a href="{{ route('posts.listing') }}" class="dh-view-all" id="carouselViewAll">
+            {{-- <a href="{{ route('posts.listing') }}" class="dh-view-all" id="carouselViewAll">
                 See all <i class="bi bi-arrow-right"></i>
-            </a>
+            </a> --}}
         </div>
         <div id="carouselContent">
             @foreach ($categoryCarousels as $i => $cat)
