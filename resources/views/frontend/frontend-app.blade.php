@@ -1392,7 +1392,8 @@ function reloadContent() {
             } else { $('#showMoreWrap').hide(); }
             $('#carouselHeading').text(activeLocSlug ? activeLocName + ' — Popular Deals' : 'Top Deals by Category');
             $('#latestHeading').text(activeLocSlug ? activeLocName + ' — Latest Deals' : 'Latest Deals');
-            refreshLinks(); initDrag();
+            refreshLinks();
+            //initDrag();
         },
         error: function () { $('#carouselContent').html(''); }
     });
