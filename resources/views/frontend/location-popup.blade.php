@@ -193,6 +193,10 @@
 @keyframes lpSlideOut { from { opacity:0; transform:translateX(-28px); } to { opacity:1; transform:translateX(0); } }
 .lp-slide-in  { animation: lpSlideIn  .22s ease both; }
 .lp-slide-out { animation: lpSlideOut .22s ease both; }
+.lp-all-btn.active {
+    background: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(99,102,241,.2);
+}
 </style>
 
 {{-- Pass localities as JSON to JS --}}
@@ -455,22 +459,57 @@ console.log('localities loaded:', window._dhLocalities);
     }
 
     function markSelected(item, loc) {
-        list.querySelectorAll('.lp-item').forEach(i => i.classList.remove('selected'));
+    const isAlreadySelected = item.classList.contains('selected');
+
+    // Deselect all
+    list.querySelectorAll('.lp-item').forEach(i => i.classList.remove('selected'));
+
+    if (isAlreadySelected) {
+        // Toggle OFF — fall back to parent level selection if available
+        const fallback = level === 'area' ? activeCity
+                       : level === 'city' ? activeDistrict
+                       : null;
+
+        if (fallback) {
+            selected = { slug: fallback.slug, name: fallback.name };
+            confirmBtn.disabled = false;
+            confirmTxt.textContent = 'Show deals in ' + fallback.name;
+            confirmBtn.querySelector('i').className = 'fas fa-arrow-right';
+        } else {
+            selected = { slug: null, name: null };
+            confirmBtn.disabled = true;
+            confirmTxt.textContent = 'Select a location to continue';
+            confirmBtn.querySelector('i').className = 'fas fa-map-marker-alt';
+        }
+    } else {
+        // Select
         item.classList.add('selected');
         selected = { slug: loc.slug, name: loc.name };
-        confirmBtn.disabled   = false;
+        confirmBtn.disabled = false;
         confirmTxt.textContent = 'Show deals in ' + loc.name;
         confirmBtn.querySelector('i').className = 'fas fa-arrow-right';
     }
+}
 
     /* ── All Areas ── */
     document.getElementById('lpAllAreas').addEventListener('click', function () {
-        list.querySelectorAll('.lp-item').forEach(i => i.classList.remove('selected'));
+    const isActive = this.classList.contains('active');
+    list.querySelectorAll('.lp-item').forEach(i => i.classList.remove('selected'));
+
+    if (isActive) {
+        this.classList.remove('active');
+        selected = { slug: null, name: null };
+        confirmBtn.disabled = true;
+        confirmTxt.textContent = 'Select a location to continue';
+        confirmBtn.querySelector('i').className = 'fas fa-map-marker-alt';
+    } else {
+        this.classList.add('active');
         selected = { slug: '', name: 'All Areas' };
-        confirmBtn.disabled   = false;
+        confirmBtn.disabled = false;
         confirmTxt.textContent = 'Browse all areas';
         confirmBtn.querySelector('i').className = 'fas fa-arrow-right';
-    });
+    }
+});
 
     /* ── Back button ── */
     backBtn.addEventListener('click', function () {
