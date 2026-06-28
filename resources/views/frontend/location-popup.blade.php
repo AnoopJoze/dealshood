@@ -580,10 +580,70 @@ console.log('localities loaded:', window._dhLocalities);
     }
 
     /* ── Boot ── */
+    /* ── Boot ── */
     const stored    = (() => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e) { return null; } })();
     const forceOpen = new URLSearchParams(location.search).has('choose-area');
 
-    goToDistricts('in');   // initial render
+    /* Restore drill-down position from stored slug */
+    function restoreLevel() {
+        if (!stored || !stored.slug) {
+            goToDistricts('in');
+            return;
+        }
+
+        const storedLoc = all.find(l => l.slug === stored.slug);
+        if (!storedLoc) {
+            goToDistricts('in');
+            return;
+        }
+
+        if (storedLoc.type === 'district') {
+            goToDistricts('in');
+            // pre-select the district
+            selected = { slug: storedLoc.slug, name: storedLoc.name };
+
+        } else if (storedLoc.type === 'city') {
+            const district = byId[storedLoc.parent_id];
+            if (district) {
+                goToCities(district, 'in');
+                selected = { slug: storedLoc.slug, name: storedLoc.name };
+            } else {
+                goToDistricts('in');
+            }
+
+        } else if (storedLoc.type === 'area') {
+            const city = byId[storedLoc.parent_id];
+            const district = city ? byId[city.parent_id] : null;
+            if (city && district) {
+                activeDistrict = district; // set before goToAreas
+                goToAreas(city, 'in');
+                selected = { slug: storedLoc.slug, name: storedLoc.name };
+            } else if (city) {
+                const dist = byId[city.parent_id];
+                if (dist) { activeDistrict = dist; }
+                goToAreas(city, 'in');
+                selected = { slug: storedLoc.slug, name: storedLoc.name };
+            } else {
+                goToDistricts('in');
+            }
+        }
+
+        // Highlight selected item after render
+        setTimeout(() => {
+            const card = list.querySelector(`[data-slug="${stored.slug}"]`);
+            if (card) {
+                card.classList.add('selected');
+                card.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            }
+            if (selected.slug !== null) {
+                confirmBtn.disabled = false;
+                confirmTxt.textContent = 'Show deals in ' + selected.name;
+                confirmBtn.querySelector('i').className = 'fas fa-arrow-right';
+            }
+        }, 50);
+    }
+
+    restoreLevel();
 
     if (!stored || forceOpen) {
         setTimeout(openPopup, 320);
