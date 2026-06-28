@@ -34,50 +34,50 @@ class SecurityHeaders
 
         // Content Security Policy
         $csp = implode('; ', [
-    "default-src 'self'",
+            "default-src 'self'",
 
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' " .
-        "https://code.jquery.com " .
-        "https://cdn.jsdelivr.net " .
-        "https://cdnjs.cloudflare.com " .
-        "https://cdn.datatables.net " .
-        "https://cdn.ckeditor.com " .
-        "https://buttons.github.io " .
-        "https://www.googletagmanager.com " .
-        "https://www.google-analytics.com",
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' " .
+                "https://code.jquery.com " .
+                "https://cdn.jsdelivr.net " .
+                "https://cdnjs.cloudflare.com " .
+                "https://cdn.datatables.net " .
+                "https://cdn.ckeditor.com " .
+                "https://buttons.github.io " .
+                "https://www.googletagmanager.com " .
+                "https://www.google-analytics.com",
 
-    "style-src 'self' 'unsafe-inline' " .
-        "https://cdn.jsdelivr.net " .
-        "https://cdnjs.cloudflare.com " .
-        "https://fonts.googleapis.com " .
-        "https://cdn.datatables.net",
+            "style-src 'self' 'unsafe-inline' " .
+                "https://cdn.jsdelivr.net " .
+                "https://cdnjs.cloudflare.com " .
+                "https://fonts.googleapis.com " .
+                "https://cdn.datatables.net",
 
-    "font-src 'self' " .
-        "https://cdnjs.cloudflare.com " .
-        "https://fonts.gstatic.com " .
-        "https://cdn.jsdelivr.net",
+            "font-src 'self' " .
+                "https://cdnjs.cloudflare.com " .
+                "https://fonts.gstatic.com " .
+                "https://cdn.jsdelivr.net",
 
-    "img-src 'self' data: blob: https: http:",
+            "img-src 'self' data: blob: https: http:",
 
-    "media-src 'self' blob: https:",
+            "media-src 'self' blob: https:",
 
-    "connect-src 'self' " .
-        "https://www.google-analytics.com " .
-        "https://analytics.google.com " .
-        "https://cdn.jsdelivr.net",
-        "https://cdn.ckeditor.com",
-        "https://api.github.com",
+            "connect-src 'self' " .
+                "https://www.google-analytics.com " .
+                "https://analytics.google.com " .
+                "https://cdn.jsdelivr.net " .
+                "https://cdn.ckeditor.com " .
+                "https://api.github.com",
 
-    "frame-src 'self' " .
-        "https://maps.google.com " .
-        "https://www.google.com",
+            "frame-src 'self' " .
+                "https://maps.google.com " .
+                "https://www.google.com",
 
-    "worker-src 'self' blob:",
+            "worker-src 'self' blob:",
 
-    "object-src 'none'",
-    "base-uri 'self'",
-    "form-action 'self'",
-]);
+            "object-src 'none'",
+            "base-uri 'self'",
+            "form-action 'self'",
+        ]);
         $response->headers->set('Content-Security-Policy', $csp);
 
         // HSTS — only on production HTTPS
