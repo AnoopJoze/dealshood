@@ -281,7 +281,7 @@
                         </span>
                         <input type="tel" id="phone" name="phone"
                                class="f-input" value="{{ old('phone') }}"
-                               placeholder="+971 50 123 4567" autocomplete="tel">
+                               placeholder="+91 9999999999" autocomplete="tel">
                     </div>
                 </div>
 

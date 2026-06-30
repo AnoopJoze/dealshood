@@ -1,6 +1,6 @@
 // public/sw.js — DealsHood Service Worker
 
-const CACHE_NAME    = 'dealshood-v1';
+const CACHE_NAME    = 'dealshood-v2'; // bumped to purge any stale/poisoned entries
 const OFFLINE_PAGE  = '/offline';
 
 // Assets to cache immediately on install
@@ -43,6 +43,14 @@ self.addEventListener('fetch', event => {
     if (url.pathname.startsWith('/admin')) return;
     if (url.pathname.startsWith('/api')) return;
 
+    // ── CRITICAL: never let the SW touch AJAX/XHR calls.
+    // These hit /listing, /, etc. with the SAME URL as real pages but
+    // return JSON. Let the browser handle them natively — no cache
+    // read, no cache write, no interception at all.
+    if (request.headers.get('X-Requested-With') === 'XMLHttpRequest') {
+        return;
+    }
+
     // Cache-first for static assets (images, CSS, JS, fonts)
     if (request.destination === 'image' ||
         request.destination === 'style'  ||
@@ -61,12 +69,28 @@ self.addEventListener('fetch', event => {
         return;
     }
 
-    // Network-first for HTML pages
+    // Network-first for real page navigations only.
+    // Use request.mode === 'navigate' instead of request.destination —
+    // it's the reliable signal for "this is an actual browser
+    // navigation" (including back/forward), as opposed to a
+    // same-URL fetch()/XHR call.
+    const isNavigation = request.mode === 'navigate' || request.destination === 'document';
+
+    if (!isNavigation) {
+        // Anything else GET that isn't a navigation and isn't a static
+        // asset (e.g. unexpected XHR without the header) — just pass
+        // through to network, don't cache, don't intercept on failure.
+        event.respondWith(fetch(request));
+        return;
+    }
+
     event.respondWith(
         fetch(request)
             .then(response => {
-                // Cache successful HTML responses
-                if (response.ok && request.destination === 'document') {
+                // Only cache genuine HTML responses for navigations.
+                // Guards against ever caching a JSON body under a page URL.
+                const contentType = response.headers.get('Content-Type') || '';
+                if (response.ok && contentType.includes('text/html')) {
                     const clone = response.clone();
                     caches.open(CACHE_NAME).then(cache => cache.put(request, clone));
                 }
