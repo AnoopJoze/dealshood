@@ -85,7 +85,11 @@ self.addEventListener('fetch', event => {
     }
 
     event.respondWith(
-        fetch(request)
+        // cache: 'no-store' bypasses the browser's HTTP disk cache for this
+        // fetch entirely. Without this, a navigation to a URL that was
+        // previously fetched via AJAX (and cached per normal HTTP rules)
+        // can silently return that old AJAX response here.
+        fetch(request, { cache: 'no-store' })
             .then(response => {
                 // Only cache genuine HTML responses for navigations.
                 // Guards against ever caching a JSON body under a page URL.
