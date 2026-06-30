@@ -99,7 +99,8 @@ class FrontEndController extends Controller
                 'posts_html'    => view('frontend.post-cards', compact('posts'))->render(),
                 'next_page'     => $posts->nextPageUrl(),
                 'total'         => $posts->total(),
-            ]);
+            ])->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+  ->header('Pragma', 'no-cache');
         }
 
         /* ── Full page load ──────────────────────────────────────────── */
@@ -199,7 +200,8 @@ class FrontEndController extends Controller
                 'html'      => view('frontend.post-cards', compact('posts'))->render(),
                 'next_page' => $posts->nextPageUrl(),
                 'total'     => $posts->total(),
-            ]);
+            ])->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+  ->header('Pragma', 'no-cache');
         }
 
         return view('frontend.frontend-app-post-listing',
