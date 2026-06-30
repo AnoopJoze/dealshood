@@ -945,7 +945,7 @@ $paletteJson = json_encode($palette);
 
         <div class="dh-toolbar">
             <p class="dh-result-info mb-0">
-                Showing <strong id="resultCount">{{ number_format($posts->total()) }}</strong> deals
+                Showing <strong id="resultCount">{{ number_format($posts->total()) }}</strong>
                 @if ($activeCat) in <strong>{{ $activeCat->name }}</strong>@endif
                 @if ($activeLoc) · <strong>{{ $activeLoc->name }}</strong>@endif
             </p>
