@@ -730,6 +730,21 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 .post-ad-fab {
     bottom: calc(var(--bot-nav-h, 60px) + env(safe-area-inset-bottom, 0px) + 75px) !important;
 }
+/* ── Disclaimer ── */
+.dh-disclaimer {
+    margin-top: 24px;
+    padding: 18px 22px;
+    background: var(--surface-2);
+    border: 1px dashed rgba(0,0,0,.12);
+    border-radius: var(--radius);
+    font-size: .78rem;
+    line-height: 1.6;
+    color: var(--ink-muted);
+}
+.dh-disclaimer strong {
+    color: var(--ink-mid);
+    font-weight: 600;
+}
 </style>
 </head>
 
@@ -943,6 +958,15 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                 </div>
                 @endif
             </div>
+            @if($post->category_id==1)
+            <div class="dh-disclaimer">
+                <strong>Disclaimer:</strong>: We help you to discover the best offers and services in your area.Offers and services listed are provided by third parties. Please contact the business directly to confirm details before visiting. DealsHood is not responsible for any service issues , disputes or changes in offers.
+            </div>
+        @elseif($post->category_id==2||$post->category_id==3)
+            <div class="dh-disclaimer">
+                <strong>Disclaimer:</strong>Dealshood aims to connect customers with nearby services for better accessibility and convenience. If any listed business prefers not to appear on our platform, they may contact us directly and the listing will be removed upon request.
+            </div>
+        @endif
         </div>
     </section>
 
