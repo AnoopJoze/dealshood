@@ -20,7 +20,10 @@
                             allowfullscreen loading="lazy"></iframe>
                 </div>
             @else
-                <img src="{{ $image }}" alt="{{ $post->title }}" loading="lazy">
+                <div class="dh-card-img-wrap">
+                    <img src="{{ $image }}" alt="" class="dh-card-bg" aria-hidden="true" loading="lazy">
+                    <img src="{{ $image }}" alt="{{ $post->title }}" class="dh-card-fg" loading="lazy">
+                </div>
             @endif
         </a>
         @if($post->is_featured)
@@ -51,7 +54,15 @@
                 <span class="dh-b dh-b-company"><i class="fas fa-building"></i> {{ $post->company_name }}</span>
             @endif
         </div>
-
+        <div class="dh-rating dh-rating-sm" data-post-id="{{ $post->id }}">
+            <div class="dh-rating-stars">
+                @for ($i = 1; $i <= 5; $i++)
+                    <i class="fas fa-star dh-star" data-value="{{ $i }}"></i>
+                @endfor
+            </div>
+            <span class="dh-rating-avg">{{ number_format($post->ratings_data_avg_rating ?: 0, 1) }}</span>
+            <span class="dh-rating-count">({{ $post->ratings_data_count ?? 0 }})</span>
+        </div>
         {{-- Title --}}
         <a href="{{ $post->url }}" class="dh-card-title">
             {{ Str::limit($post->title, 60) }}

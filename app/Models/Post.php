@@ -150,4 +150,8 @@ class Post extends Model implements HasMedia
 
     return "https://wa.me/{$number}";
 }
+public function ratingsData()
+{
+    return $this->hasMany(PostRating::class);
+}
 }
