@@ -1268,24 +1268,42 @@ $(document).on('mouseenter', '.dh-star', function () {
         $(document).on('mouseleave', '.dh-rating-stars', function () {
             $(this).children('.dh-star').removeClass('hover');
         });
-        $(document).on('click', '.dh-star', function () {
-            const val    = $(this).data('value');
-            const wrap   = $(this).closest('.dh-rating');
-            const postId = wrap.data('post-id');
+    $(document).on('click', '.dh-star', function () {
+    const val    = $(this).data('value');
+    const wrap   = $(this).closest('.dh-rating');
+    const postId = wrap.data('post-id');
+    const current = parseInt(wrap.data('current') || 0);
 
-            $.ajax({
-                url: '/posts/' + postId + '/rate',
-                type: 'POST',
-                data: { _token: '{{ csrf_token() }}', rating: val },
-                success: function (res) {
-                    wrap.find('.dh-star').each(function () {
-                        $(this).toggleClass('active', $(this).data('value') <= val);
-                    });
-                    wrap.find('.dh-rating-avg').text(res.avg_rating.toFixed(1));
-                    wrap.find('.dh-rating-count').text('(' + res.total + ' ratings)');
-                }
-            });
+    if (val === current) {
+        // Same star clicked again — remove rating
+        $.ajax({
+            url: '/posts/' + postId + '/rate',
+            type: 'DELETE',
+            data: { _token: '{{ csrf_token() }}' },
+            success: function (res) {
+                wrap.data('current', 0);
+                wrap.find('.dh-star').removeClass('active');
+                wrap.find('.dh-rating-avg').text(res.avg_rating.toFixed(1));
+                wrap.find('.dh-rating-count').text('(' + res.total + ' ratings)');
+            }
         });
+        return;
+    }
+
+    $.ajax({
+        url: '/posts/' + postId + '/rate',
+        type: 'POST',
+        data: { _token: '{{ csrf_token() }}', rating: val },
+        success: function (res) {
+            wrap.data('current', val);
+            wrap.find('.dh-star').each(function () {
+                $(this).toggleClass('active', $(this).data('value') <= val);
+            });
+            wrap.find('.dh-rating-avg').text(res.avg_rating.toFixed(1));
+            wrap.find('.dh-rating-count').text('(' + res.total + ' ratings)');
+        }
+    });
+});
     
 const CSRF        = '{{ csrf_token() }}';
 const LISTING_URL = '{{ route("posts.listing") }}';
