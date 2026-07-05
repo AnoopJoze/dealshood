@@ -11,7 +11,7 @@ use App\Models\PostShare;
 use App\Models\PostView;
 use App\Models\Subcategory;
 use Illuminate\Http\Request;
-
+use App\Models\PostRating;
 class FrontEndController extends Controller
 {
     /* ════════════════════════════════════════════
@@ -58,6 +58,7 @@ class FrontEndController extends Controller
                         $q->with(['locality', 'subcategory'])
                           ->withCount('likesData')
                           ->withCount('sharesData')
+                          ->withCount('ratingsData')->withAvg('ratingsData', 'rating')
                           ->where('status', 'published')
                           ->when(!empty($localityIds), fn($q) => $q->whereIn('locality_id', $localityIds))
                           ->orderByDesc('views')
@@ -75,6 +76,7 @@ class FrontEndController extends Controller
             /* Latest posts filtered by locality */
             $posts = Post::with(['category', 'subcategory', 'locality'])
                 ->withCount(['likesData', 'sharesData'])
+                ->withCount('ratingsData')->withAvg('ratingsData', 'rating')
                 ->where('status', 'published')
                 ->when(!empty($localityIds), fn($q) => $q->whereIn('locality_id', $localityIds))
                 ->orderBy('sort_order')
@@ -109,6 +111,7 @@ class FrontEndController extends Controller
                     $q->with(['locality', 'subcategory'])
                       ->withCount('likesData')
                       ->withCount('sharesData')
+                      ->withCount('ratingsData')->withAvg('ratingsData', 'rating')
                       ->where('status', 'published')
                       ->orderBy('sort_order')
                       ->orderByDesc('views')
@@ -122,6 +125,7 @@ class FrontEndController extends Controller
 
         $posts = Post::with(['category', 'subcategory', 'locality'])
             ->withCount(['likesData', 'sharesData'])
+            ->withCount('ratingsData')->withAvg('ratingsData', 'rating')
             ->where('status', 'published')
             ->orderBy('sort_order')
             ->latest()
@@ -170,6 +174,7 @@ class FrontEndController extends Controller
 
         $query = Post::with(['category', 'subcategory', 'locality'])
             ->withCount(['likesData', 'sharesData'])
+            ->withCount('ratingsData')->withAvg('ratingsData', 'rating')
             ->where('status', 'published');
 
         if ($request->filled('category_id')) {
@@ -214,7 +219,7 @@ class FrontEndController extends Controller
     public function postDetail(Request $request, $locality, $category, $subcategory, $slug)
     {
         $post = Post::with(['category', 'subcategory', 'locality', 'user',
-                            'likesData', 'sharesData', 'viewsData'])
+                            'likesData', 'sharesData', 'viewsData', 'ratingsData'])
             ->where('slug', $slug)
             ->where('status', 'published')
             ->firstOrFail();
@@ -234,9 +239,12 @@ class FrontEndController extends Controller
         }
 
         $this->trackView($post);
-
+        $userRating = PostRating::where('post_id', $post->id)
+            ->where(fn($q) => $q->where('ip_address', request()->ip())->orWhere('session_id', session()->getId()))
+            ->value('rating');
         $relatedPosts = Post::with(['category', 'subcategory', 'locality'])
             ->withCount(['likesData', 'sharesData'])
+            ->withCount('ratingsData')->withAvg('ratingsData', 'rating')
             ->where('category_id', $post->category_id)
             ->where('id', '!=', $post->id)
             ->where('status', 'published')
@@ -245,7 +253,7 @@ class FrontEndController extends Controller
             ->limit(6)
             ->get();
 
-        return view('frontend.post-details', compact('post', 'relatedPosts'));
+        return view('frontend.post-details', compact('post', 'relatedPosts', 'userRating'));
     }
 
     /* ════════════════════════════════════════════
@@ -269,7 +277,43 @@ class FrontEndController extends Controller
 
         return response()->json(['liked' => true, 'likes' => PostLike::where('post_id', $id)->count()]);
     }
+/* ════════════════════════════════════════════
+   RATE POST
+════════════════════════════════════════════ */
+public function rate(Request $request, $id)
+{
+    $request->validate(['rating' => 'required|integer|min:1|max:5']);
 
+    $ip  = $request->ip();
+    $sid = session()->getId();
+
+    $existing = PostRating::where('post_id', $id)
+        ->where(fn($q) => $q->where('ip_address', $ip)->orWhere('session_id', $sid))
+        ->first();
+
+    if ($existing) {
+        $existing->update(['rating' => $request->rating]);
+    } else {
+        PostRating::create([
+            'post_id'    => $id,
+            'user_id'    => auth()->id(),
+            'ip_address' => $ip,
+            'session_id' => $sid,
+            'rating'     => $request->rating,
+        ]);
+    }
+
+    $agg = PostRating::where('post_id', $id)
+        ->selectRaw('AVG(rating) as avg_rating, COUNT(*) as total')
+        ->first();
+
+    return response()->json([
+        'success'     => true,
+        'your_rating' => (int) $request->rating,
+        'avg_rating'  => round((float) $agg->avg_rating, 1),
+        'total'       => (int) $agg->total,
+    ]);
+}
     /* ════════════════════════════════════════════
        SHARE
     ════════════════════════════════════════════ */

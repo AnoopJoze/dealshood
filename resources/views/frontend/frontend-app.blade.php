@@ -804,7 +804,7 @@
 /* ── Card image height in carousel ──────────────── */
 .dh-track .dh-card-media img,
 .dh-track .dh-card-media video {
-    height: 170px;
+    height: 195px;
 }
 .dh-track .dh-card-media .ratio { height: 170px; }
 
@@ -834,7 +834,7 @@
     }
     .dh-track .dh-card-media img,
     .dh-track .dh-card-media video {
-        height: 148px;
+        height: 195px;
     }
     .dh-track-outer {
         margin: 0 -16px;
@@ -870,7 +870,7 @@
 }
 .dh-track .dh-card-media img,
 .dh-track .dh-card-media video {
-    height: 170px;
+    height: 195px;
     object-fit: cover;
 }
 .dh-track .dh-card-body {
@@ -885,7 +885,7 @@
 @media (max-width: 640px) {
     .dh-track .dh-card { flex: 0 0 75vw; max-width: 260px; }
     .dh-track .dh-card-media img,
-    .dh-track .dh-card-media video { height: 148px; }
+    .dh-track .dh-card-media video { height: 195px; }
 }
 /* ── Fix meta row alignment in carousel ── */
 .dh-track .dh-card-meta {
@@ -900,6 +900,51 @@
 }
 .dh-card-meta{
     gap:0px !important;
+}
+
+/* ── Star rating ── */
+.dh-rating { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
+.dh-rating-stars { display: flex; gap: 3px; }
+.dh-star {
+    font-size: 1.05rem;
+    color: rgba(0,0,0,.15);
+    cursor: pointer;
+    transition: color .12s, transform .12s;
+}
+.dh-star:hover, .dh-star.hover { color: #f59e0b; transform: scale(1.12); }
+.dh-star.active { color: #f59e0b; }
+.dh-rating-avg { font-weight: 700; font-size: .88rem; color: var(--ink); }
+.dh-rating-count { font-size: .74rem; color: var(--ink-muted); }
+.dh-rating-sm .dh-star { font-size: .82rem; }
+.dh-rating-sm .dh-rating-avg { font-size: .76rem; }
+.dh-rating-sm .dh-rating-count { font-size: .68rem; }
+.dh-card-media {
+    position: relative;
+    aspect-ratio: 4 / 3;      /* uniform card height regardless of source image shape */
+    overflow: hidden;
+    background: var(--surface-2, #f1f1f1);
+}
+
+.dh-card-img-wrap { position: absolute; inset: 0; }
+
+/* Blurred, scaled copy fills the frame edge-to-edge */
+.dh-card-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(18px) brightness(.85) saturate(1.15);
+    transform: scale(1.15); /* hides blur edge fringing */
+}
+
+/* Real image sits on top, always shown in full — no cropping */
+.dh-card-fg {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 </style>
 </head>
@@ -1214,6 +1259,34 @@ $palette = [
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
 <script>
+$(document).on('mouseenter', '.dh-star', function () {
+            const val = $(this).data('value');
+            $(this).parent().children('.dh-star').each(function () {
+                $(this).toggleClass('hover', $(this).data('value') <= val);
+            });
+        });
+        $(document).on('mouseleave', '.dh-rating-stars', function () {
+            $(this).children('.dh-star').removeClass('hover');
+        });
+        $(document).on('click', '.dh-star', function () {
+            const val    = $(this).data('value');
+            const wrap   = $(this).closest('.dh-rating');
+            const postId = wrap.data('post-id');
+
+            $.ajax({
+                url: '/posts/' + postId + '/rate',
+                type: 'POST',
+                data: { _token: '{{ csrf_token() }}', rating: val },
+                success: function (res) {
+                    wrap.find('.dh-star').each(function () {
+                        $(this).toggleClass('active', $(this).data('value') <= val);
+                    });
+                    wrap.find('.dh-rating-avg').text(res.avg_rating.toFixed(1));
+                    wrap.find('.dh-rating-count').text('(' + res.total + ' ratings)');
+                }
+            });
+        });
+    
 const CSRF        = '{{ csrf_token() }}';
 const LISTING_URL = '{{ route("posts.listing") }}';
 const HOME_URL    = '{{ route("home") }}';
