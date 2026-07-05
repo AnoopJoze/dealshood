@@ -401,7 +401,7 @@
     .dh-card:hover{transform:translateY(-5px);box-shadow:var(--sh-md);}
     .dh-card-media{position:relative;overflow:hidden;flex-shrink:0;}
     .dh-card-media a{display:block;}
-    .dh-card-media img,.dh-card-media video{width:100%;height:270px;object-fit:cover;
+    .dh-card-media img,.dh-card-media video{width:100%;height:220px;object-fit:cover;
                                              display:block;transition:transform .35s;}
     .dh-card:hover .dh-card-media img{transform:scale(1.04);}
     .dh-card-media .ratio{height:220px;}
@@ -722,7 +722,7 @@
 .dh-rating-sm .dh-rating-count { font-size: .68rem; }
 .dh-card-media {
     position: relative;
-    aspect-ratio: 4 / 3;      /* uniform card height regardless of source image shape */
+    aspect-ratio: 5 / 3;      /* uniform card height regardless of source image shape */
     overflow: hidden;
     background: var(--surface-2, #f1f1f1);
 }
