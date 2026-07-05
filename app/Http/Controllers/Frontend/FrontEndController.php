@@ -168,7 +168,7 @@ class FrontEndController extends Controller
 
         if ($request->filled('category_id')) {
             $cat           = Category::where('slug', $request->category_id)->first();
-            $subcategories = $cat ? $cat->subcategories()
+            $subcategories = $cat ? $cat->subcategories()->where('subcategories.is_active',1)
                 ->orderBy('sort_order')->get() : collect();
         }
 
