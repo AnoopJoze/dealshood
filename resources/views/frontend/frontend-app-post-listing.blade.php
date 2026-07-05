@@ -1102,9 +1102,6 @@ $paletteJson = json_encode($palette);
     }
     #post-wrapper .dh-card-media img,
     #post-wrapper.dh-card-media video { height: 270px; }
-    .dh-grid.list-view .dh-card-media img{
-        height:205px !important;
-    }
 }
 </style>
 <script src="/frontend/js/core/popper.min.js"></script>
