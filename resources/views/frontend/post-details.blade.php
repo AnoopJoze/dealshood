@@ -847,7 +847,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                         @endif
                         <span class="dh-meta-item">👁 {{ number_format($post->viewsData->count()) }} views</span>
                     </div>
-                    <div class="dh-rating" data-post-id="{{ $post->id }}">
+                    <div class="dh-rating" data-post-id="{{ $post->id }}" data-current="{{ $userRating ?? 0 }}">
                         <div class="dh-rating-stars">
                             @for ($i = 1; $i <= 5; $i++)
                                 <i class="fas fa-star dh-star {{ $userRating && $i <= $userRating ? 'active' : '' }}" data-value="{{ $i }}"></i>
@@ -1066,23 +1066,41 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
             $(this).children('.dh-star').removeClass('hover');
         });
         $(document).on('click', '.dh-star', function () {
-            const val    = $(this).data('value');
-            const wrap   = $(this).closest('.dh-rating');
-            const postId = wrap.data('post-id');
+    const val    = $(this).data('value');
+    const wrap   = $(this).closest('.dh-rating');
+    const postId = wrap.data('post-id');
+    const current = parseInt(wrap.data('current') || 0);
 
-            $.ajax({
-                url: '/posts/' + postId + '/rate',
-                type: 'POST',
-                data: { _token: '{{ csrf_token() }}', rating: val },
-                success: function (res) {
-                    wrap.find('.dh-star').each(function () {
-                        $(this).toggleClass('active', $(this).data('value') <= val);
-                    });
-                    wrap.find('.dh-rating-avg').text(res.avg_rating.toFixed(1));
-                    wrap.find('.dh-rating-count').text('(' + res.total + ' ratings)');
-                }
-            });
+    if (val === current) {
+        // Same star clicked again — remove rating
+        $.ajax({
+            url: '/posts/' + postId + '/rate',
+            type: 'DELETE',
+            data: { _token: '{{ csrf_token() }}' },
+            success: function (res) {
+                wrap.data('current', 0);
+                wrap.find('.dh-star').removeClass('active');
+                wrap.find('.dh-rating-avg').text(res.avg_rating.toFixed(1));
+                wrap.find('.dh-rating-count').text('(' + res.total + ' ratings)');
+            }
         });
+        return;
+    }
+
+    $.ajax({
+        url: '/posts/' + postId + '/rate',
+        type: 'POST',
+        data: { _token: '{{ csrf_token() }}', rating: val },
+        success: function (res) {
+            wrap.data('current', val);
+            wrap.find('.dh-star').each(function () {
+                $(this).toggleClass('active', $(this).data('value') <= val);
+            });
+            wrap.find('.dh-rating-avg').text(res.avg_rating.toFixed(1));
+            wrap.find('.dh-rating-count').text('(' + res.total + ' ratings)');
+        }
+    });
+});
     document.getElementById('footerYear').textContent = new Date().getFullYear();
 
     // Nav toggle

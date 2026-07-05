@@ -314,6 +314,28 @@ public function rate(Request $request, $id)
         'total'       => (int) $agg->total,
     ]);
 }
+/* ════════════════════════════════════════════
+   REMOVE RATING
+════════════════════════════════════════════ */
+public function unrate($id)
+{
+    $ip  = request()->ip();
+    $sid = session()->getId();
+
+    PostRating::where('post_id', $id)
+        ->where(fn($q) => $q->where('ip_address', $ip)->orWhere('session_id', $sid))
+        ->delete();
+
+    $agg = PostRating::where('post_id', $id)
+        ->selectRaw('AVG(rating) as avg_rating, COUNT(*) as total')
+        ->first();
+
+    return response()->json([
+        'success'    => true,
+        'avg_rating' => round((float) $agg->avg_rating, 1),
+        'total'      => (int) $agg->total,
+    ]);
+}
     /* ════════════════════════════════════════════
        SHARE
     ════════════════════════════════════════════ */

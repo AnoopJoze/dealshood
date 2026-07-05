@@ -41,6 +41,7 @@ Route::post('/submit-ad', [App\Http\Controllers\Frontend\AdSubmissionController:
 Route::get('/get-subcategories/{categoryId}', [FrontEndController::class, 'getSubcategories']);
 
     Route::post('/posts/{id}/rate', [FrontEndController::class, 'rate']);
+    Route::delete('/posts/{id}/rate', [FrontEndController::class, 'unrate']);
     Route::post('/posts/{id}/like', [FrontEndController::class, 'like']);
     Route::post('/posts/{id}/share', [FrontEndController::class, 'share']);
     Route::post('/posts/{id}/toggle-like', [FrontEndController::class, 'toggleLike']);
