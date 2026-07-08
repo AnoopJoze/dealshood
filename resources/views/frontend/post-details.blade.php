@@ -746,21 +746,40 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     font-weight: 600;
 }
 /* ── Star rating ── */
-.dh-rating { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
-.dh-rating-stars { display: flex; gap: 3px; }
-.dh-star {
+/* ── Star rating — interactive (post detail page) ── */
+.dh-rating-input { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
+.dh-rating-input .dh-rating-stars { display: flex; gap: 3px; }
+.dh-rating-input .dh-star {
     font-size: 1.05rem;
     color: rgba(0,0,0,.15);
     cursor: pointer;
     transition: color .12s, transform .12s;
 }
-.dh-star:hover, .dh-star.hover { color: #f59e0b; transform: scale(1.12); }
-.dh-star.active { color: #f59e0b; }
-.dh-rating-avg { font-weight: 700; font-size: .88rem; color: var(--ink); }
-.dh-rating-count { font-size: .74rem; color: var(--ink-muted); }
-.dh-rating-sm .dh-star { font-size: .82rem; }
-.dh-rating-sm .dh-rating-avg { font-size: .76rem; }
-.dh-rating-sm .dh-rating-count { font-size: .68rem; }
+.dh-rating-input .dh-star:hover,
+.dh-rating-input .dh-star.hover { color: #f59e0b; transform: scale(1.12); }
+.dh-rating-input .dh-star.active { color: #f59e0b; }
+.dh-rating-input .dh-rating-avg  { font-weight: 700; font-size: .88rem; color: var(--ink); }
+.dh-rating-input .dh-rating-count { font-size: .74rem; color: var(--ink-muted); }
+
+/* ── Star rating — read-only average display (cards) ── */
+.dh-rating-view { display: flex; align-items: center; gap: 6px; }
+.dh-rating-view .dh-stars-bg {
+    position: relative;
+    display: inline-block;
+    font-size: .82rem;
+    letter-spacing: 2px;
+    color: rgba(0,0,0,.15);
+    line-height: 1;
+}
+.dh-rating-view .dh-stars-fg {
+    position: absolute;
+    top: 0; left: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    color: #f59e0b;
+}
+.dh-rating-view .dh-rating-avg-sm { font-size: .74rem; font-weight: 700; color: var(--ink); }
+.dh-rating-view .dh-rating-count-sm { font-size: .68rem; color: var(--ink-muted); }
 </style>
 </head>
 
@@ -847,7 +866,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                         @endif
                         <span class="dh-meta-item">👁 {{ number_format($post->viewsData->count()) }} views</span>
                     </div>
-                    <div class="dh-rating" data-post-id="{{ $post->id }}" data-current="{{ $userRating ?? 0 }}">
+                    <div class="dh-rating-input" data-post-id="{{ $post->id }}" data-current="{{ $userRating ?? 0 }}">
                         <div class="dh-rating-stars">
                             @for ($i = 1; $i <= 5; $i++)
                                 <i class="fas fa-star dh-star {{ $userRating && $i <= $userRating ? 'active' : '' }}" data-value="{{ $i }}"></i>
@@ -1056,23 +1075,22 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
     <script>
-        $(document).on('mouseenter', '.dh-star', function () {
-            const val = $(this).data('value');
-            $(this).parent().children('.dh-star').each(function () {
-                $(this).toggleClass('hover', $(this).data('value') <= val);
-            });
-        });
-        $(document).on('mouseleave', '.dh-rating-stars', function () {
-            $(this).children('.dh-star').removeClass('hover');
-        });
-        $(document).on('click', '.dh-star', function () {
-    const val    = $(this).data('value');
-    const wrap   = $(this).closest('.dh-rating');
-    const postId = wrap.data('post-id');
+$(document).on('mouseenter', '.dh-rating-input .dh-star', function () {
+    const val = $(this).data('value');
+    $(this).parent().children('.dh-star').each(function () {
+        $(this).toggleClass('hover', $(this).data('value') <= val);
+    });
+});
+$(document).on('mouseleave', '.dh-rating-input .dh-rating-stars', function () {
+    $(this).children('.dh-star').removeClass('hover');
+});
+$(document).on('click', '.dh-rating-input .dh-star', function () {
+    const val     = $(this).data('value');
+    const wrap    = $(this).closest('.dh-rating-input');
+    const postId  = wrap.data('post-id');
     const current = parseInt(wrap.data('current') || 0);
 
     if (val === current) {
-        // Same star clicked again — remove rating
         $.ajax({
             url: '/posts/' + postId + '/rate',
             type: 'DELETE',
