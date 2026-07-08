@@ -703,23 +703,40 @@
         display: none !important;
     }
 }
-
-/* ── Star rating ── */
-.dh-rating { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
-.dh-rating-stars { display: flex; gap: 3px; }
-.dh-star {
-    font-size: 1.05rem;
-    color: rgba(0,0,0,.15);
-    cursor: pointer;
-    transition: color .12s, transform .12s;
+.dh-card-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
 }
-.dh-star:hover, .dh-star.hover { color: #f59e0b; transform: scale(1.12); }
-.dh-star.active { color: #f59e0b; }
-.dh-rating-avg { font-weight: 700; font-size: .88rem; color: var(--ink); }
-.dh-rating-count { font-size: .74rem; color: var(--ink-muted); }
-.dh-rating-sm .dh-star { font-size: .82rem; }
-.dh-rating-sm .dh-rating-avg { font-size: .76rem; }
-.dh-rating-sm .dh-rating-count { font-size: .68rem; }
+.dh-card-title-row .dh-card-title {
+    flex: 1;
+    min-width: 0;           /* lets Str::limit'd text truncate/wrap without pushing the rating off */
+}
+
+.dh-rating-view {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;          /* rating never gets squeezed by a long title */
+    margin: 0;                /* no longer needs its own-line spacing */
+}
+.dh-rating-view .dh-star-big-wrap {
+    position: relative;
+    display: inline-block;
+    font-size: 1rem;          /* slightly smaller to sit comfortably inline with the title */
+    line-height: 1;
+    color: rgba(0,0,0,.15);
+}
+.dh-rating-view .dh-star-big-fg {
+    position: absolute;
+    top: 0; left: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    color: #f59e0b;
+}
+.dh-rating-view .dh-rating-avg-sm { font-size: .76rem; font-weight: 700; color: var(--ink); }
+.dh-rating-view .dh-rating-count-sm { font-size: .68rem; color: var(--ink-muted); }
 .dh-card-media {
     position: relative;
     aspect-ratio: 5 / 3;      /* uniform card height regardless of source image shape */

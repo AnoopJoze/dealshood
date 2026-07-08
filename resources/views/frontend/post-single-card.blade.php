@@ -54,24 +54,41 @@
                 <span class="dh-b dh-b-company"><i class="fas fa-building"></i> {{ $post->company_name }}</span>
             @endif
         </div>
-        <div class="dh-rating dh-rating-sm" data-post-id="{{ $post->id }}">
-            <div class="dh-rating-stars">
-                @for ($i = 1; $i <= 5; $i++)
-                    <i class="fas fa-star dh-star" data-value="{{ $i }}"></i>
-                @endfor
-            </div>
-            <span class="dh-rating-avg">{{ number_format($post->ratings_data_avg_rating ?: 0, 1) }}</span>
-            <span class="dh-rating-count">({{ $post->ratings_data_count ?? 0 }})</span>
-        </div>
         {{-- Title --}}
-        <a href="{{ $post->url }}" class="dh-card-title">
-            {{ Str::limit($post->title, 60) }}
-        </a>
+        {{-- Title --}}
+{{-- Title + Rating row --}}
+<div class="dh-card-title-row">
+    <a href="{{ $post->url }}" class="dh-card-title">
+        {{ Str::limit($post->title, 60) }}
+    </a>
 
-        {{-- Description --}}
-        <p class="dh-card-desc">
-            {{ Str::limit(strip_tags($post->description), 90) }}
-        </p>
+    @php
+        $avgRating = round($post->ratings_data_avg_rating ?? 0, 1);
+        $fillPct   = $avgRating > 0 ? ($avgRating / 5) * 100 : 0;
+    @endphp
+    <div class="dh-rating-view">
+        <span class="dh-star-big-wrap">
+            <i class="fas fa-star"></i>
+            <span class="dh-star-big-fg" style="width: {{ $fillPct }}%;">
+                <i class="fas fa-star"></i>
+            </span>
+        </span>
+        <span class="dh-rating-avg-sm">{{ $avgRating > 0 ? number_format($avgRating, 1) : '' }}</span>
+        <span class="dh-rating-count-sm">({{ $post->ratings_data_count ?? 0 }})</span>
+    </div>
+</div>
+
+{{-- Description --}}
+<p class="dh-card-desc">
+    {{ Str::limit(strip_tags($post->description), 90) }}
+</p>
+
+{{-- Rating — right under title, before description --}}
+
+{{-- Description --}}
+<p class="dh-card-desc">
+    {{ Str::limit(strip_tags($post->description), 90) }}
+</p>
 
         {{-- Stats --}}
         <div class="dh-card-meta">
