@@ -373,10 +373,10 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         border-radius: 100px; backdrop-filter: blur(6px); z-index: 5;
     }
     .dh-media-card video { width: 100%; display: block; max-height: 500px; object-fit: cover; }
-    .dh-single-img { width: 100%; height: 480px; object-fit: cover; display: block; cursor: zoom-in; }
+    .dh-single-img { width: 100%; height: clamp(220px, 55vw, 480px); object-fit: cover; display: block; cursor: zoom-in; }
 
     /* Carousel */
-    .dh-carousel .carousel-item img { width: 100%; height: 480px; object-fit: cover; cursor: zoom-in; }
+    .dh-carousel .carousel-item img { width: 100%; height: clamp(220px, 55vw, 480px); object-fit: cover; cursor: zoom-in; }
     .dh-carousel .carousel-control-prev,
     .dh-carousel .carousel-control-next {
         width: 42px; height: 42px;
@@ -620,9 +620,6 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     }
     .dh-sort-pills::-webkit-scrollbar { display: none; }
 
-    /* Post detail hero taller */
-    .dh-hero.detail-hero { min-height: 60vw; }
-
     /* Post detail description font */
     .dh-content-body { font-size: .94rem; line-height: 1.78; }
 
@@ -761,25 +758,28 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 .dh-rating-input .dh-rating-avg  { font-weight: 700; font-size: .88rem; color: var(--ink); }
 .dh-rating-input .dh-rating-count { font-size: .74rem; color: var(--ink-muted); }
 
-/* ── Star rating — read-only average display (cards) ── */
+/* ── Star rating — read-only average display (same as post-single-card) ── */
 .dh-rating-view { display: flex; align-items: center; gap: 6px; }
-.dh-rating-view .dh-stars-bg {
+.dh-rating-view .dh-star-big-wrap {
     position: relative;
     display: inline-block;
-    font-size: .82rem;
-    letter-spacing: 2px;
-    color: rgba(0,0,0,.15);
+    font-size: 1.1rem;
     line-height: 1;
+    color: rgba(0,0,0,.15);
 }
-.dh-rating-view .dh-stars-fg {
+.dh-rating-view .dh-star-big-fg {
     position: absolute;
     top: 0; left: 0;
     overflow: hidden;
     white-space: nowrap;
     color: #f59e0b;
 }
-.dh-rating-view .dh-rating-avg-sm { font-size: .74rem; font-weight: 700; color: var(--ink); }
-.dh-rating-view .dh-rating-count-sm { font-size: .68rem; color: var(--ink-muted); }
+.dh-rating-view .dh-rating-avg-sm { font-size: .84rem; font-weight: 700; color: var(--ink); }
+.dh-rating-view .dh-rating-count-sm { font-size: .74rem; color: var(--ink-muted); }
+
+/* ── Rate this deal (bottom of page) ── */
+.dh-rate-card { margin-top: 24px; }
+.dh-rate-card .dh-rating-input { margin-bottom: 0; }
 </style>
 </head>
 
@@ -837,6 +837,10 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         @php
             $images = $post->getMedia('posts');
             $video  = $post->getFirstMediaUrl('videos');
+
+            $ratingCount = $post->ratingsData->count();
+            $avgRating   = $ratingCount ? round($post->ratingsData->avg('rating'), 1) : 0;
+            $ratingFillPct = $avgRating > 0 ? ($avgRating / 5) * 100 : 0;
         @endphp
 
         <div class="dh-wrap">
@@ -866,14 +870,15 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                         @endif
                         <span class="dh-meta-item">👁 {{ number_format($post->viewsData->count()) }} views</span>
                     </div>
-                    <div class="dh-rating-input" data-post-id="{{ $post->id }}" data-current="{{ $userRating ?? 0 }}">
-                        <div class="dh-rating-stars">
-                            @for ($i = 1; $i <= 5; $i++)
-                                <i class="fas fa-star dh-star {{ $userRating && $i <= $userRating ? 'active' : '' }}" data-value="{{ $i }}"></i>
-                            @endfor
-                        </div>
-                        <span class="dh-rating-avg">{{ number_format($post->ratingsData->avg('rating') ?: 0, 1) }}</span>
-                        <span class="dh-rating-count">({{ number_format($post->ratingsData->count()) }} ratings)</span>
+                    <div class="dh-rating-view">
+                        <span class="dh-star-big-wrap">
+                            <i class="fas fa-star"></i>
+                            <span class="dh-star-big-fg" id="heroStarFg" style="width: {{ $ratingFillPct }}%;">
+                                <i class="fas fa-star"></i>
+                            </span>
+                        </span>
+                        <span class="dh-rating-avg-sm" id="heroRatingAvg">{{ $avgRating > 0 ? number_format($avgRating, 1) : '' }}</span>
+                        <span class="dh-rating-count-sm" id="heroRatingCount">({{ number_format($ratingCount) }})</span>
                     </div>
 
                     <p class="dh-excerpt">
@@ -1002,6 +1007,21 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                 </div>
                 @endif
             </div>
+
+            {{-- Rate this deal --}}
+            <div class="dh-contact-card dh-rate-card">
+                <p class="dh-contact-title">Rate this Deal</p>
+                <div class="dh-rating-input" data-post-id="{{ $post->id }}" data-current="{{ $userRating ?? 0 }}">
+                    <div class="dh-rating-stars">
+                        @for ($i = 1; $i <= 5; $i++)
+                            <i class="fas fa-star dh-star {{ $userRating && $i <= $userRating ? 'active' : '' }}" data-value="{{ $i }}"></i>
+                        @endfor
+                    </div>
+                    <span class="dh-rating-avg">{{ $avgRating > 0 ? number_format($avgRating, 1) : '0.0' }}</span>
+                    <span class="dh-rating-count">({{ number_format($ratingCount) }} ratings)</span>
+                </div>
+            </div>
+
             @if($post->category_id==1)
             <div class="dh-disclaimer">
                 <strong>Disclaimer:</strong>: We help you to discover the best offers and services in your area.Offers and services listed are provided by third parties. Please contact the business directly to confirm details before visiting. DealsHood is not responsible for any service issues , disputes or changes in offers.
@@ -1075,6 +1095,11 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
     <script>
+function updateHeroRating(avg, total) {
+    $('#heroRatingAvg').text(avg > 0 ? avg.toFixed(1) : '');
+    $('#heroRatingCount').text('(' + total + ')');
+    $('#heroStarFg').css('width', (avg > 0 ? (avg / 5) * 100 : 0) + '%');
+}
 $(document).on('mouseenter', '.dh-rating-input .dh-star', function () {
     const val = $(this).data('value');
     $(this).parent().children('.dh-star').each(function () {
@@ -1100,6 +1125,7 @@ $(document).on('click', '.dh-rating-input .dh-star', function () {
                 wrap.find('.dh-star').removeClass('active');
                 wrap.find('.dh-rating-avg').text(res.avg_rating.toFixed(1));
                 wrap.find('.dh-rating-count').text('(' + res.total + ' ratings)');
+                updateHeroRating(res.avg_rating, res.total);
             }
         });
         return;
@@ -1116,6 +1142,7 @@ $(document).on('click', '.dh-rating-input .dh-star', function () {
             });
             wrap.find('.dh-rating-avg').text(res.avg_rating.toFixed(1));
             wrap.find('.dh-rating-count').text('(' + res.total + ' ratings)');
+            updateHeroRating(res.avg_rating, res.total);
         }
     });
 });
