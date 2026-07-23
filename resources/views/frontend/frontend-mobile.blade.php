@@ -118,7 +118,7 @@
 
     /* ── Cards — full width, better touch ──────────── */
     .dh-card { border-radius: 14px; }
-    .dh-card-media img,
+    .dh-card-media img:not(.dh-card-bg):not(.dh-card-fg),
     .dh-card-media video { height: 180px; }
 
     /* ── Section padding ───────────────────────────── */

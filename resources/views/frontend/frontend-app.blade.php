@@ -403,9 +403,9 @@
                transition:transform .22s,box-shadow .22s; }
     .dh-card:hover { transform:translateY(-5px); box-shadow:var(--sh-md); }
     .dh-card-media { position:relative; overflow:hidden; flex-shrink:0; }
-    .dh-card-media img,.dh-card-media video { width:100%; height:200px; object-fit:cover;
+    .dh-card-media img:not(.dh-card-bg):not(.dh-card-fg),.dh-card-media video { width:100%; height:200px; object-fit:cover;
                                               display:block; transition:transform .35s; }
-    .dh-card:hover .dh-card-media img { transform:scale(1.04); }
+    .dh-card:hover .dh-card-media img:not(.dh-card-bg):not(.dh-card-fg) { transform:scale(1.04); }
     .dh-card-media .ratio { height:200px; }
     .badge-feat { position:absolute; top:10px; right:10px; background:#f59e0b; color:#fff;
                   font-size:.6rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase;
@@ -802,7 +802,7 @@
 .dh-track.is-dragging .dh-card { pointer-events: none; }
 
 /* ── Card image height in carousel ──────────────── */
-.dh-track .dh-card-media img,
+.dh-track .dh-card-media img:not(.dh-card-bg):not(.dh-card-fg),
 .dh-track .dh-card-media video {
     height: 195px;
 }
@@ -832,7 +832,7 @@
     .dh-track .dh-card {
         flex: 0 0 220px;
     }
-    .dh-track .dh-card-media img,
+    .dh-track .dh-card-media img:not(.dh-card-bg):not(.dh-card-fg),
     .dh-track .dh-card-media video {
         height: 195px;
     }
@@ -868,7 +868,7 @@
     flex-direction: column;
     height: auto;          /* let stretch handle it */
 }
-.dh-track .dh-card-media img,
+.dh-track .dh-card-media img:not(.dh-card-bg):not(.dh-card-fg),
 .dh-track .dh-card-media video {
     height: 195px;
     object-fit: cover;
@@ -884,7 +884,7 @@
 
 @media (max-width: 640px) {
     .dh-track .dh-card { flex: 0 0 75vw; max-width: 260px; }
-    .dh-track .dh-card-media img,
+    .dh-track .dh-card-media img:not(.dh-card-bg):not(.dh-card-fg),
     .dh-track .dh-card-media video { height: 195px; }
 }
 /* ── Fix meta row alignment in carousel ── */

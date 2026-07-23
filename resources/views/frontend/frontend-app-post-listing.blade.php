@@ -401,9 +401,9 @@
     .dh-card:hover{transform:translateY(-5px);box-shadow:var(--sh-md);}
     .dh-card-media{position:relative;overflow:hidden;flex-shrink:0;}
     .dh-card-media a{display:block;}
-    .dh-card-media img,.dh-card-media video{width:100%;height:220px;object-fit:cover;
+    .dh-card-media img:not(.dh-card-bg):not(.dh-card-fg),.dh-card-media video{width:100%;height:220px;object-fit:cover;
                                              display:block;transition:transform .35s;}
-    .dh-card:hover .dh-card-media img{transform:scale(1.04);}
+    .dh-card:hover .dh-card-media img:not(.dh-card-bg):not(.dh-card-fg){transform:scale(1.04);}
     .dh-card-media .ratio{height:220px;}
     .badge-feat{position:absolute;top:12px;right:12px;background:#f59e0b;color:#fff;
                 font-size:.6rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
