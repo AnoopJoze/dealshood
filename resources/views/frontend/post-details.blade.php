@@ -851,6 +851,17 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                     <span class="dh-eyebrow">{{ optional($post->category)->name ?? 'General' }}</span>
                     <h1 class="dh-title">{{ $post->title }}</h1>
 
+                    <div class="dh-rating-view" style="margin-bottom:14px;">
+                        <span class="dh-star-big-wrap">
+                            <i class="fas fa-star"></i>
+                            <span class="dh-star-big-fg" id="heroStarFg" style="width: {{ $ratingFillPct }}%;">
+                                <i class="fas fa-star"></i>
+                            </span>
+                        </span>
+                        <span class="dh-rating-avg-sm" id="heroRatingAvg">{{ $avgRating > 0 ? number_format($avgRating, 1) : '' }}</span>
+                        <span class="dh-rating-count-sm" id="heroRatingCount">({{ number_format($ratingCount) }})</span>
+                    </div>
+
                     <div class="dh-meta">
                         @if($post->locality)
                             <span class="dh-meta-item">📍 {{ $post->locality->name }}</span>
@@ -869,16 +880,6 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                             <span class="dh-meta-item">🕒 {{ $post->created_at->diffForHumans() }}</span>
                         @endif
                         <span class="dh-meta-item">👁 {{ number_format($post->viewsData->count()) }} views</span>
-                    </div>
-                    <div class="dh-rating-view">
-                        <span class="dh-star-big-wrap">
-                            <i class="fas fa-star"></i>
-                            <span class="dh-star-big-fg" id="heroStarFg" style="width: {{ $ratingFillPct }}%;">
-                                <i class="fas fa-star"></i>
-                            </span>
-                        </span>
-                        <span class="dh-rating-avg-sm" id="heroRatingAvg">{{ $avgRating > 0 ? number_format($avgRating, 1) : '' }}</span>
-                        <span class="dh-rating-count-sm" id="heroRatingCount">({{ number_format($ratingCount) }})</span>
                     </div>
 
                     <p class="dh-excerpt">
