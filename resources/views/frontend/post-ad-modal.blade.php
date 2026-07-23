@@ -3,189 +3,15 @@
     $adLocalities = \App\Models\Locality::orderBy('name')->get(['id','name']);
 @endphp
 
-{{-- ── Floating Post Ad Button ───────────────────────── --}}
-<button class="post-ad-fab" id="postAdFab" onclick="openPostAdModal()">
-    <i class="fas fa-plus"></i>
-    <span>Post Free Ad</span>
-</button>
-
-{{-- ── Backdrop ─────────────────────────────────────── --}}
-<div class="post-ad-backdrop" id="postAdBackdrop" onclick="closePostAdModal()"></div>
-
-{{-- ── Slide-up Modal ───────────────────────────────── --}}
-<div class="post-ad-sheet" id="postAdSheet">
-
-    <div class="post-ad-handle"></div>
-
-    <div class="post-ad-header">
-        <div>
-            <div class="post-ad-title">📢 Post Your Ad</div>
-            <div class="post-ad-sub">Free listing — reviewed within 24 hours</div>
-        </div>
-        <button class="post-ad-close" onclick="closePostAdModal()">
-            <i class="fas fa-times"></i>
-        </button>
-    </div>
-
-    <div class="post-ad-body" id="postAdBody">
-
-        {{-- Step indicators --}}
-        <div class="post-ad-steps">
-            <div class="pad-step active" id="padStep1">
-                <span class="pad-step-num">1</span> Your Details
-            </div>
-            <div class="pad-step-line"></div>
-            <div class="pad-step" id="padStep2">
-                <span class="pad-step-num">2</span> Ad Info
-            </div>
-            <div class="pad-step-line"></div>
-            <div class="pad-step" id="padStep3">
-                <span class="pad-step-num">3</span> Submit
-            </div>
-        </div>
-
-        <form id="postAdForm" novalidate enctype="multipart/form-data">
-            @csrf
-
-            {{-- ── Step 1: Contact ── --}}
-            <div class="pad-pane" id="padPane1">
-                <div class="pad-row">
-                    <label class="pad-label">Full Name <span class="text-danger">*</span></label>
-                    <input type="text" name="name" class="pad-input" placeholder="Your name">
-                    <small class="pad-err" id="err_name"></small>
-                </div>
-                <div class="pad-row">
-                    <label class="pad-label">Email Address <span class="text-danger">*</span></label>
-                    <input type="email" name="email" class="pad-input" placeholder="you@example.com">
-                    <small class="pad-err" id="err_email"></small>
-                </div>
-                <div class="pad-row-2">
-                    <div class="pad-row">
-                        <label class="pad-label">Phone</label>
-                        <input type="text" name="phone" class="pad-input" placeholder="+91 98765 43210">
-                    </div>
-                    <div class="pad-row">
-                        <label class="pad-label">WhatsApp</label>
-                        <input type="text" name="whatsapp" class="pad-input" placeholder="+91 98765 43210">
-                    </div>
-                </div>
-                <div class="pad-row">
-                    <label class="pad-label">Company / Business Name</label>
-                    <input type="text" name="company_name" class="pad-input" placeholder="e.g. Acme Traders">
-                </div>
-            </div>
-
-            {{-- ── Step 2: Ad Info ── --}}
-            <div class="pad-pane d-none" id="padPane2">
-                <div class="pad-row">
-                    <label class="pad-label">Ad Title <span class="text-danger">*</span></label>
-                    <input type="text" name="title" class="pad-input" placeholder="e.g. 50% Off on All Electronics">
-                    <small class="pad-err" id="err_title"></small>
-                </div>
-                <div class="pad-row-2">
-                    <div class="pad-row">
-                        <label class="pad-label">Category <span class="text-danger">*</span></label>
-                        <select name="category_id" class="pad-input pad-select">
-                            <option value="">Select…</option>
-                            @foreach($adCategories as $cat)
-                                <option value="{{ $cat->id }}">{{ $cat->name }}</option>
-                            @endforeach
-                        </select>
-                        <small class="pad-err" id="err_category_id"></small>
-                    </div>
-                    <div class="pad-row">
-                        <label class="pad-label">Locality</label>
-                        <select name="locality_id" class="pad-input pad-select">
-                            <option value="">Select…</option>
-                            @foreach($adLocalities as $loc)
-                                <option value="{{ $loc->id }}">{{ $loc->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-                <div class="pad-row">
-                    <label class="pad-label">Description</label>
-                    <textarea name="description" class="pad-input pad-textarea"
-                              placeholder="Describe your offer, product or service…" rows="4"></textarea>
-                </div>
-                <div class="pad-row-2">
-                    <div class="pad-row">
-                        <label class="pad-label">Offer %</label>
-                        <div class="pad-input-group">
-                            <input type="number" name="offer_percentage" class="pad-input"
-                                   placeholder="e.g. 20" min="0" max="100" step="0.01">
-                            <span class="pad-input-suffix">%</span>
-                        </div>
-                    </div>
-                    <div class="pad-row">
-                        <label class="pad-label">Valid Until</label>
-                        <input type="date" name="expiry_date" class="pad-input"
-                               min="{{ now()->addDay()->format('Y-m-d') }}">
-                    </div>
-                </div>
-                <div class="pad-row">
-                    <label class="pad-label">Location / Area</label>
-                    <input type="text" name="location" class="pad-input"
-                           placeholder="e.g. Near City Mall, Downtown">
-                </div>
-                <div class="pad-row">
-                    <label class="pad-label">Upload Images <span style="color:#94a3b8;font-weight:400;">(up to 5)</span></label>
-                    <div class="pad-upload-zone" id="padUploadZone" onclick="document.getElementById('padImageInput').click()">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <span>Tap to add photos</span>
-                        <small>JPG, PNG, WEBP — Max 5MB each</small>
-                    </div>
-                    <input type="file" id="padImageInput" name="images[]" accept="image/*" multiple style="display:none;">
-                    <div class="pad-image-strip" id="padImageStrip"></div>
-                    <small class="pad-err" id="err_images"></small>
-                </div>
-            </div>
-
-            {{-- ── Step 3: Review & Submit ── --}}
-            <div class="pad-pane d-none" id="padPane3">
-                <div class="pad-review" id="padReview"></div>
-                <p style="font-size:.75rem;color:#94a3b8;margin-top:12px;line-height:1.6;">
-                    <i class="fas fa-shield-alt me-1" style="color:#22c55e;"></i>
-                    By submitting, you agree that your ad will be reviewed before being published.
-                    We'll email you at the address provided.
-                </p>
-            </div>
-
-        </form>
-
-    </div>
-
-    {{-- Footer nav --}}
-    <div class="post-ad-footer">
-        <button class="pad-btn pad-btn-ghost" id="padBtnBack" onclick="padGoBack()" style="display:none;">
-            <i class="fas fa-arrow-left"></i> Back
-        </button>
-        <button class="pad-btn pad-btn-primary" id="padBtnNext" onclick="padGoNext()">
-            Next <i class="fas fa-arrow-right"></i>
-        </button>
-        <button class="pad-btn pad-btn-primary d-none" id="padBtnSubmit" onclick="padSubmit()">
-            <span id="padBtnSubmitText"><i class="fas fa-paper-plane"></i> Submit Ad</span>
-            <span id="padBtnSubmitSpinner" class="d-none">
-                <span class="spinner-border spinner-border-sm"></span> Submitting…
-            </span>
-        </button>
-    </div>
-
-</div>
-
-{{-- ── Success screen (replaces sheet content) ── --}}
-<div class="post-ad-success" id="postAdSuccess" style="display:none;">
-    <div class="pas-icon">🎉</div>
-    <div class="pas-title">Ad Submitted!</div>
-    <div class="pas-sub">
-        We've received your ad and will review it within 24 hours.<br>
-        Check your email for a confirmation.
-    </div>
-    <button class="pad-btn pad-btn-primary" onclick="closePostAdModal()" style="margin-top:24px;width:100%;">
-        Done
-    </button>
-</div>
-
+{{-- ── Styles loaded BEFORE the markup below ──────────
+     The sheet/backdrop must be off-screen (transform/display)
+     the instant they're parsed. If the <style> tag came after
+     this HTML (as it used to), the browser can paint the sheet
+     in its untransformed, at-the-bottom-of-the-viewport state
+     for a frame before the rules apply — a visible flash of the
+     full "Post Your Ad" form before it slides away. Defining the
+     rules first means they're already in effect when these
+     elements are created, so there's nothing to flash. ── --}}
 <style>
 /* ── FAB ── */
 .post-ad-fab {
@@ -395,6 +221,189 @@
     font-size: 9px; cursor: pointer; display: flex; align-items: center; justify-content: center;
 }
 </style>
+
+{{-- ── Floating Post Ad Button ───────────────────────── --}}
+<button class="post-ad-fab" id="postAdFab" onclick="openPostAdModal()">
+    <i class="fas fa-plus"></i>
+    <span>Post Free Ad</span>
+</button>
+
+{{-- ── Backdrop ─────────────────────────────────────── --}}
+<div class="post-ad-backdrop" id="postAdBackdrop" onclick="closePostAdModal()"></div>
+
+{{-- ── Slide-up Modal ───────────────────────────────── --}}
+<div class="post-ad-sheet" id="postAdSheet">
+
+    <div class="post-ad-handle"></div>
+
+    <div class="post-ad-header">
+        <div>
+            <div class="post-ad-title">📢 Post Your Ad</div>
+            <div class="post-ad-sub">Free listing — reviewed within 24 hours</div>
+        </div>
+        <button class="post-ad-close" onclick="closePostAdModal()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <div class="post-ad-body" id="postAdBody">
+
+        {{-- Step indicators --}}
+        <div class="post-ad-steps">
+            <div class="pad-step active" id="padStep1">
+                <span class="pad-step-num">1</span> Your Details
+            </div>
+            <div class="pad-step-line"></div>
+            <div class="pad-step" id="padStep2">
+                <span class="pad-step-num">2</span> Ad Info
+            </div>
+            <div class="pad-step-line"></div>
+            <div class="pad-step" id="padStep3">
+                <span class="pad-step-num">3</span> Submit
+            </div>
+        </div>
+
+        <form id="postAdForm" novalidate enctype="multipart/form-data">
+            @csrf
+
+            {{-- ── Step 1: Contact ── --}}
+            <div class="pad-pane" id="padPane1">
+                <div class="pad-row">
+                    <label class="pad-label">Full Name <span class="text-danger">*</span></label>
+                    <input type="text" name="name" class="pad-input" placeholder="Your name">
+                    <small class="pad-err" id="err_name"></small>
+                </div>
+                <div class="pad-row">
+                    <label class="pad-label">Email Address <span class="text-danger">*</span></label>
+                    <input type="email" name="email" class="pad-input" placeholder="you@example.com">
+                    <small class="pad-err" id="err_email"></small>
+                </div>
+                <div class="pad-row-2">
+                    <div class="pad-row">
+                        <label class="pad-label">Phone</label>
+                        <input type="text" name="phone" class="pad-input" placeholder="+91 98765 43210">
+                    </div>
+                    <div class="pad-row">
+                        <label class="pad-label">WhatsApp</label>
+                        <input type="text" name="whatsapp" class="pad-input" placeholder="+91 98765 43210">
+                    </div>
+                </div>
+                <div class="pad-row">
+                    <label class="pad-label">Company / Business Name</label>
+                    <input type="text" name="company_name" class="pad-input" placeholder="e.g. Acme Traders">
+                </div>
+            </div>
+
+            {{-- ── Step 2: Ad Info ── --}}
+            <div class="pad-pane d-none" id="padPane2">
+                <div class="pad-row">
+                    <label class="pad-label">Ad Title <span class="text-danger">*</span></label>
+                    <input type="text" name="title" class="pad-input" placeholder="e.g. 50% Off on All Electronics">
+                    <small class="pad-err" id="err_title"></small>
+                </div>
+                <div class="pad-row-2">
+                    <div class="pad-row">
+                        <label class="pad-label">Category <span class="text-danger">*</span></label>
+                        <select name="category_id" class="pad-input pad-select">
+                            <option value="">Select…</option>
+                            @foreach($adCategories as $cat)
+                                <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                            @endforeach
+                        </select>
+                        <small class="pad-err" id="err_category_id"></small>
+                    </div>
+                    <div class="pad-row">
+                        <label class="pad-label">Locality</label>
+                        <select name="locality_id" class="pad-input pad-select">
+                            <option value="">Select…</option>
+                            @foreach($adLocalities as $loc)
+                                <option value="{{ $loc->id }}">{{ $loc->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="pad-row">
+                    <label class="pad-label">Description</label>
+                    <textarea name="description" class="pad-input pad-textarea"
+                              placeholder="Describe your offer, product or service…" rows="4"></textarea>
+                </div>
+                <div class="pad-row-2">
+                    <div class="pad-row">
+                        <label class="pad-label">Offer %</label>
+                        <div class="pad-input-group">
+                            <input type="number" name="offer_percentage" class="pad-input"
+                                   placeholder="e.g. 20" min="0" max="100" step="0.01">
+                            <span class="pad-input-suffix">%</span>
+                        </div>
+                    </div>
+                    <div class="pad-row">
+                        <label class="pad-label">Valid Until</label>
+                        <input type="date" name="expiry_date" class="pad-input"
+                               min="{{ now()->addDay()->format('Y-m-d') }}">
+                    </div>
+                </div>
+                <div class="pad-row">
+                    <label class="pad-label">Location / Area</label>
+                    <input type="text" name="location" class="pad-input"
+                           placeholder="e.g. Near City Mall, Downtown">
+                </div>
+                <div class="pad-row">
+                    <label class="pad-label">Upload Images <span style="color:#94a3b8;font-weight:400;">(up to 5)</span></label>
+                    <div class="pad-upload-zone" id="padUploadZone" onclick="document.getElementById('padImageInput').click()">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Tap to add photos</span>
+                        <small>JPG, PNG, WEBP — Max 5MB each</small>
+                    </div>
+                    <input type="file" id="padImageInput" name="images[]" accept="image/*" multiple style="display:none;">
+                    <div class="pad-image-strip" id="padImageStrip"></div>
+                    <small class="pad-err" id="err_images"></small>
+                </div>
+            </div>
+
+            {{-- ── Step 3: Review & Submit ── --}}
+            <div class="pad-pane d-none" id="padPane3">
+                <div class="pad-review" id="padReview"></div>
+                <p style="font-size:.75rem;color:#94a3b8;margin-top:12px;line-height:1.6;">
+                    <i class="fas fa-shield-alt me-1" style="color:#22c55e;"></i>
+                    By submitting, you agree that your ad will be reviewed before being published.
+                    We'll email you at the address provided.
+                </p>
+            </div>
+
+        </form>
+
+    </div>
+
+    {{-- Footer nav --}}
+    <div class="post-ad-footer">
+        <button class="pad-btn pad-btn-ghost" id="padBtnBack" onclick="padGoBack()" style="display:none;">
+            <i class="fas fa-arrow-left"></i> Back
+        </button>
+        <button class="pad-btn pad-btn-primary" id="padBtnNext" onclick="padGoNext()">
+            Next <i class="fas fa-arrow-right"></i>
+        </button>
+        <button class="pad-btn pad-btn-primary d-none" id="padBtnSubmit" onclick="padSubmit()">
+            <span id="padBtnSubmitText"><i class="fas fa-paper-plane"></i> Submit Ad</span>
+            <span id="padBtnSubmitSpinner" class="d-none">
+                <span class="spinner-border spinner-border-sm"></span> Submitting…
+            </span>
+        </button>
+    </div>
+
+</div>
+
+{{-- ── Success screen (replaces sheet content) ── --}}
+<div class="post-ad-success" id="postAdSuccess" style="display:none;">
+    <div class="pas-icon">🎉</div>
+    <div class="pas-title">Ad Submitted!</div>
+    <div class="pas-sub">
+        We've received your ad and will review it within 24 hours.<br>
+        Check your email for a confirmation.
+    </div>
+    <button class="pad-btn pad-btn-primary" onclick="closePostAdModal()" style="margin-top:24px;width:100%;">
+        Done
+    </button>
+</div>
 
 <script>
 let padCurrentStep = 1;
