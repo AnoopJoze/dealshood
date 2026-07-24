@@ -947,6 +947,7 @@
 
 /* Blurred, scaled copy fills the frame edge-to-edge */
 .dh-card-bg {
+    display: block;
     position: absolute;
     inset: 0;
     width: 100%;
@@ -958,6 +959,7 @@
 
 /* Real image sits on top, always shown in full — no cropping */
 .dh-card-fg {
+    display: block;
     position: relative;
     z-index: 1;
     width: 100%;

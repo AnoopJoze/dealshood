@@ -313,7 +313,7 @@
         position:relative;
         overflow:hidden;
     }
-    .dh-grid.list-view .dh-card-media img,
+    .dh-grid.list-view .dh-card-media img:not(.dh-card-bg):not(.dh-card-fg),
     .dh-grid.list-view .dh-card-media video{
         position:absolute; inset:0;
         width:100%; height:100%; object-fit:cover;
@@ -748,6 +748,7 @@
 
 /* Blurred, scaled copy fills the frame edge-to-edge */
 .dh-card-bg {
+    display: block;
     position: absolute;
     inset: 0;
     width: 100%;
@@ -759,6 +760,7 @@
 
 /* Real image sits on top, always shown in full — no cropping */
 .dh-card-fg {
+    display: block;
     position: relative;
     z-index: 1;
     width: 100%;
@@ -1117,7 +1119,7 @@ $paletteJson = json_encode($palette);
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
-    #post-wrapper .dh-card-media img,
+    #post-wrapper .dh-card-media img:not(.dh-card-bg):not(.dh-card-fg),
     #post-wrapper.dh-card-media video { height: 270px; }
 }
 </style>
