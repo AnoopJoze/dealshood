@@ -46,6 +46,7 @@ class Post extends Model implements HasMedia
         'meta_title',
         'meta_description',
         'keywords',
+        'disclaimer',
         // Contact
         'phone_number',
         'whatsapp_number',
@@ -92,6 +93,7 @@ class Post extends Model implements HasMedia
         'meta_title'       => 'encrypted',
         'meta_description' => 'encrypted',
         'keywords'         => 'encrypted',
+        'disclaimer'       => 'encrypted',
     ];
 
     /* ── URL accessor ──────────────────────────────── */
