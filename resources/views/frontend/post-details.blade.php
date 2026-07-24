@@ -1023,7 +1023,11 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                 </div>
             </div>
 
-            @if($post->category_id==1)
+            @if($post->disclaimer)
+            <div class="dh-disclaimer">
+                <strong>Disclaimer:</strong> {{ $post->disclaimer }}
+            </div>
+        @elseif($post->category_id==1)
             <div class="dh-disclaimer">
                 <strong>Disclaimer:</strong>: We help you to discover the best offers and services in your area.Offers and services listed are provided by third parties. Please contact the business directly to confirm details before visiting. DealsHood is not responsible for any service issues , disputes or changes in offers.
             </div>

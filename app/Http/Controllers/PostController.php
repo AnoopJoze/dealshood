@@ -318,6 +318,7 @@ public function destroy(Post $post)
             'meta_title'       => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',
             'keywords'         => 'nullable|string|max:500',
+            'disclaimer'       => 'nullable|string|max:2000',
         ];
     }
  

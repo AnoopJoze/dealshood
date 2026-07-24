@@ -498,6 +498,14 @@
                             <textarea id="description" class="form-control" rows="4"
                                       placeholder="Post content…"></textarea>
                         </div>
+                        <div class="col-12">
+                            <label class="form-label">Disclaimer</label>
+                            <textarea id="post_disclaimer" class="form-control" rows="3"
+                                      placeholder="Custom disclaimer shown on this post's detail page…"></textarea>
+                            <small style="font-size:.72rem;color:var(--muted2);">
+                                Shown at the bottom of this post's detail page. Leave blank to use the default disclaimer for its category.
+                            </small>
+                        </div>
                         <div class="col-md-4">
                             <label class="form-label">Category <span class="text-danger">*</span></label>
                             <select id="post_category_id" class="form-select">
@@ -833,7 +841,7 @@ $(document).on('click', '.ps-view-tab', function() {
 
 /* ── Tab switching (modal) ────────────────────────────────── */
 var fieldTabMap = {
-    title:'tab-basic', description:'tab-basic',
+    title:'tab-basic', description:'tab-basic', disclaimer:'tab-basic',
     category_id:'tab-basic', status:'tab-basic',
     company_name:'tab-location', phone_number:'tab-location', whatsapp_number:'tab-location',
     latitude:'tab-location', longitude:'tab-location',
@@ -887,6 +895,7 @@ function resetModal() {
     $('#modalMeta').addClass('d-none');
     $('#savePostText').html('<i class="fas fa-save"></i> Save Post');
     $('#post_id, #post_title, #post_expiry_date').val('');
+    $('#post_disclaimer').val('');
     $('#post_offer_percentage').val('');
     $('#post_category_id, #post_locality_id, #post_user_id').val('');
     $('#post_subcategory_id').html('<option value="">— Select Subcategory —</option>');
@@ -943,6 +952,7 @@ $(document).on('click', '.editPost', function() {
         $('#post_is_featured').prop('checked', !!res.is_featured);
         $('#post_is_active').prop('checked', !!res.is_active);
         editorInstance.setData(res.description ?? '');
+        $('#post_disclaimer').val(res.disclaimer ?? '');
         if (res.category_id) {
             $('#post_category_id').val(res.category_id).trigger('change');
             setTimeout(() => $('#post_subcategory_id').val(res.subcategory_id), 450);
@@ -1002,6 +1012,7 @@ $('#savePost').on('click', function() {
             is_featured:$('#post_is_featured').is(':checked')?1:0,
             is_active:$('#post_is_active').is(':checked')?1:0,
             description:editorInstance.getData(),
+            disclaimer:$('#post_disclaimer').val(),
             country:$('#post_country').val(), state:$('#post_state').val(),
             city:$('#post_city').val(), location:$('#post_location').val(),
             latitude:$('#post_latitude').val(), longitude:$('#post_longitude').val(),            
