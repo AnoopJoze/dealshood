@@ -373,10 +373,10 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         border-radius: 100px; backdrop-filter: blur(6px); z-index: 5;
     }
     .dh-media-card video { width: 100%; display: block; max-height: 500px; object-fit: cover; }
-    .dh-single-img { width: 100%; height: clamp(220px, 55vw, 480px); object-fit: cover; display: block; cursor: zoom-in; }
+    .dh-single-img { width: 100%; height: clamp(220px, 55vw, 480px); object-fit: contain; background: #111; display: block; cursor: zoom-in; }
 
     /* Carousel */
-    .dh-carousel .carousel-item img { width: 100%; height: clamp(220px, 55vw, 480px); object-fit: cover; cursor: zoom-in; }
+    .dh-carousel .carousel-item img { display: block; width: 100%; height: clamp(220px, 55vw, 480px); object-fit: contain; background: #111; cursor: zoom-in; }
     .dh-carousel .carousel-control-prev,
     .dh-carousel .carousel-control-next {
         width: 42px; height: 42px;
