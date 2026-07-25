@@ -183,7 +183,7 @@
         <span class="al-circle al-c1"></span>
         <span class="al-circle al-c2"></span>
         <div class="al-content">
-            <img src="/frontend/img/dealshood.png" alt="DealsHood" class="al-logo">
+            <img src="{{ site_logo_url() }}" alt="{{ setting('site_name', 'DealsHood') }}" class="al-logo">
             <h1 class="al-title">Welcome back to DealsHood.</h1>
             <p class="al-sub">Sign in to discover the best local deals around you, every single day.</p>
             <div class="al-feat">
@@ -206,7 +206,7 @@
         <div class="auth-box">
 
             <div class="auth-head">
-                <img src="/frontend/img/dealshood.png" alt="DealsHood" class="auth-head-logo d-md-none">
+                <img src="{{ site_logo_url() }}" alt="{{ setting('site_name', 'DealsHood') }}" class="auth-head-logo d-md-none">
                 <h1>Sign in</h1>
                 <p>Don't have an account? <a href="{{ route('register') }}">Create one free</a></p>
             </div>

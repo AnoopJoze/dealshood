@@ -118,7 +118,7 @@
 
     {{-- Header --}}
     <div class="header">
-        <img src="{{ asset('frontend/img/dealshood.png') }}" alt="DealsHood">
+        <img src="{{ site_logo_url() }}" alt="{{ setting('site_name', 'DealsHood') }}">
         <h1>New Ad Submitted for Review</h1>
         <p>Action required — review and publish or reject</p>
     </div>

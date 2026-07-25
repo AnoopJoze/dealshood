@@ -15,6 +15,22 @@ use App\Models\PostRating;
 class FrontEndController extends Controller
 {
     /* ════════════════════════════════════════════
+       SERVICE WORKER — server-rendered so the
+       precached logo/favicon always match Settings.
+    ════════════════════════════════════════════ */
+    public function serviceWorker()
+    {
+        $js = view('frontend.sw', [
+            'logoUrl'    => site_logo_url(),
+            'faviconUrl' => site_favicon_url(),
+        ])->render();
+
+        return response($js, 200)
+            ->header('Content-Type', 'application/javascript')
+            ->header('Cache-Control', 'no-cache');
+    }
+
+    /* ════════════════════════════════════════════
        HOME
     ════════════════════════════════════════════ */
     public function home(Request $request)
