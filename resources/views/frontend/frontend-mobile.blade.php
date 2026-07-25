@@ -338,7 +338,7 @@ document.getElementById('filterBackdrop')?.addEventListener('click', function ()
         const shareData = {
             title: document.title,
             text:  'Find the best local deals near you!',
-            url:   window.location.origin
+            url:   window.location.href
         };
 
         if (navigator.share) {
