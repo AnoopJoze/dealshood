@@ -4,7 +4,7 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Contact Us — DealsHood</title>
-    <link rel="icon" type="image/png" href="/frontend/img/favicon.ico">
+    <link rel="icon" type="image/png" href="{{ site_favicon_url() }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link href="/frontend/css/soft-design-system.css?v=1.1.0" rel="stylesheet">
@@ -107,7 +107,7 @@
             <i class="fas fa-chevron-left" style="font-size:.76rem;"></i> Home
         </a>
         <a href="{{ route('home') }}" class="nav-logo">
-            <img src="/frontend/img/dealshood.png" alt="DealsHood">
+            <img src="{{ site_logo_url() }}" alt="{{ setting('site_name', 'DealsHood') }}">
         </a>
         <div style="width:80px;"></div>
     </div>

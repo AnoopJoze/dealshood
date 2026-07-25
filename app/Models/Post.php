@@ -47,6 +47,11 @@ class Post extends Model implements HasMedia
         'meta_description',
         'keywords',
         'disclaimer',
+        // Social sharing
+        'shared_to_facebook',
+        'shared_to_instagram',
+        'facebook_post_id',
+        'instagram_post_id',
         // Contact
         'phone_number',
         'whatsapp_number',
@@ -69,6 +74,8 @@ class Post extends Model implements HasMedia
     protected $casts = [
         'is_featured'  => 'boolean',
         'is_active'    => 'boolean',
+        'shared_to_facebook'  => 'boolean',
+        'shared_to_instagram' => 'boolean',
         'published_at' => 'datetime',
         'expiry_date'  => 'date',
         // Contact

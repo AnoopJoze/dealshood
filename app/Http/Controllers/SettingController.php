@@ -36,6 +36,9 @@ class SettingController extends Controller
             'google_analytics_id' => 'nullable|string|max:50',
             'footer_text'      => 'nullable|string|max:300',
             'posts_per_page'   => 'nullable|integer|min:1|max:100',
+            'fb_page_id'            => 'nullable|string|max:100',
+            'fb_page_access_token'  => 'nullable|string|max:1000',
+            'ig_business_account_id' => 'nullable|string|max:100',
             'site_logo'        => 'nullable|image|mimes:png,jpg,jpeg,svg,webp|max:2048',
             'site_favicon'     => 'nullable|image|mimes:png,ico,svg|max:512',
             'og_image'         => 'nullable|image|mimes:png,jpg,jpeg,webp|max:3072',
@@ -49,12 +52,20 @@ class SettingController extends Controller
             'instagram_url','facebook_url','twitter_url','youtube_url',
             'address','google_analytics_id','footer_text','posts_per_page',
             'maintenance_mode','admin_email_notify',
+            'fb_page_id','ig_business_account_id',
         ];
 
         foreach ($textFields as $field) {
             if ($request->has($field)) {
                 Setting::set($field, $request->input($field) ?? '');
             }
+        }
+
+        // ── Facebook Page Access Token — secret, encrypted at rest,
+        //    only overwritten when a new value is actually typed
+        //    (blank submit keeps the existing token). ──
+        if ($request->filled('fb_page_access_token')) {
+            Setting::set('fb_page_access_token', encrypt($request->input('fb_page_access_token')));
         }
 
         // Checkboxes (unchecked = not in request)

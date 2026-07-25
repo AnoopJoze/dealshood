@@ -102,6 +102,7 @@ Route::prefix('posts')->name('posts.')->group(function () {
     Route::post('/',                      [PostController::class, 'ajaxStore'])->name('ajaxStore');
     Route::get('/{post}/edit-data',       [PostController::class, 'editData'])->name('editData');
     Route::put('/{post}',                 [PostController::class, 'update'])->name('update');
+    Route::post('/{post}/share',          [PostController::class, 'share'])->name('share');
     Route::get('/{post}',                 [PostController::class, 'show'])->name('show');
     Route::post('/inline-update',         [PostController::class, 'inlineUpdate'])->name('inlineUpdate');
     Route::post('/media/upload',          [PostController::class, 'mediaUpload'])->name('mediaUpload');

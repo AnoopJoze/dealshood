@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="apple-touch-icon" sizes="76x76" href="/frontend/img/apple-icon.png">
-    <link rel="icon" type="image/png" href="/frontend/img/favicon.ico">
+    <link rel="icon" type="image/png" href="{{ site_favicon_url() }}">
     @php
     $siteName = setting('site_name', 'DealsHood');
 
@@ -13,9 +13,9 @@
     /* ── OG image — must be absolute HTTPS, publicly accessible ── */
     $ogImage = $post->getFirstMediaUrl('posts');
 
-    // Fallback to default
+    // Fallback to the site's default OG image / logo
     if (!$ogImage) {
-        $ogImage = url('/frontend/img/default.jpg');
+        $ogImage = site_og_image_url();
     }
 
     // Make absolute if relative
@@ -138,7 +138,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title"           content="{{ $siteName }}">
 <link rel="apple-touch-icon"                      href="/frontend/img/icons/icon-192x192.png">
-<link rel="icon" type="image/png"                 href="/frontend/img/favicon.ico">
+<link rel="icon" type="image/png"                 href="{{ site_favicon_url() }}">
 
 <script>
 // Register service worker
@@ -817,7 +817,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         <span class="dh-nav-page-title">{{ Str::limit($post->title, 28) }}</span>
 
         <a href="{{ route('home') }}" class="dh-nav-logo d-none d-md-block">
-            <img src="/frontend/img/dealshood.png" alt="DealsHood">
+            <img src="{{ site_logo_url() }}" alt="{{ $siteName }}">
         </a>
         <div class="dh-nav-actions" style="display:flex;align-items:center;gap:10px;">
             <a href="https://www.instagram.com/dealshood?igsh=NHJpdDhkYmJ2dTlj"
@@ -1044,7 +1044,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     <div class="wrap">
         <div class="dh-footer-grid">
             <div>
-                <img src="/frontend/img/dealshood.png" alt="DealsHood"
+                <img src="{{ site_logo_url() }}" alt="{{ $siteName }}"
                      style="height:32px;filter:brightness(0) invert(1);opacity:.8;">
                 <p class="dh-footer-brand">DealsHood</p>
                 <p class="dh-footer-tag">Discover the best deals around you.</p>
@@ -1276,7 +1276,7 @@ $(document).on('click', '.dh-rating-input .dh-star', function () {
         'url'   => url('/'),
         'logo'  => [
             '@type' => 'ImageObject',
-            'url'   => url('/frontend/img/dealshood.png'),
+            'url'   => site_logo_url(),
         ],
     ],
     'about'         => $post->category ? [

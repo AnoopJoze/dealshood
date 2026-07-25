@@ -384,6 +384,68 @@
         </div>
     </div>
 
+    {{-- ── Social Media API (Auto-Posting) ── --}}
+    <div class="card border-0 shadow-sm mb-4" style="border-radius:16px;">
+        <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <span style="width:30px;height:30px;border-radius:8px;background:#eff6ff;
+                             color:#1877f2;display:flex;align-items:center;justify-content:center;font-size:.8rem;">
+                    <i class="fas fa-paper-plane"></i>
+                </span>
+                <h6 class="mb-0 fw-bold">Social Media API (Auto-Posting)</h6>
+            </div>
+            <p class="text-muted mb-0" style="font-size:.78rem;padding-left:38px;">
+                Credentials used to share new posts to your Facebook Page and Instagram Business account.
+            </p>
+        </div>
+        <div class="card-body px-4 pt-3 pb-4">
+
+            <div class="alert alert-light border d-flex gap-2 mb-3" style="font-size:.76rem;border-radius:10px;">
+                <i class="fas fa-circle-info mt-1" style="color:#3b82f6;"></i>
+                <div>
+                    Requires a Meta Developer App with a Facebook Page and an Instagram
+                    <strong>Business</strong> account linked to that Page. Generate a
+                    long-lived Page Access Token in
+                    <a href="https://developers.facebook.com/tools/explorer/" target="_blank" rel="noopener">Graph API Explorer</a>
+                    with <code>pages_manage_posts</code>, <code>pages_read_engagement</code> and
+                    <code>instagram_content_publish</code> permissions.
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-sm-6">
+                    <label class="form-label fw-semibold" style="font-size:.8rem;">Facebook Page ID</label>
+                    <input type="text" name="fb_page_id" class="form-control form-control-sm"
+                           value="{{ $settings['fb_page_id'] ?? '' }}"
+                           placeholder="e.g. 102938475610293">
+                </div>
+                <div class="col-sm-6">
+                    <label class="form-label fw-semibold" style="font-size:.8rem;">Instagram Business Account ID</label>
+                    <input type="text" name="ig_business_account_id" class="form-control form-control-sm"
+                           value="{{ $settings['ig_business_account_id'] ?? '' }}"
+                           placeholder="e.g. 17841400000000000">
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-semibold" style="font-size:.8rem;">
+                        Page Access Token
+                        @if(!empty($settings['fb_page_access_token']))
+                            <span class="badge bg-success-subtle text-success rounded-pill ms-1" style="font-size:.65rem;">
+                                <i class="fas fa-check-circle"></i> Set
+                            </span>
+                        @endif
+                    </label>
+                    <input type="password" name="fb_page_access_token" class="form-control form-control-sm"
+                           placeholder="{{ !empty($settings['fb_page_access_token']) ? 'Leave blank to keep the existing token' : 'Paste your long-lived Page Access Token' }}"
+                           autocomplete="new-password">
+                    <div class="form-text">
+                        Used for both Facebook and Instagram publishing. Stored encrypted — never re-displayed once saved.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
     {{-- ── Footer ── --}}
     <div class="card border-0 shadow-sm" style="border-radius:16px;">
         <div class="card-header bg-white border-0 pt-4 px-4 pb-0">

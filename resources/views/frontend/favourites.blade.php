@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="icon" type="image/png" href="/frontend/img/favicon.ico">
+    <link rel="icon" type="image/png" href="{{ site_favicon_url() }}">
     <title>My Favourites — DealsHood</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -285,7 +285,7 @@
         </a>
         <span class="nav-title">My Favourites</span>
         <a href="{{ route('home') }}" class="nav-logo">
-            <img src="/frontend/img/dealshood.png" alt="DealsHood">
+            <img src="{{ site_logo_url() }}" alt="{{ setting('site_name', 'DealsHood') }}">
         </a>
         <div class="nav-right">
             <a href="https://www.instagram.com/dealshood?igsh=NHJpdDhkYmJ2dTlj"

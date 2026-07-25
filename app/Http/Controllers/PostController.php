@@ -7,13 +7,14 @@ use Carbon\Carbon; use DataTables; use Illuminate\Http\Request; use Illuminate\S
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use App\Mail\NewPostNotification;
 use Illuminate\Support\Facades\Mail;
+use App\Services\SocialShareService;
 class PostController extends Controller
 {
-    public function __construct()
+    public function __construct(private SocialShareService $socialShare)
     {
         $this->middleware('can:posts.view')  ->only(['index','data','show','editData']);
         $this->middleware('can:posts.create')->only(['ajaxStore']);
-        $this->middleware('can:posts.edit')->only(['update','inlineUpdate','mediaUpload','mediaDelete','reorder','saveOrder']);
+        $this->middleware('can:posts.edit')->only(['update','inlineUpdate','mediaUpload','mediaDelete','reorder','saveOrder','share']);
         $this->middleware('can:posts.delete')->only(['destroy','restore','forceDelete','bulkTrash','bulkRestore','emptyTrash']);
     }
 
@@ -196,7 +197,40 @@ public function update(Request $request, Post $post)
  
     return response()->json(['success' => true, 'data' => $post->fresh()]);
 }
- 
+
+// ── share (Facebook / Instagram) ──────────────────────────────
+public function share(Request $request, Post $post)
+{
+    if (auth()->user()->hasRole('author') && $post->user_id !== auth()->id()) {
+        abort(403);
+    }
+
+    $request->validate([
+        'platforms'   => 'required|array',
+        'platforms.*' => 'in:facebook,instagram',
+    ]);
+
+    $results = [];
+
+    if (in_array('facebook', $request->platforms)) {
+        $result = $this->socialShare->shareToFacebook($post);
+        $results['facebook'] = $result;
+        if ($result['success']) {
+            $post->update(['shared_to_facebook' => true, 'facebook_post_id' => $result['id'] ?? null]);
+        }
+    }
+
+    if (in_array('instagram', $request->platforms)) {
+        $result = $this->socialShare->shareToInstagram($post);
+        $results['instagram'] = $result;
+        if ($result['success']) {
+            $post->update(['shared_to_instagram' => true, 'instagram_post_id' => $result['id'] ?? null]);
+        }
+    }
+
+    return response()->json(['success' => true, 'results' => $results]);
+}
+
 // ── inlineUpdate ─────────────────────────────────────────────
 public function inlineUpdate(Request $request)
 {
