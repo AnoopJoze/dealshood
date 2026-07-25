@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="icon" type="image/png" href="/frontend/img/favicon.ico">
+    <link rel="icon" type="image/png" href="{{ site_favicon_url() }}">
     <title>Verify Your Email — DealsHood</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
@@ -120,7 +120,7 @@
 
 <div class="card">
 
-    <img src="/frontend/img/dealshood.png" alt="DealsHood" class="logo">
+    <img src="{{ site_logo_url() }}" alt="{{ setting('site_name', 'DealsHood') }}" class="logo">
 
     <div class="icon-wrap">
         <i class="fas fa-envelope-open-text"></i>

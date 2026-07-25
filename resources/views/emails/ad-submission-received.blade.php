@@ -21,7 +21,7 @@
 <body>
 <div class="card">
     <div class="header">
-        <img src="{{ url('/frontend/img/dealshood.png') }}" alt="{{ setting('site_name','DealsHood') }}"
+        <img src="{{ site_logo_url() }}" alt="{{ setting('site_name','DealsHood') }}"
              style="filter:brightness(0) invert(1);">
     </div>
     <div class="body">
