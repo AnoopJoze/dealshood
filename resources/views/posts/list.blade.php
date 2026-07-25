@@ -579,6 +579,32 @@
                             </label>
                         </div>
                     </div>
+
+                    <hr class="my-3" style="border-color:var(--border);">
+                    <p class="modal-section-label">Share to Social Media</p>
+                    <div class="d-flex gap-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="post_share_facebook">
+                            <label class="form-check-label" style="font-size:.82rem;" for="post_share_facebook">
+                                <i class="fab fa-facebook me-1" style="color:#1877f2;"></i> Share to Facebook
+                            </label>
+                            <span class="badge bg-success-subtle text-success rounded-pill d-none ms-1" id="fbSharedBadge" style="font-size:.62rem;">
+                                <i class="fas fa-check-circle"></i> Already shared
+                            </span>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="post_share_instagram">
+                            <label class="form-check-label" style="font-size:.82rem;" for="post_share_instagram">
+                                <i class="fab fa-instagram me-1" style="color:#e1306c;"></i> Share to Instagram
+                            </label>
+                            <span class="badge bg-success-subtle text-success rounded-pill d-none ms-1" id="igSharedBadge" style="font-size:.62rem;">
+                                <i class="fas fa-check-circle"></i> Already shared
+                            </span>
+                        </div>
+                    </div>
+                    <small style="font-size:.72rem;color:var(--muted2);">
+                        Requires Facebook/Instagram API credentials configured in Settings. Instagram needs at least one image on this post.
+                    </small>
                 </div>
 
                 {{-- ── Tab 2: Location ───────────────────────────── --}}
@@ -911,6 +937,8 @@ function resetModal() {
     $('#post_video_url').val('');
     myDropzone.removeAllFiles(true);
     $('#post_meta_title, #post_meta_description, #post_keywords').val('');
+    $('#post_share_facebook, #post_share_instagram').prop('checked', false);
+    $('#fbSharedBadge, #igSharedBadge').addClass('d-none');
 }
 
 $('#addPostBtn').on('click', resetModal);
@@ -973,22 +1001,59 @@ $(document).on('click', '.editPost', function() {
         $('#post_meta_title').val(res.meta_title ?? '');
         $('#post_meta_description').val(res.meta_description ?? '');
         $('#post_keywords').val(res.keywords ?? '');
+        $('#fbSharedBadge').toggleClass('d-none', !res.shared_to_facebook);
+        $('#igSharedBadge').toggleClass('d-none', !res.shared_to_instagram);
         $('#postModal').modal('show');
     }).fail(() => Swal.fire('Error', 'Could not load post data.', 'error'));
 });
 
 // Flag to track whether modal should close after upload
 let pendingModalClose = false;
+let pendingSocialShare = { facebook: false, instagram: false };
 
 // Close modal + refresh table + show success toast
 function finishSave() {
     $('#postModal').modal('hide');
     table.ajax.reload(null, false);
+
+    const platforms = [];
+    if (pendingSocialShare.facebook)  platforms.push('facebook');
+    if (pendingSocialShare.instagram) platforms.push('instagram');
+    pendingSocialShare = { facebook: false, instagram: false };
+
+    if (!platforms.length) {
+        Swal.fire({
+            icon: 'success',
+            title: isEditMode ? 'Post updated!' : 'Post created!',
+            timer: 1500,
+            showConfirmButton: false
+        });
+        return;
+    }
+
     Swal.fire({
-        icon: 'success',
-        title: isEditMode ? 'Post updated!' : 'Post created!',
-        timer: 1500,
-        showConfirmButton: false
+        title: 'Sharing…',
+        text: 'Posting to ' + platforms.map(p => p[0].toUpperCase() + p.slice(1)).join(' & ') + '…',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading(),
+    });
+
+    $.post('{{ url("admin/posts") }}/' + postId + '/share', {
+        _token: '{{ csrf_token() }}',
+        platforms: platforms,
+    }).done(function (res) {
+        const results = res.results || {};
+        const allOk = Object.values(results).every(r => r.success);
+        const lines = Object.entries(results).map(([platform, r]) =>
+            (r.success ? '✅ ' : '❌ ') + platform.charAt(0).toUpperCase() + platform.slice(1) + ': ' + r.message
+        );
+        Swal.fire({
+            icon: allOk ? 'success' : 'warning',
+            title: 'Social sharing',
+            html: lines.join('<br>'),
+        });
+    }).fail(function () {
+        Swal.fire('Error', 'Could not reach the social sharing endpoint.', 'error');
     });
 }
 /* ── Save ─────────────────────────────────────────────────── */
@@ -997,6 +1062,10 @@ $('#savePost').on('click', function() {
     $('#savePostText').addClass('d-none');
     $('#savePostSpinner').removeClass('d-none');
     $('#savePost').prop('disabled', true);
+    pendingSocialShare = {
+        facebook:  $('#post_share_facebook').is(':checked'),
+        instagram: $('#post_share_instagram').is(':checked'),
+    };
     $.ajax({
         url  : isEditMode ? '{{ url("admin/posts") }}/' + postId : '{{ route("posts.ajaxStore") }}',
         type : 'POST',

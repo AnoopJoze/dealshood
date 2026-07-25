@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="icon" type="image/png" href="/frontend/img/favicon.ico">
+    <link rel="icon" type="image/png" href="{{ site_favicon_url() }}">
     <title>Create Account — DealsHood</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
@@ -183,7 +183,7 @@
         <span class="al-circle al-c2"></span>
         <span class="al-circle al-c3"></span>
         <div class="al-content">
-            <img src="/frontend/img/dealshood.png" alt="DealsHood" class="al-logo">
+            <img src="{{ site_logo_url() }}" alt="{{ setting('site_name', 'DealsHood') }}" class="al-logo">
             <h1 class="al-title">Find the best deals in your area.</h1>
             <p class="al-sub">Join thousands of people discovering local offers every day. Free to join, free to browse.</p>
             <div class="al-feat">
@@ -220,7 +220,7 @@
         <div class="auth-box">
 
             <div class="auth-head">
-                <img src="/frontend/img/dealshood.png" alt="DealsHood" class="auth-head-logo d-md-none">
+                <img src="{{ site_logo_url() }}" alt="{{ setting('site_name', 'DealsHood') }}" class="auth-head-logo d-md-none">
                 <h1>Create your account</h1>
                 <p>Already have one? <a href="{{ route('login') }}">Sign in</a></p>
             </div>

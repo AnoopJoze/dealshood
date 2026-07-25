@@ -3,9 +3,8 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="icon" type="image/png" href="/frontend/img/favicon.ico">
-    <link rel="icon" type="image/svg+xml" href="/frontend/img/icons/favicon.svg" />
-    <link rel="shortcut icon" href="/frontend/img/iconsfavicon.ico" />
+    <link rel="icon" type="image/png" href="{{ site_favicon_url() }}">
+    <link rel="shortcut icon" href="{{ site_favicon_url() }}">
     @php
     /* ── Site settings ──────────────────────────────── */
     $siteName    = setting('site_name', 'DealsHood');
@@ -16,9 +15,7 @@
     $ogUrl       = url()->current();
 
     /* ── OG image ───────────────────────────────────── */
-    $ogImage = setting('og_image')
-        ? str_replace('http://', 'https://', url(setting('og_image')))
-        : str_replace('http://', 'https://', url('/frontend/img/dealshood.png'));
+    $ogImage = site_og_image_url();
 
     /* ── Dynamic keywords from categories + localities ─ */
     $catNames = $categories->pluck('name')->take(10)->implode(', ');
@@ -79,11 +76,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title"     content="{{ $siteName }}">
     <link rel="apple-touch-icon"                href="/frontend/img/icons/icon-192x192.png">
-
-    {{-- ── Favicons ─────────────────────────────────────── --}}
-    <link rel="icon"       type="image/png"    href="/frontend/img/favicon.ico">
-    <link rel="icon"       type="image/svg+xml" href="/frontend/img/icons/favicon.svg">
-    <link rel="shortcut icon"                  href="/frontend/img/icons/favicon.ico">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
@@ -973,7 +965,7 @@
 <nav class="dh-nav">
     <div class="dh-nav-inner">
         <a href="{{ route('home') }}">
-            <img src="/frontend/img/dealshood.png" alt="DealsHood" style="height:45px;">
+            <img src="{{ site_logo_url() }}" alt="{{ $siteName }}" style="height:45px;">
         </a>
         <button class="loc-trigger" id="locTrigger" type="button"
                 onclick="window.openLocationPopup && window.openLocationPopup()">
@@ -1232,7 +1224,7 @@ $palette = [
     <div class="wrap">
         <div class="dh-footer-grid">
             <div>
-                <img src="/frontend/img/dealshood.png" alt="DealsHood"
+                <img src="{{ site_logo_url() }}" alt="{{ $siteName }}"
                      style="height:32px;filter:brightness(0) invert(1);opacity:.8;">
                 <p class="dh-footer-brand">DealsHood</p>
                 <p class="dh-footer-tag">Discover the best deals around you.</p>
