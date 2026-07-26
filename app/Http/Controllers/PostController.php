@@ -201,8 +201,8 @@ public function update(Request $request, Post $post)
 // ── share (Facebook / Instagram) ──────────────────────────────
 public function share(Request $request, Post $post)
 {
-    if (auth()->user()->hasRole('author') && $post->user_id !== auth()->id()) {
-        abort(403);
+    if (!auth()->user()->hasAnyRole(['super-admin', 'admin'])) {
+        abort(403, 'Only admins can share posts to social media.');
     }
 
     $request->validate([

@@ -580,6 +580,7 @@
                         </div>
                     </div>
 
+                    @if(auth()->user()->hasAnyRole(['super-admin', 'admin']))
                     <hr class="my-3" style="border-color:var(--border);">
                     <p class="modal-section-label">Share to Social Media</p>
                     <div class="d-flex gap-4">
@@ -605,6 +606,7 @@
                     <small style="font-size:.72rem;color:var(--muted2);">
                         Requires Facebook/Instagram API credentials configured in Settings. Instagram needs at least one image on this post.
                     </small>
+                    @endif
                 </div>
 
                 {{-- ── Tab 2: Location ───────────────────────────── --}}
