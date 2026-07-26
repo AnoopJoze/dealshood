@@ -341,6 +341,25 @@ document.getElementById('filterBackdrop')?.addEventListener('click', function ()
             url:   window.location.href
         };
 
+        // Try to shorten the current URL first — fall back to the full
+        // URL silently if the request fails for any reason (offline,
+        // rate-limited, etc.), so sharing never gets blocked on this.
+        try {
+            const res = await fetch('{{ route("shorten") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ url: window.location.href }),
+            });
+            const data = await res.json();
+            if (res.ok && data.short_url) {
+                shareData.url = data.short_url;
+            }
+        } catch (e) { /* keep the full URL */ }
+
         if (navigator.share) {
             try { await navigator.share(shareData); } catch (e) { /* cancelled */ }
         } else {

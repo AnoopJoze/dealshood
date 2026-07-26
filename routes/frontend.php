@@ -3,9 +3,15 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Frontend\FrontEndController;
 use App\Http\Controllers\Frontend\RegisterController;
+use App\Http\Controllers\Frontend\ShortLinkController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 Route::get('/sw.js', [FrontEndController::class, 'serviceWorker'])->name('sw');
+
+Route::post('/shorten', [ShortLinkController::class, 'shorten'])
+    ->middleware('throttle:30,1')
+    ->name('shorten');
+Route::get('/s/{code}', [ShortLinkController::class, 'redirect'])->name('shortlink');
 
 Route::get('/email/verify', function () {
     return view('auth.verify-email');
