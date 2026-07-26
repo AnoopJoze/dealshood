@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Post;
 use App\Models\Setting;
+use App\Models\ShortLink;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -32,6 +33,16 @@ class SocialShareService
         return $post->getFirstMediaUrl('posts') ?: null;
     }
 
+    private function shortUrl(Post $post): string
+    {
+        try {
+            return ShortLink::getOrCreateFor($post->url)->short_url;
+        } catch (\Throwable $e) {
+            Log::warning('SocialShareService: could not create short link, using full URL', ['post_id' => $post->id, 'error' => $e->getMessage()]);
+            return $post->url;
+        }
+    }
+
     private function caption(Post $post): string
     {
         $parts = array_filter([
@@ -40,7 +51,7 @@ class SocialShareService
             strip_tags($post->description ?? ''),
         ]);
 
-        $caption = implode("\n\n", $parts) . "\n\n" . $post->url;
+        $caption = implode("\n\n", $parts) . "\n\n" . $this->shortUrl($post);
 
         return Str::limit($caption, 2000);
     }
@@ -68,7 +79,7 @@ class SocialShareService
                 ])
                 : Http::timeout(20)->asForm()->post(self::GRAPH_BASE . "/{$pageId}/feed", [
                     'message'      => $this->caption($post),
-                    'link'         => $post->url,
+                    'link'         => $this->shortUrl($post),
                     'access_token' => $token,
                 ]);
 
