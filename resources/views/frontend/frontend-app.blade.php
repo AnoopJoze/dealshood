@@ -1509,8 +1509,20 @@ $(document).on('click', '.likeBtn', function () {
         res.liked ? btn.addClass('liked') : btn.removeClass('liked');
     });
 });
-$(document).on('click', '.shareBtn', function () {
-    const id=$(this).data('id'), url=$(this).data('url');
+$(document).on('click', '.shareBtn', async function () {
+    const id = $(this).data('id');
+    let url = $(this).data('url');
+
+    try {
+        const res  = await fetch('{{ route("shorten") }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+            body: JSON.stringify({ url }),
+        });
+        const data = await res.json();
+        if (res.ok && data.short_url) url = data.short_url;
+    } catch (e) { /* keep the full URL */ }
+
     navigator.share ? navigator.share({url}) : (navigator.clipboard.writeText(url), alert('Link copied!'));
     $.post('/posts/'+id+'/share', {_token:CSRF, platform:'web'});
 });

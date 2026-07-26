@@ -1197,8 +1197,20 @@ $(document).on('click', '.dh-rating-input .dh-star', function () {
     });
 
     // Share
-    $(document).on('click', '.shareBtn', function () {
-        const id = $(this).data('id'), url = $(this).data('url');
+    $(document).on('click', '.shareBtn', async function () {
+        const id = $(this).data('id');
+        let url = $(this).data('url');
+
+        try {
+            const res  = await fetch('{{ route("shorten") }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                body: JSON.stringify({ url }),
+            });
+            const data = await res.json();
+            if (res.ok && data.short_url) url = data.short_url;
+        } catch (e) { /* keep the full URL */ }
+
         navigator.share ? navigator.share({ url }) : (navigator.clipboard.writeText(url), alert('Link copied!'));
         $.ajax({ url: '/posts/' + id + '/share', type: 'POST', data: { _token: '{{ csrf_token() }}', platform: 'web' } });
     });
