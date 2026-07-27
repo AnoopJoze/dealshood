@@ -12,7 +12,8 @@ class AdSubmission extends Model implements HasMedia
 
     protected $fillable = [
         'name', 'email', 'phone', 'whatsapp',
-        'title', 'category_id', 'locality_id',
+        'title', 'category_id', 'subcategory_id', 'custom_subcategory',
+        'locality_id', 'custom_locality',
         'description', 'company_name', 'location',
         'offer_percentage', 'expiry_date',
         'status', 'admin_notes',
@@ -36,6 +37,11 @@ class AdSubmission extends Model implements HasMedia
     public function locality()
     {
         return $this->belongsTo(Locality::class);
+    }
+
+    public function subcategory()
+    {
+        return $this->belongsTo(Subcategory::class);
     }
 
     public function getStatusBadgeAttribute(): array

@@ -6,28 +6,46 @@ use App\Http\Controllers\Controller;
 use App\Mail\AdSubmissionAdminNotify;
 use App\Mail\AdSubmissionReceived;
 use App\Models\AdSubmission;
+use App\Models\Subcategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
 class AdSubmissionController extends Controller
 {
+    /**
+     * Subcategories for a category, used by the "Post an Ad" popup's
+     * category → subcategory cascade. Public (no auth) since this is
+     * called from the frontend ad-submission form.
+     */
+    public function subcategoriesForCategory($categoryId)
+    {
+        return Subcategory::where('category_id', $categoryId)
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get(['id', 'name']);
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'             => 'required|string|max:100',
-            'email'            => 'required|email|max:100',
-            'phone'            => 'nullable|string|max:20',
-            'whatsapp'         => 'nullable|string|max:20',
-            'title'            => 'required|string|max:255',
-            'category_id'      => 'required|exists:categories,id',
-            'locality_id'      => 'nullable|exists:localities,id',
-            'description'      => 'nullable|string|max:2000',
-            'company_name'     => 'nullable|string|max:255',
-            'location'         => 'nullable|string|max:255',
-            'offer_percentage' => 'nullable|numeric|min:0|max:100',
-            'expiry_date'      => 'nullable|date|after:today',
-            'images'           => 'nullable|array|max:5',
-            'images.*'         => 'image|mimes:jpg,jpeg,png,webp|max:5120',
+            'name'               => 'required|string|max:100',
+            'email'              => 'required|email|max:100',
+            'phone'              => 'nullable|string|max:20',
+            'whatsapp'           => 'nullable|string|max:20',
+            'title'              => 'required|string|max:255',
+            'category_id'        => 'required|exists:categories,id',
+            'subcategory_id'     => 'nullable|exists:subcategories,id',
+            'custom_subcategory' => 'nullable|string|max:255',
+            'locality_id'        => 'nullable|exists:localities,id',
+            'custom_locality'    => 'nullable|string|max:255',
+            'description'        => 'nullable|string|max:2000',
+            'company_name'       => 'nullable|string|max:255',
+            'location'           => 'nullable|string|max:255',
+            'offer_percentage'   => 'nullable|numeric|min:0|max:100',
+            'expiry_date'        => 'nullable|date|after:today',
+            'images'             => 'nullable|array|max:5',
+            'images.*'           => 'image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
 
         $submission = AdSubmission::create($validated);

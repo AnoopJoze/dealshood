@@ -150,7 +150,26 @@
                 <ul class="ps-meta">
                     <li><span class="ml">Title</span><span class="mv">{{ $submission->title }}</span></li>
                     <li><span class="ml">Category</span><span class="mv {{ !$submission->category ? 'empty':'' }}">{{ $submission->category?->name ?? 'Not set' }}</span></li>
-                    <li><span class="ml">Locality</span><span class="mv {{ !$submission->locality ? 'empty':'' }}">{{ $submission->locality?->name ?? 'Not set' }}</span></li>
+                    <li>
+                        <span class="ml">Subcategory</span>
+                        @if ($submission->subcategory)
+                            <span class="mv">{{ $submission->subcategory->name }}</span>
+                        @elseif ($submission->custom_subcategory)
+                            <span class="mv">{{ $submission->custom_subcategory }} <small class="text-muted">(typed in — not in the list)</small></span>
+                        @else
+                            <span class="mv empty">Not set</span>
+                        @endif
+                    </li>
+                    <li>
+                        <span class="ml">Locality</span>
+                        @if ($submission->locality)
+                            <span class="mv">{{ $submission->locality->name }}</span>
+                        @elseif ($submission->custom_locality)
+                            <span class="mv">{{ $submission->custom_locality }} <small class="text-muted">(typed in — not in the list)</small></span>
+                        @else
+                            <span class="mv empty">Not set</span>
+                        @endif
+                    </li>
                     <li><span class="ml">Location</span><span class="mv {{ !$submission->location ? 'empty':'' }}">{{ $submission->location ?? 'Not set' }}</span></li>
                     <li><span class="ml">Offer</span><span class="mv {{ !$submission->offer_percentage ? 'empty':'' }}">{{ $submission->offer_percentage ? $submission->offer_percentage.'% OFF' : 'None' }}</span></li>
                     <li><span class="ml">Expiry</span><span class="mv {{ !$submission->expiry_date ? 'empty':'' }}">{{ $submission->expiry_date?->format('d M Y') ?? 'No expiry' }}</span></li>

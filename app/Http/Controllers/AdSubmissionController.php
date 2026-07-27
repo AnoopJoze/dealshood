@@ -27,7 +27,7 @@ class AdSubmissionController extends Controller
 
     public function data(Request $request)
     {
-        $query = AdSubmission::with(['category', 'locality', 'media']);
+        $query = AdSubmission::with(['category', 'subcategory', 'locality', 'media']);
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -52,16 +52,18 @@ class AdSubmissionController extends Controller
                 '<div><div class="text-sm fw-semibold">'.e($row->name).'</div>'
                 .'<small class="text-muted">'.e($row->email).'</small></div>'
             )
-            ->addColumn('category', fn($row) =>
-                $row->category
-                    ? '<span class="badge bg-primary-subtle text-primary rounded-pill px-2">'.e($row->category->name).'</span>'
-                    : '<span class="text-muted">—</span>'
-            )
-            ->addColumn('locality', fn($row) =>
-                $row->locality
-                    ? '<span class="text-sm">'.e($row->locality->name).'</span>'
-                    : '<span class="text-muted">—</span>'
-            )
+            ->addColumn('category', function ($row) {
+                if (!$row->category) return '<span class="text-muted">—</span>';
+                $html = '<span class="badge bg-primary-subtle text-primary rounded-pill px-2">'.e($row->category->name).'</span>';
+                $sub  = $row->subcategory ? e($row->subcategory->name) : ($row->custom_subcategory ? e($row->custom_subcategory).' <em class="text-muted">(custom)</em>' : null);
+                if ($sub) $html .= '<br><small class="text-muted">'.$sub.'</small>';
+                return $html;
+            })
+            ->addColumn('locality', function ($row) {
+                if ($row->locality) return '<span class="text-sm">'.e($row->locality->name).'</span>';
+                if ($row->custom_locality) return '<span class="text-sm">'.e($row->custom_locality).' <em class="text-muted">(custom)</em></span>';
+                return '<span class="text-muted">—</span>';
+            })
             ->addColumn('status', function ($row) {
                 [$bg, $tc] = $row->status_badge;
                 return '<span class="badge '.$bg.' '.$tc.' rounded-pill px-2">'.ucfirst($row->status).'</span>';
@@ -86,7 +88,7 @@ class AdSubmissionController extends Controller
 
     public function show(AdSubmission $submission)
     {
-        $submission->load(['category', 'locality', 'media']);
+        $submission->load(['category', 'subcategory', 'locality', 'media']);
         return view('ad-submissions.show', compact('submission'));
     }
 
@@ -105,7 +107,7 @@ class AdSubmissionController extends Controller
             'slug'             => $slug,
             'description'      => $submission->description,
             'category_id'      => $submission->category_id,
-            'subcategory_id'   => null,
+            'subcategory_id'   => $submission->subcategory_id,
             'locality_id'      => $submission->locality_id,
             'user_id'          => auth()->id(),
             'status'           => 'published',
