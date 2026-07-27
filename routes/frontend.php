@@ -47,6 +47,8 @@ Route::get('/dealshood-ads', [FrontEndController::class, 'listing'])
 Route::post('/submit-ad', [App\Http\Controllers\Frontend\AdSubmissionController::class, 'store'])
      ->name('ad.submit');
 Route::get('/get-subcategories/{categoryId}', [FrontEndController::class, 'getSubcategories']);
+Route::get('/ad-subcategories/{categoryId}', [App\Http\Controllers\Frontend\AdSubmissionController::class, 'subcategoriesForCategory'])
+     ->name('ad.subcategories');
 
     Route::post('/posts/{id}/rate', [FrontEndController::class, 'rate']);
     Route::delete('/posts/{id}/rate', [FrontEndController::class, 'unrate']);

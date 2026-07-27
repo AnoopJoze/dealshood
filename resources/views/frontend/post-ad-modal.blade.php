@@ -304,7 +304,7 @@
                 <div class="pad-row-2">
                     <div class="pad-row">
                         <label class="pad-label">Category <span class="text-danger">*</span></label>
-                        <select name="category_id" class="pad-input pad-select">
+                        <select name="category_id" id="padCategorySelect" class="pad-input pad-select">
                             <option value="">Select…</option>
                             @foreach($adCategories as $cat)
                                 <option value="{{ $cat->id }}">{{ $cat->name }}</option>
@@ -313,14 +313,31 @@
                         <small class="pad-err" id="err_category_id"></small>
                     </div>
                     <div class="pad-row">
-                        <label class="pad-label">Locality</label>
-                        <select name="locality_id" class="pad-input pad-select">
-                            <option value="">Select…</option>
-                            @foreach($adLocalities as $loc)
-                                <option value="{{ $loc->id }}">{{ $loc->name }}</option>
-                            @endforeach
+                        <label class="pad-label">Subcategory</label>
+                        <select name="subcategory_id" id="padSubcategorySelect" class="pad-input pad-select" disabled>
+                            <option value="">Select a category first…</option>
                         </select>
                     </div>
+                </div>
+                <div class="pad-row d-none" id="padCustomSubcategoryRow">
+                    <label class="pad-label">Enter your Subcategory</label>
+                    <input type="text" name="custom_subcategory" id="padCustomSubcategory" class="pad-input"
+                           placeholder="e.g. Car Wash">
+                </div>
+                <div class="pad-row">
+                    <label class="pad-label">Locality</label>
+                    <select name="locality_id" id="padLocalitySelect" class="pad-input pad-select">
+                        <option value="">Select…</option>
+                        @foreach($adLocalities as $loc)
+                            <option value="{{ $loc->id }}">{{ $loc->name }}</option>
+                        @endforeach
+                        <option value="__other__">Other (not listed)…</option>
+                    </select>
+                </div>
+                <div class="pad-row d-none" id="padCustomLocalityRow">
+                    <label class="pad-label">Enter your Locality</label>
+                    <input type="text" name="custom_locality" id="padCustomLocality" class="pad-input"
+                           placeholder="e.g. Vytilla">
                 </div>
                 <div class="pad-row">
                     <label class="pad-label">Description</label>
@@ -458,7 +475,56 @@ function resetPadForm() {
     document.getElementById('padBtnNext').classList.remove('d-none');
     document.getElementById('padBtnSubmit').classList.add('d-none');
     document.getElementById('padBtnNext').innerHTML = 'Next <i class="fas fa-arrow-right"></i>';
+
+    const subSel = document.getElementById('padSubcategorySelect');
+    subSel.innerHTML = '<option value="">Select a category first…</option>';
+    subSel.disabled = true;
+    document.getElementById('padCustomSubcategoryRow').classList.add('d-none');
+    document.getElementById('padCustomLocalityRow').classList.add('d-none');
 }
+
+/* ── Category → Subcategory cascade ──────────────────────── */
+document.getElementById('padCategorySelect').addEventListener('change', function () {
+    const categoryId = this.value;
+    const subSel = document.getElementById('padSubcategorySelect');
+    document.getElementById('padCustomSubcategoryRow').classList.add('d-none');
+
+    if (!categoryId) {
+        subSel.innerHTML = '<option value="">Select a category first…</option>';
+        subSel.disabled = true;
+        return;
+    }
+
+    subSel.innerHTML = '<option value="">Loading…</option>';
+    subSel.disabled = true;
+
+    fetch('/ad-subcategories/' + categoryId)
+        .then(r => r.json())
+        .then(list => {
+            let html = '<option value="">Select…</option>';
+            list.forEach(s => html += `<option value="${s.id}">${s.name}</option>`);
+            html += '<option value="__other__">Other (not listed)…</option>';
+            subSel.innerHTML = html;
+            subSel.disabled = false;
+        })
+        .catch(() => {
+            subSel.innerHTML = '<option value="">Select…</option><option value="__other__">Other (not listed)…</option>';
+            subSel.disabled = false;
+        });
+});
+
+/* ── "Other" toggles ──────────────────────────────────────── */
+document.getElementById('padSubcategorySelect').addEventListener('change', function () {
+    const row = document.getElementById('padCustomSubcategoryRow');
+    row.classList.toggle('d-none', this.value !== '__other__');
+    if (this.value !== '__other__') document.getElementById('padCustomSubcategory').value = '';
+});
+
+document.getElementById('padLocalitySelect').addEventListener('change', function () {
+    const row = document.getElementById('padCustomLocalityRow');
+    row.classList.toggle('d-none', this.value !== '__other__');
+    if (this.value !== '__other__') document.getElementById('padCustomLocality').value = '';
+});
 
 function padShowPane(step) {
     [1,2,3].forEach(i => {
@@ -512,9 +578,11 @@ function buildReview() {
     const get = k => fd.get(k) || '';
 
     const catSel = document.querySelector('[name="category_id"]');
-    const locSel = document.querySelector('[name="locality_id"]');
+    const subSel = document.getElementById('padSubcategorySelect');
+    const locSel = document.getElementById('padLocalitySelect');
     const catName = catSel.options[catSel.selectedIndex]?.text || '';
-    const locName = locSel.options[locSel.selectedIndex]?.text || '';
+    const subName = subSel.value === '__other__' ? get('custom_subcategory') : (subSel.options[subSel.selectedIndex]?.text || '');
+    const locName = locSel.value === '__other__' ? get('custom_locality')    : (locSel.options[locSel.selectedIndex]?.text || '');
 
     const rows = [
         ['Name',     get('name')],
@@ -524,6 +592,7 @@ function buildReview() {
         ['Company',  get('company_name')],
         ['Ad Title', get('title')],
         ['Category', catName],
+        ['Subcategory', subName],
         ['Locality', locName],
         ['Location', get('location')],
         ['Offer',    get('offer_percentage') ? get('offer_percentage') + '% OFF' : ''],
@@ -576,6 +645,11 @@ function padSubmit() {
     btn.disabled = true;
 
     const fd = new FormData(document.getElementById('postAdForm'));
+    // "__other__" is a UI sentinel, not a real ID — swap it for an
+    // empty subcategory/locality plus whatever was typed in the
+    // matching free-text field.
+    if (fd.get('subcategory_id') === '__other__') fd.set('subcategory_id', '');
+    if (fd.get('locality_id') === '__other__') fd.set('locality_id', '');
     padSelectedFiles.forEach(file => fd.append('images[]', file));
     fetch('{{ route("ad.submit") }}', {
         method: 'POST',
