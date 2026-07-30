@@ -107,6 +107,7 @@ Route::prefix('posts')->name('posts.')->group(function () {
     Route::post('/inline-update',         [PostController::class, 'inlineUpdate'])->name('inlineUpdate');
     Route::post('/media/upload',          [PostController::class, 'mediaUpload'])->name('mediaUpload');
     Route::delete('/media/{id}',          [PostController::class, 'mediaDelete'])->name('mediaDelete');
+    Route::post('/media/reorder',         [PostController::class, 'mediaReorder'])->name('mediaReorder');
 
     // Soft-delete
     Route::delete('/{post}',             [PostController::class, 'destroy'])->name('destroy');

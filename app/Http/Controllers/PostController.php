@@ -14,7 +14,7 @@ class PostController extends Controller
     {
         $this->middleware('can:posts.view')  ->only(['index','data','show','editData']);
         $this->middleware('can:posts.create')->only(['ajaxStore']);
-        $this->middleware('can:posts.edit')->only(['update','inlineUpdate','mediaUpload','mediaDelete','reorder','saveOrder','share']);
+        $this->middleware('can:posts.edit')->only(['update','inlineUpdate','mediaUpload','mediaDelete','mediaReorder','reorder','saveOrder','share']);
         $this->middleware('can:posts.delete')->only(['destroy','restore','forceDelete','bulkTrash','bulkRestore','emptyTrash']);
     }
 
@@ -297,6 +297,17 @@ public function destroy(Post $post)
         return response()->json(['success'=>true,'id'=>$media->id,'url'=>$media->getUrl()]);
     }
     public function mediaDelete($id) { Media::findOrFail($id)->delete(); return response()->json(['success'=>true]); }
+    public function mediaReorder(Request $request)
+    {
+        $request->validate([
+            'ids'   => 'required|array',
+            'ids.*' => 'integer|exists:media,id',
+        ]);
+        foreach ($request->ids as $index => $id) {
+            Media::where('id', $id)->update(['order_column' => $index + 1]);
+        }
+        return response()->json(['success' => true]);
+    }
 
     public function show(Post $post)
     {

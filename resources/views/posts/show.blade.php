@@ -303,7 +303,16 @@
 
 /* Image strip */
 .img-strip { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: .75rem; }
-.img-strip .img-wrap { position: relative; }
+.img-strip .img-wrap { position: relative; cursor: grab; }
+.img-strip .img-wrap:active { cursor: grabbing; }
+.img-strip .img-wrap.sortable-ghost { opacity: .35; }
+.img-strip .img-wrap.sortable-drag { opacity: .9; }
+.img-strip .img-wrap:first-child::before {
+    content: 'Cover'; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%);
+    background: var(--accent); color: #fff; font-size: 8px; font-weight: 700;
+    letter-spacing: .04em; text-transform: uppercase; padding: 1px 5px; border-radius: 4px;
+    z-index: 1;
+}
 .img-strip img {
     width: 56px; height: 56px; object-fit: cover;
     border-radius: 8px; border: 2px solid var(--border); cursor: pointer;
@@ -1005,9 +1014,10 @@
                 {{-- ── Media ─── --}}
                 <div class="modal-tab-pane d-none" id="etab-media">
                     <p class="modal-section-lbl">Images</p>
+                    <small class="d-block mb-2" style="color:var(--muted2);">Drag to reorder — first image is used as the cover photo</small>
                     <div id="e_existingImages" class="img-strip">
                         @foreach ($post->getMedia('posts') as $m)
-                            <div class="img-wrap" id="media-wrap-{{ $m->id }}">
+                            <div class="img-wrap" id="media-wrap-{{ $m->id }}" data-id="{{ $m->id }}">
                                 <a href="{{ $m->getUrl() }}" data-fancybox="edit-gallery">
                                     <img src="{{ $m->getUrl() }}" alt="{{ $m->name }}">
                                 </a>
@@ -1123,6 +1133,7 @@
 <script src="https://cdn.ckeditor.com/ckeditor5/40.2.0/classic/ckeditor.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 
 <script>
 const POST_ID = {{ $post->id }};
@@ -1149,7 +1160,7 @@ const editDZ = new Dropzone('#editDropzone', {
 
 function appendThumb(id, url) {
     $('#e_existingImages').append(`
-        <div class="img-wrap" id="media-wrap-${id}">
+        <div class="img-wrap" id="media-wrap-${id}" data-id="${id}">
             <a href="${url}" data-fancybox="edit-gallery"><img src="${url}" alt=""></a>
             <button type="button" class="btn btn-danger btn-del-media"
                     data-id="${id}" title="Remove">
@@ -1157,6 +1168,25 @@ function appendThumb(id, url) {
             </button>
         </div>`);
 }
+
+/* ── Image reorder (drag & drop) ──────────────────────────── */
+function saveImageOrder(container) {
+    var ids = container.find('.img-wrap').map(function() { return $(this).data('id'); }).get();
+    if (!ids.length) return;
+    $.ajax({
+        url: '{{ route("posts.mediaReorder") }}',
+        method: 'POST',
+        data: { ids: ids, _token: '{{ csrf_token() }}' }
+    });
+}
+new Sortable(document.getElementById('e_existingImages'), {
+    animation: 150,
+    ghostClass: 'sortable-ghost',
+    dragClass: 'sortable-drag',
+    filter: '.btn-del-media',
+    preventOnFilter: false,
+    onEnd: function() { saveImageOrder($('#e_existingImages')); }
+});
 
 // ── Fancybox ──────────────────────────────────────────────────
 Fancybox.bind('[data-fancybox="post-gallery"]', { Toolbar: { display: ['close'] } });
