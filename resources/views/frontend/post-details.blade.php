@@ -60,7 +60,7 @@
         $post->subcategory?->name ? $post->subcategory->name                   : null,
         $post->locality?->name    ? 'in ' . $post->locality->name              : null,
         $post->company_name       ? 'by ' . $post->company_name                : null,
-        $post->offer_percentage   ? rtrim(rtrim(number_format($post->offer_percentage,2),'0'),'.') . '% off' : null,
+        $post->offer_percentage   ? $post->offer_percentage : null,
         $post->expiry_date && !\Carbon\Carbon::parse($post->expiry_date)->isPast()
             ? 'Valid until ' . \Carbon\Carbon::parse($post->expiry_date)->format('d M Y')
             : null,
@@ -954,8 +954,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                     </div>
                     @if ($post->offer_percentage)
                         <div class="dh-offer-stamp">
-                            <span class="pct">{{ rtrim(rtrim(number_format($post->offer_percentage, 2), '0'), '.') }}%</span>
-                            <span class="lbl">Off</span>
+                            <span class="pct">{{ $post->offer_percentage }}</span>
                         </div>
                     @endif
                 </div>

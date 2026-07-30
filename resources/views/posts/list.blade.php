@@ -554,12 +554,9 @@
                             <input type="date" id="post_expiry_date" class="form-control">
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Offer Percentage</label>
-                            <div class="input-group">
-                                <input type="number" id="post_offer_percentage" class="form-control"
-                                    placeholder="e.g. 20" min="0" max="100" step="0.01">
-                                <span class="input-group-text bg-light">%</span>
-                            </div>
+                            <label class="form-label">Offer</label>
+                            <input type="text" id="post_offer_percentage" class="form-control"
+                                placeholder="e.g. 20% OFF, Buy 1 Get 1 Free" maxlength="50">
                             <small class="text-danger d-none" id="err_offer_percentage"></small>
                         </div>
                     </div>

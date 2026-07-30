@@ -406,7 +406,7 @@
                     </span>
                     @if ($post->offer_percentage)
                         <span class="ps-status-pill" style="background:#fee2e2;color:#dc2626;">
-                            <i class="fas fa-tag" style="font-size:.62rem;"></i> {{ $post->offer_percentage }}% OFF
+                            <i class="fas fa-tag" style="font-size:.62rem;"></i> {{ $post->offer_percentage }}
                         </span>
                     @endif
                 </div>
@@ -889,12 +889,9 @@
                             <input type="date" id="e_expiry_date" class="form-control"
                                    value="{{ $post->expiry_date ? \Carbon\Carbon::parse($post->expiry_date)->format('Y-m-d') : '' }}">
                         </div><div class="col-md-4">
-                            <label class="form-label">Offer Percentage</label>
-                            <div class="input-group">
-                                <input type="number" id="e_offer_percentage" class="form-control"
-                                    value="{{ $post->offer_percentage }}" min="0" max="100" step="0.01">
-                                <span class="input-group-text bg-light">%</span>
-                            </div>
+                            <label class="form-label">Offer</label>
+                            <input type="text" id="e_offer_percentage" class="form-control"
+                                value="{{ $post->offer_percentage }}" placeholder="e.g. 20% OFF, Buy 1 Get 1 Free" maxlength="50">
                             <small class="text-danger d-none" id="e_err_offer_percentage"></small>
                         </div>
                     </div>
