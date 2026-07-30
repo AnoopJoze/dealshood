@@ -6,6 +6,7 @@ use App\Models\AdSubmission;
 use App\Models\Category;
 use App\Models\Locality;
 use App\Models\Post;
+use App\Models\Subcategory;
 use Carbon\Carbon;
 use DataTables;
 use Illuminate\Http\Request;
@@ -16,7 +17,7 @@ class AdSubmissionController extends Controller
     public function __construct()
     {
         $this->middleware('can:posts.view')   ->only(['index', 'data', 'show']);
-        $this->middleware('can:posts.create') ->only(['approve']);
+        $this->middleware('can:posts.create') ->only(['approve', 'createSubcategory', 'createLocality']);
         $this->middleware('can:posts.delete') ->only(['destroy', 'reject']);
     }
 
@@ -137,6 +138,53 @@ class AdSubmissionController extends Controller
             'message'  => 'Ad approved and published!',
             'post_url' => route('posts.show', $post->id),
         ]);
+    }
+
+    /**
+     * Turn a submission's free-typed subcategory into a real Subcategory
+     * under the submission's category, and link it back.
+     */
+    public function createSubcategory(AdSubmission $submission)
+    {
+        if (!$submission->custom_subcategory) {
+            return response()->json(['success' => false, 'message' => 'This submission has no custom subcategory text.'], 422);
+        }
+
+        $subcategory = Subcategory::create([
+            'name'        => $submission->custom_subcategory,
+            'category_id' => $submission->category_id,
+            'slug'        => Str::slug($submission->custom_subcategory),
+            'is_active'   => true,
+            'sort_order'  => 0,
+        ]);
+
+        $submission->update(['subcategory_id' => $subcategory->id]);
+
+        return response()->json(['success' => true, 'message' => '"'.$subcategory->name.'" created and linked.']);
+    }
+
+    /**
+     * Turn a submission's free-typed locality into a real Locality
+     * (as a top-level "area" — admin can move it under the correct
+     * region afterward via Localities), and link it back.
+     */
+    public function createLocality(AdSubmission $submission)
+    {
+        if (!$submission->custom_locality) {
+            return response()->json(['success' => false, 'message' => 'This submission has no custom locality text.'], 422);
+        }
+
+        $locality = Locality::create([
+            'name'      => $submission->custom_locality,
+            'slug'      => Str::slug($submission->custom_locality),
+            'type'      => 'area',
+            'parent_id' => null,
+            'is_active' => true,
+        ]);
+
+        $submission->update(['locality_id' => $locality->id]);
+
+        return response()->json(['success' => true, 'message' => '"'.$locality->name.'" created and linked.']);
     }
 
     public function reject(Request $request, AdSubmission $submission)

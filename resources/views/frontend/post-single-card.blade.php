@@ -31,7 +31,7 @@
         @endif
     @if($post->offer_percentage)
         <span class="badge-offer">
-            <i class="fas fa-tag"></i> {{ rtrim(rtrim(number_format($post->offer_percentage, 2), '0'), '.') }}% OFF
+            <i class="fas fa-tag"></i> {{ $post->offer_percentage }}
         </span>
     @endif
     </div>

@@ -144,6 +144,8 @@ Route::prefix('ad-submissions')->name('ad-submissions.')->group(function () {
     Route::post('/data',              [AdSubmissionController::class, 'data'])->name('data');
     Route::get('/{submission}',       [AdSubmissionController::class, 'show'])->name('show');
     Route::post('/{submission}/approve', [AdSubmissionController::class, 'approve'])->name('approve');
+    Route::post('/{submission}/create-subcategory', [AdSubmissionController::class, 'createSubcategory'])->name('createSubcategory');
+    Route::post('/{submission}/create-locality',    [AdSubmissionController::class, 'createLocality'])->name('createLocality');
     Route::post('/{submission}/reject',  [AdSubmissionController::class, 'reject'])->name('reject');
     Route::delete('/{submission}',    [AdSubmissionController::class, 'destroy'])->name('destroy');
 });

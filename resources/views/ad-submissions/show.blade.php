@@ -152,23 +152,35 @@
                     <li><span class="ml">Category</span><span class="mv {{ !$submission->category ? 'empty':'' }}">{{ $submission->category?->name ?? 'Not set' }}</span></li>
                     <li>
                         <span class="ml">Subcategory</span>
-                        @if ($submission->subcategory)
-                            <span class="mv">{{ $submission->subcategory->name }}</span>
-                        @elseif ($submission->custom_subcategory)
-                            <span class="mv">{{ $submission->custom_subcategory }} <small class="text-muted">(typed in — not in the list)</small></span>
-                        @else
-                            <span class="mv empty">Not set</span>
-                        @endif
+                        <span class="mv">
+                            @if ($submission->subcategory)
+                                {{ $submission->subcategory->name }}
+                            @elseif ($submission->custom_subcategory)
+                                {{ $submission->custom_subcategory }} <small class="text-muted">(typed in — not in the list)</small>
+                                <button type="button" class="ps-btn ps-btn-ghost d-block mt-2" id="createSubcatBtn"
+                                        data-id="{{ $submission->id }}" style="font-size:.68rem;padding:.3rem .6rem;">
+                                    <i class="fas fa-plus"></i> Create &amp; Link Subcategory
+                                </button>
+                            @else
+                                <span class="empty">Not set</span>
+                            @endif
+                        </span>
                     </li>
                     <li>
                         <span class="ml">Locality</span>
-                        @if ($submission->locality)
-                            <span class="mv">{{ $submission->locality->name }}</span>
-                        @elseif ($submission->custom_locality)
-                            <span class="mv">{{ $submission->custom_locality }} <small class="text-muted">(typed in — not in the list)</small></span>
-                        @else
-                            <span class="mv empty">Not set</span>
-                        @endif
+                        <span class="mv">
+                            @if ($submission->locality)
+                                {{ $submission->locality->name }}
+                            @elseif ($submission->custom_locality)
+                                {{ $submission->custom_locality }} <small class="text-muted">(typed in — not in the list)</small>
+                                <button type="button" class="ps-btn ps-btn-ghost d-block mt-2" id="createLocBtn"
+                                        data-id="{{ $submission->id }}" style="font-size:.68rem;padding:.3rem .6rem;">
+                                    <i class="fas fa-plus"></i> Create &amp; Link Locality
+                                </button>
+                            @else
+                                <span class="empty">Not set</span>
+                            @endif
+                        </span>
                     </li>
                     <li><span class="ml">Location</span><span class="mv {{ !$submission->location ? 'empty':'' }}">{{ $submission->location ?? 'Not set' }}</span></li>
                     <li><span class="ml">Offer</span><span class="mv {{ !$submission->offer_percentage ? 'empty':'' }}">{{ $submission->offer_percentage ? $submission->offer_percentage.'% OFF' : 'None' }}</span></li>
@@ -233,6 +245,52 @@ $('#approveBtn').on('click', function () {
             },
             error: xhr => Swal.fire('Error', xhr.responseJSON?.message || 'Failed to approve.', 'error'),
         });
+    });
+});
+
+$('#createSubcatBtn').on('click', function () {
+    const btn = $(this), id = btn.data('id');
+    btn.prop('disabled', true);
+    $.ajax({
+        url: '{{ url("admin/ad-submissions") }}/' + id + '/create-subcategory',
+        type: 'POST',
+        data: { _token: '{{ csrf_token() }}' },
+        success: res => {
+            if (res.success) {
+                Swal.fire({ icon: 'success', title: res.message, timer: 1800, showConfirmButton: false })
+                    .then(() => window.location.reload());
+            } else {
+                Swal.fire('Error', res.message, 'error');
+                btn.prop('disabled', false);
+            }
+        },
+        error: xhr => {
+            Swal.fire('Error', xhr.responseJSON?.message || 'Failed to create subcategory.', 'error');
+            btn.prop('disabled', false);
+        },
+    });
+});
+
+$('#createLocBtn').on('click', function () {
+    const btn = $(this), id = btn.data('id');
+    btn.prop('disabled', true);
+    $.ajax({
+        url: '{{ url("admin/ad-submissions") }}/' + id + '/create-locality',
+        type: 'POST',
+        data: { _token: '{{ csrf_token() }}' },
+        success: res => {
+            if (res.success) {
+                Swal.fire({ icon: 'success', title: res.message, timer: 1800, showConfirmButton: false })
+                    .then(() => window.location.reload());
+            } else {
+                Swal.fire('Error', res.message, 'error');
+                btn.prop('disabled', false);
+            }
+        },
+        error: xhr => {
+            Swal.fire('Error', xhr.responseJSON?.message || 'Failed to create locality.', 'error');
+            btn.prop('disabled', false);
+        },
     });
 });
 

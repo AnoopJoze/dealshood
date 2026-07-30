@@ -346,7 +346,7 @@ public function destroy(Post $post)
             'company_name'     => 'nullable|string|max:255',
             'phone_number'     => 'nullable|string|max:20',
             'whatsapp_number'  => 'nullable|string|max:20',
-            'offer_percentage' => 'nullable|numeric|min:0|max:100',
+            'offer_percentage' => 'nullable|string|max:50',
             // Media / SEO
             'video_url'        => 'nullable|string|max:500',
             'meta_title'       => 'nullable|string|max:255',
