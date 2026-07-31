@@ -240,6 +240,9 @@
 }
 .dropzone:hover { border-color: var(--accent); }
 .dropzone .dz-message { margin: .5em 0; font-size: .84rem; color: var(--muted2); }
+.dropzone .dz-preview { cursor: grab; }
+.dropzone .dz-preview:active { cursor: grabbing; }
+.dropzone .dz-preview.sortable-ghost { opacity: .35; }
 
 /* Image strip */
 .img-strip { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: .75rem; }
@@ -737,6 +740,7 @@
                             <br><small style="color:var(--muted2);">Max 5 MB · JPG, PNG, WEBP</small>
                         </div>
                     </form>
+                    <small class="d-block mt-2" style="color:var(--muted2);">Drag the thumbnails above to set their order before saving</small>
                     <hr class="my-4" style="border-color:var(--border);">
                     <p class="modal-section-label">Video</p>
                     <div class="row g-3">
@@ -836,13 +840,19 @@ const myDropzone = new Dropzone('#postDropzone', {
     parallelUploads: 1,
     maxFilesize: 5,
     acceptedFiles: 'image/*',
+    clickable: '.dz-message',
     headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
     sending: (file, xhr, fd) => fd.append('post_id', postId),
     success: function(file, res) {
         if (res.url) appendImageThumb(res.id, res.url);
         this.removeFile(file);
+        if (this.getQueuedFiles().length > 0) this.processQueue();
     },
-    error: (file, msg) => console.error(msg),
+    error: function(file, msg) {
+        console.error(msg);
+        this.removeFile(file);
+        if (this.getQueuedFiles().length > 0) this.processQueue();
+    },
     // ── ADD THIS ──
     queuecomplete: function() {
         if (pendingModalClose) {
@@ -850,6 +860,18 @@ const myDropzone = new Dropzone('#postDropzone', {
             finishSave();
         }
     },
+});
+
+/* ── Reorder queued (not-yet-uploaded) images before saving ── */
+new Sortable(document.getElementById('postDropzone'), {
+    animation: 150,
+    draggable: '.dz-preview',
+    onEnd: function() {
+        var previews = Array.from(document.getElementById('postDropzone').querySelectorAll('.dz-preview'));
+        myDropzone.files = previews
+            .map(el => myDropzone.files.find(f => f.previewElement === el))
+            .filter(Boolean);
+    }
 });
 
 function appendImageThumb(id, url) {
@@ -974,15 +996,20 @@ $('#addPostBtn').on('click', resetModal);
 $('#postModal').on('hidden.bs.modal', resetModal);
 
 /* ── Category → Subcategory cascade ──────────────────────── */
-$(document).on('change', '#post_category_id', function() {
-    var id = $(this).val();
+function loadSubcategories(categoryId, selectedId) {
     $('#post_subcategory_id').html('<option value="">— Select Subcategory —</option>');
-    if (!id) return;
-    $.get('{{ url("admin/get-subcategories") }}/' + id, function(res) {
+    if (!categoryId) return;
+    $.get('{{ url("admin/get-subcategories") }}/' + categoryId, function(res) {
         var html = '<option value="">— Select Subcategory —</option>';
-        res.forEach(r => { html += `<option value="${r.id}">${r.name}</option>`; });
+        res.forEach(r => {
+            html += `<option value="${r.id}"${selectedId && r.id == selectedId ? ' selected' : ''}>${r.name}</option>`;
+        });
         $('#post_subcategory_id').html(html);
     });
+}
+
+$(document).on('change', '#post_category_id', function() {
+    loadSubcategories($(this).val());
 });
 
 /* ── Open EDIT ────────────────────────────────────────────── */
@@ -1011,8 +1038,8 @@ $(document).on('click', '.editPost', function() {
         editorInstance.setData(res.description ?? '');
         $('#post_disclaimer').val(res.disclaimer ?? '');
         if (res.category_id) {
-            $('#post_category_id').val(res.category_id).trigger('change');
-            setTimeout(() => $('#post_subcategory_id').val(res.subcategory_id), 450);
+            $('#post_category_id').val(res.category_id);
+            loadSubcategories(res.category_id, res.subcategory_id);
         }
        
         $('#post_company_name').val(res.company_name ?? '');
