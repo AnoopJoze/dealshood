@@ -68,7 +68,7 @@ class SubCategoryController extends Controller
     public function ajaxStore(Request $request)
     {
         $request->validate(['category_id'=>'required|exists:categories,id','name'=>'required|string|max:255']);
-        $sub = Subcategory::create(['category_id'=>$request->category_id,'name'=>$request->name,'slug'=>Str::slug($request->name),'is_active'=>true]);
+        $sub = Subcategory::create(['category_id'=>$request->category_id,'name'=>$request->name,'slug'=>$this->makeSlug($request->name),'is_active'=>true]);
         return response()->json(['success'=>true,'message'=>'Subcategory created.','data'=>$sub->load('category')]);
     }
 
@@ -77,12 +77,21 @@ class SubCategoryController extends Controller
         $request->validate(['id'=>'required|exists:subcategories,id','field'=>'required|in:name,category_id,is_active','value'=>'nullable']);
         $sub = Subcategory::findOrFail($request->id);
         match ($request->field) {
-            'name'        => [$sub->name=$request->value, $sub->slug=Str::slug($request->value)],
+            'name'        => [$sub->name=$request->value, $sub->slug=$this->makeSlug($request->value, $sub->id)],
             'category_id' => $sub->category_id=$request->value?:null,
             'is_active'   => $sub->is_active=(bool)$request->value,
         };
         $sub->save();
         return response()->json(['success'=>true]);
+    }
+
+    private function makeSlug(string $name, ?int $ignoreId = null): string
+    {
+        $slug  = Str::slug($name);
+        $query = Subcategory::withTrashed()->where('slug', 'like', "{$slug}%");
+        if ($ignoreId) $query->where('id', '!=', $ignoreId);
+        $count = $query->count();
+        return $count ? "{$slug}-{$count}" : $slug;
     }
 
     public function destroy(Subcategory $subcategory) { $subcategory->delete(); return response()->json(['success'=>true,'message'=>'Subcategory deleted.']); }
