@@ -1147,7 +1147,7 @@ ClassicEditor.create(document.querySelector('#e_description'))
 Dropzone.autoDiscover = false;
 const editDZ = new Dropzone('#editDropzone', {
     url: '{{ route("posts.mediaUpload") }}',
-    autoProcessQueue: true, parallelUploads: 3,
+    autoProcessQueue: true, parallelUploads: 1,
     maxFilesize: 5, acceptedFiles: 'image/*',
     headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
     sending: (file, xhr, fd) => fd.append('post_id', POST_ID),

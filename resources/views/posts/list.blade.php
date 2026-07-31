@@ -833,7 +833,7 @@ Dropzone.autoDiscover = false;
 const myDropzone = new Dropzone('#postDropzone', {
     url: '{{ route("posts.mediaUpload") }}',
     autoProcessQueue: false,
-    parallelUploads: 5,
+    parallelUploads: 1,
     maxFilesize: 5,
     acceptedFiles: 'image/*',
     headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
