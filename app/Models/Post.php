@@ -103,6 +103,33 @@ class Post extends Model implements HasMedia
         'disclaimer'       => 'encrypted',
     ];
 
+    /**
+     * Manually-ordered posts (sort_order > 0, set via the admin reorder
+     * screen) come first in that order; everything else (sort_order still
+     * at its default of 0) falls after, left for the caller to sort further
+     * (e.g. ->latest() or ->orderByDesc('views')).
+     */
+    public function scopeManualFirst($query)
+    {
+        return $query->orderByRaw('sort_order = 0')->orderBy('sort_order');
+    }
+
+    /**
+     * Match posts whose primary locality OR any additional locality is in
+     * the given list of ids (e.g. a locality plus all its descendant ids).
+     */
+    public function scopeInLocalities($query, array $localityIds)
+    {
+        if (empty($localityIds)) {
+            return $query;
+        }
+
+        return $query->where(function ($q) use ($localityIds) {
+            $q->whereIn('locality_id', $localityIds)
+              ->orWhereHas('additionalLocalities', fn ($qq) => $qq->whereIn('localities.id', $localityIds));
+        });
+    }
+
     /* ── URL accessor ──────────────────────────────── */
     public function getUrlAttribute(): string
     {
@@ -128,6 +155,15 @@ class Post extends Model implements HasMedia
     public function locality():    \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Locality::class);
+    }
+
+    /**
+     * Extra locations this post also appears under, in addition to its
+     * primary `locality` (which still drives the URL/breadcrumb).
+     */
+    public function additionalLocalities(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Locality::class, 'locality_post');
     }
 
     public function user():        \Illuminate\Database\Eloquent\Relations\BelongsTo

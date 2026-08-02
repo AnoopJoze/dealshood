@@ -866,6 +866,9 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                         @if($post->locality)
                             <span class="dh-meta-item">📍 {{ $post->locality->name }}</span>
                         @endif
+                        @if($post->additionalLocalities->isNotEmpty())
+                            <span class="dh-meta-item">📍 Also in: {{ $post->additionalLocalities->pluck('name')->join(', ') }}</span>
+                        @endif
                         @if($post->expiry_date)
                             @if(\Carbon\Carbon::parse($post->expiry_date)->isPast())
                                 <span class="dh-meta-item" style="color:#dc2626;">

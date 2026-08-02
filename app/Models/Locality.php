@@ -90,6 +90,15 @@ public static function withPostsTree()
         ->distinct()
         ->pluck('locality_id');
 
+    $additionalIds = \App\Models\Post::where('status', 'published')
+        ->whereHas('additionalLocalities')
+        ->with('additionalLocalities:id')
+        ->get()
+        ->pluck('additionalLocalities.*.id')
+        ->flatten();
+
+    $directIds = $directIds->merge($additionalIds)->unique();
+
     $byId = $all->keyBy('id');
     $relevantIds = [];
 

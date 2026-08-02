@@ -76,14 +76,14 @@ class FrontEndController extends Controller
                           ->withCount('sharesData')
                           ->withCount('ratingsData')->withAvg('ratingsData', 'rating')
                           ->where('status', 'published')
-                          ->when(!empty($localityIds), fn($q) => $q->whereIn('locality_id', $localityIds))
+                          ->inLocalities($localityIds)
                           ->orderByDesc('views')
                           ->limit(10);
                     },
                 ])
                 ->whereHas('posts', function ($q) use ($localityIds) {
                     $q->where('status', 'published')
-                    ->when(!empty($localityIds), fn($q) => $q->whereIn('locality_id', $localityIds));
+                    ->inLocalities($localityIds);
                 })
                 ->withCount(['posts' => fn($q) => $q->where('status', 'published')])
                 ->orderBy('id', 'asc')
@@ -94,8 +94,8 @@ class FrontEndController extends Controller
                 ->withCount(['likesData', 'sharesData'])
                 ->withCount('ratingsData')->withAvg('ratingsData', 'rating')
                 ->where('status', 'published')
-                ->when(!empty($localityIds), fn($q) => $q->whereIn('locality_id', $localityIds))
-                ->orderBy('sort_order')
+                ->inLocalities($localityIds)
+                ->manualFirst()
                 ->latest()
                 ->paginate(12);
 
@@ -129,7 +129,7 @@ class FrontEndController extends Controller
                       ->withCount('sharesData')
                       ->withCount('ratingsData')->withAvg('ratingsData', 'rating')
                       ->where('status', 'published')
-                      ->orderBy('sort_order')
+                      ->manualFirst()
                       ->orderByDesc('views')
                       ->limit(5);
                 },
@@ -143,7 +143,7 @@ class FrontEndController extends Controller
             ->withCount(['likesData', 'sharesData'])
             ->withCount('ratingsData')->withAvg('ratingsData', 'rating')
             ->where('status', 'published')
-            ->orderBy('sort_order')
+            ->manualFirst()
             ->latest()
             ->paginate(5);
 
@@ -201,7 +201,7 @@ class FrontEndController extends Controller
         }
         if ($request->filled('locality_id')) {
             $localityIds = Locality::descendantIdsForSlug($request->locality_id);
-            $query->whereIn('locality_id', $localityIds);
+            $query->inLocalities($localityIds);
         }
         if ($request->filled('keyword')) {
             $kw = $request->keyword;
@@ -211,7 +211,7 @@ class FrontEndController extends Controller
         match ($request->sort) {
             'popular'  => $query->orderByDesc('views'),
             'trending' => $query->orderByRaw('(views + likes_data_count + shares_data_count) DESC'),
-            default    => $query->orderBy('sort_order')->latest(),
+            default    => $query->manualFirst()->latest(),
         };
 
         $posts = $query->paginate(12)->withQueryString();
@@ -234,7 +234,7 @@ class FrontEndController extends Controller
     ════════════════════════════════════════════ */
     public function postDetail(Request $request, $locality, $category, $subcategory, $slug)
     {
-        $post = Post::with(['category', 'subcategory', 'locality', 'user',
+        $post = Post::with(['category', 'subcategory', 'locality', 'additionalLocalities', 'user',
                             'likesData', 'sharesData', 'viewsData', 'ratingsData'])
             ->where('slug', $slug)
             ->where('status', 'published')
@@ -264,7 +264,7 @@ class FrontEndController extends Controller
             ->where('category_id', $post->category_id)
             ->where('id', '!=', $post->id)
             ->where('status', 'published')
-            ->orderBy('sort_order')
+            ->manualFirst()
             ->latest()
             ->limit(6)
             ->get();

@@ -543,6 +543,17 @@
                                 @endforeach
                             </select>
                         </div>
+                        <div class="col-12">
+                            <label class="form-label">Also Available In</label>
+                            <select id="post_locality_ids" class="form-select" multiple size="5">
+                                @foreach ($localities as $loc)
+                                    <option value="{{ $loc->id }}">{{ $loc->name }}</option>
+                                @endforeach
+                            </select>
+                            <small style="font-size:.72rem;color:var(--muted2);">
+                                Optional — hold Ctrl/Cmd to pick multiple additional locations this post should also appear under, besides its main Locality above.
+                            </small>
+                        </div>
                         <div class="col-md-4">
                             <label class="form-label">Status <span class="text-danger">*</span></label>
                             <select id="post_status" class="form-select">
@@ -975,6 +986,7 @@ function resetModal() {
     $('#post_disclaimer').val('');
     $('#post_offer_percentage').val('');
     $('#post_category_id, #post_locality_id, #post_user_id').val('');
+    $('#post_locality_ids').val([]);
     $('#post_subcategory_id').html('<option value="">— Select Subcategory —</option>');
     $('#post_status').val('draft');
     $('#post_is_featured').prop('checked', false);
@@ -1031,6 +1043,7 @@ $(document).on('click', '.editPost', function() {
         $('#post_status').val(res.status);
         $('#post_user_id').val(res.user_id);
         $('#post_locality_id').val(res.locality_id);
+        $('#post_locality_ids').val((res.additional_locality_ids ?? []).map(String));
         $('#post_expiry_date').val(res.expiry_date ?? '');
         $('#post_offer_percentage').val(res.offer_percentage ?? '');
         $('#post_is_featured').prop('checked', !!res.is_featured);
@@ -1131,6 +1144,7 @@ $('#savePost').on('click', function() {
             category_id:$('#post_category_id').val(),
             subcategory_id:$('#post_subcategory_id').val(),
             locality_id:$('#post_locality_id').val(),
+            locality_ids: $('#post_locality_ids').val() || [],
             status:$('#post_status').val(),
             expiry_date:$('#post_expiry_date').val(),
             offer_percentage: $('#post_offer_percentage').val(),
