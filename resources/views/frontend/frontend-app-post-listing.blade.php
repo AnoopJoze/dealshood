@@ -105,6 +105,15 @@
                   width:100%;max-width:1180px;margin:0 auto;padding:0 24px;}
     .dh-nav-logo img{height:45px;display:block;}
     .dh-nav-actions{display:flex;align-items:center;gap:10px;}
+    /* Groups the location trigger with the action buttons so they read as
+       one cluster instead of leaving .loc-trigger stranded mid-bar under
+       justify-content:space-between. display:contents on mobile keeps the
+       existing flex flow (and spacing) exactly as it was. */
+    .dh-nav-right{display:contents;}
+    @media(min-width:769px){
+        .dh-nav-inner{justify-content:flex-start;}
+        .dh-nav-right{display:flex;align-items:center;gap:16px;margin-left:auto;}
+    }
     .dh-btn-nav{display:inline-flex;align-items:center;gap:6px;font-size:.75rem;font-weight:500;
                 letter-spacing:.04em;border:none;cursor:pointer;border-radius:100px;
                 padding:9px 18px;text-decoration:none;transition:transform .15s;}
@@ -200,6 +209,16 @@
     .dh-hero-sub{font-size:.85rem;color:rgba(255,255,255,.48);font-weight:300;margin:0;}
     .dh-hero-wave{position:absolute;bottom:-1px;left:0;right:0;z-index:3;line-height:0;}
     .dh-hero-wave svg{display:block;width:100%;}
+
+    /* Desktop — the compact/mobile proportions look thin stretched across a
+       wide viewport, so give it more height, a bigger title ceiling and a
+       subtitle to fill the space with real content instead of empty band. */
+    @media(min-width:769px){
+        .dh-hero{min-height:280px;}
+        .dh-hero-body{padding:36px 24px 52px;}
+        .dh-hero-title{font-size:clamp(2.3rem,4vw,3.2rem);margin:0 0 10px;}
+        .dh-hero-sub{font-size:1rem;}
+    }
 
     /* ── Shared wrapper ────────────────────────────────── */
     .dh-wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
@@ -805,25 +824,27 @@
         <a href="{{ route('home') }}" class="d-none d-md-block">
             <img src="{{ site_logo_url() }}" alt="{{ $siteName }}" style="height:45px;">
         </a>
-        <button class="loc-trigger {{ $activeLoc ? 'has-loc' : '' }}" id="locTrigger" type="button"
-                onclick="window.openLocationPopup && window.openLocationPopup()">
-            <span class="lt-pin"><i class="fas fa-map-marker-alt"></i></span>
-            <span class="lt-dot"></span>
-            <span class="lt-label" id="locLabel">{{ $activeLoc->name ?? 'Choose your area' }}</span>
-            <i class="fas fa-chevron-down lt-chevron"></i>
-        </button>
-        <div class="dh-nav-actions" style="display:flex;align-items:center;gap:10px;">
-            <a href="{{ route('home') }}" class="dh-btn-nav" style="background:#f1f5f9;color:var(--ink);">
-                <i class="bi bi-house"></i> Home
-            </a>
-            <a href="https://www.instagram.com/dealshood?igsh=NHJpdDhkYmJ2dTlj"
-               target="_blank" class="dh-btn-nav dh-btn-ig">
-                <i class="bi bi-instagram"></i> Follow
-            </a>
-            <a href="https://wa.me/918086087050?text=Hello%20I%20am%20interested%20in%20your%20listing"
-               target="_blank" class="dh-btn-nav dh-btn-wa">
-                <i class="bi bi-whatsapp"></i> Contact
-            </a>
+        <div class="dh-nav-right">
+            <button class="loc-trigger {{ $activeLoc ? 'has-loc' : '' }}" id="locTrigger" type="button"
+                    onclick="window.openLocationPopup && window.openLocationPopup()">
+                <span class="lt-pin"><i class="fas fa-map-marker-alt"></i></span>
+                <span class="lt-dot"></span>
+                <span class="lt-label" id="locLabel">{{ $activeLoc->name ?? 'Choose your area' }}</span>
+                <i class="fas fa-chevron-down lt-chevron"></i>
+            </button>
+            <div class="dh-nav-actions" style="display:flex;align-items:center;gap:10px;">
+                <a href="{{ route('home') }}" class="dh-btn-nav" style="background:#f1f5f9;color:var(--ink);">
+                    <i class="bi bi-house"></i> Home
+                </a>
+                <a href="https://www.instagram.com/dealshood?igsh=NHJpdDhkYmJ2dTlj"
+                   target="_blank" class="dh-btn-nav dh-btn-ig">
+                    <i class="bi bi-instagram"></i> Follow
+                </a>
+                <a href="https://wa.me/918086087050?text=Hello%20I%20am%20interested%20in%20your%20listing"
+                   target="_blank" class="dh-btn-nav dh-btn-wa">
+                    <i class="bi bi-whatsapp"></i> Contact
+                </a>
+            </div>
         </div>
     </div>
     <button id="pwaInstallBtn"
@@ -917,6 +938,19 @@
                 Browse All
             @endif
         </h1>
+        <p class="dh-hero-sub">
+            @if ($activeCat && $activeLoc)
+                {{ number_format($posts->total()) }} deals in {{ $activeCat->name }} near {{ $activeLoc->name }}
+            @elseif ($activeCat)
+                {{ number_format($posts->total()) }} deals available in {{ $activeCat->name }}
+            @elseif ($activeLoc)
+                {{ number_format($posts->total()) }} deals available near {{ $activeLoc->name }}
+            @elseif (request('keyword'))
+                {{ number_format($posts->total()) }} results found
+            @else
+                Explore the best deals and offers near you
+            @endif
+        </p>
     </div>
     <div class="dh-hero-wave">
         <svg viewBox="0 0 1440 56" fill="none">
