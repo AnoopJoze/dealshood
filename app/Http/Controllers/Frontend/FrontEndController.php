@@ -77,6 +77,7 @@ class FrontEndController extends Controller
                           ->withCount('ratingsData')->withAvg('ratingsData', 'rating')
                           ->where('status', 'published')
                           ->inLocalities($localityIds)
+                          ->manualFirst()
                           ->orderByDesc('views')
                           ->limit(10);
                     },
