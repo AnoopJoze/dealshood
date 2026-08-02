@@ -133,19 +133,22 @@ class PostController extends Controller
  
         return response()->json([
             ...$post->toArray(),
-            'images'          => $images,
-            'video_url_media' => $video?->getUrl(),
+            'images'                  => $images,
+            'video_url_media'         => $video?->getUrl(),
             // Explicitly include encrypted contact fields
-            'company_name'    => $post->company_name,
-            'phone_number'    => $post->phone_number,
-            'whatsapp_number' => $post->whatsapp_number,
-            'google_map_url'  => $post->google_map_url,
+            'company_name'            => $post->company_name,
+            'phone_number'            => $post->phone_number,
+            'whatsapp_number'         => $post->whatsapp_number,
+            'google_map_url'          => $post->google_map_url,
+            'additional_locality_ids' => $post->additionalLocalities()->pluck('localities.id'),
         ]);
     }
 public function ajaxStore(Request $request)
 {
     $validated = $request->validate($this->rules());
- 
+    $localityIds = $validated['locality_ids'] ?? [];
+    unset($validated['locality_ids']);
+
     // Authors can only create drafts under their own account
     if (auth()->user()->hasRole('author')) {
         $validated['status']  = 'draft';
@@ -153,12 +156,13 @@ public function ajaxStore(Request $request)
     } else {
         $validated['user_id'] = $validated['user_id'] ?? auth()->id();
     }
- 
+
     $validated['slug']         = $this->makeSlug($validated['title']);
     $validated['published_at'] = ($validated['status'] === 'published') ? now() : null;
- 
+
     $post = Post::create($validated);
- 
+    $post->additionalLocalities()->sync(array_diff($localityIds, [$post->locality_id]));
+
     if ($request->hasFile('video')) {
         $post->addMediaFromRequest('video')->toMediaCollection('videos');
     }
@@ -168,7 +172,7 @@ public function ajaxStore(Request $request)
         }
     return response()->json(['success' => true, 'data' => $post]);
 }
- 
+
 // ── update ───────────────────────────────────────────────────
 public function update(Request $request, Post $post)
 {
@@ -176,25 +180,28 @@ public function update(Request $request, Post $post)
     if (auth()->user()->hasRole('author') && $post->user_id !== auth()->id()) {
         abort(403, 'You can only edit your own posts.');
     }
- 
+
     $validated = $request->validate($this->rules($post->id));
- 
+    $localityIds = $validated['locality_ids'] ?? [];
+    unset($validated['locality_ids']);
+
     // Authors cannot change status — always stays draft
     if (auth()->user()->hasRole('author')) {
         $validated['status'] = 'draft';
     }
- 
+
     if ($validated['status'] === 'published' && ! $post->published_at) {
         $validated['published_at'] = now();
     }
- 
+
     $post->update($validated);
- 
+    $post->additionalLocalities()->sync(array_diff($localityIds, [$post->locality_id]));
+
     if ($request->hasFile('video')) {
         $post->clearMediaCollection('videos');
         $post->addMediaFromRequest('video')->toMediaCollection('videos');
     }
- 
+
     return response()->json(['success' => true, 'data' => $post->fresh()]);
 }
 
@@ -315,7 +322,7 @@ public function destroy(Post $post)
 
     public function show(Post $post)
     {
-        $post->load(['category','subcategory','locality','user','likesData','sharesData','viewsData','media']);
+        $post->load(['category','subcategory','locality','additionalLocalities','user','likesData','sharesData','viewsData','media']);
         $post->increment('views');
         return view('posts.show', compact('post') + [
             'categories' => Category::orderBy('name')->get(),
@@ -345,6 +352,8 @@ public function destroy(Post $post)
             'description'      => 'nullable|string',
             'subcategory_id'   => 'nullable|exists:subcategories,id',
             'locality_id'      => 'nullable|exists:localities,id',
+            'locality_ids'     => 'nullable|array',
+            'locality_ids.*'   => 'integer|exists:localities,id',
             'user_id'          => 'nullable|exists:users,id',
             'expiry_date'      => 'nullable|date',
             'is_featured'      => 'nullable|boolean',
@@ -401,7 +410,7 @@ public function destroy(Post $post)
         $query->where('status', 'published'); // default: only what shows on frontend
     }
 
-    $posts = $query->orderBy('sort_order')->orderByDesc('created_at')->get();
+    $posts = $query->manualFirst()->orderByDesc('created_at')->get();
 
     return view('posts.reorder', [
         'posts'      => $posts,
@@ -418,7 +427,7 @@ public function saveOrder(Request $request)
     ]);
 
     foreach ($request->order as $index => $id) {
-        Post::where('id', $id)->update(['sort_order' => $index]);
+        Post::where('id', $id)->update(['sort_order' => $index + 1]);
     }
 
     return response()->json(['success' => true, 'message' => 'Post order saved.']);

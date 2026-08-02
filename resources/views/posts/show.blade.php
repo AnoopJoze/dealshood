@@ -871,6 +871,20 @@
                                 @endforeach
                             </select>
                         </div>
+                        <div class="col-12">
+                            <label class="form-label">Also Available In</label>
+                            <select id="e_locality_ids" class="form-select" multiple size="5">
+                                @foreach ($localities as $loc)
+                                    <option value="{{ $loc->id }}"
+                                        {{ $post->additionalLocalities->contains('id', $loc->id) ? 'selected':'' }}>
+                                        {{ $loc->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <small style="font-size:.72rem;color:var(--muted2);">
+                                Optional — hold Ctrl/Cmd to pick multiple additional locations this post should also appear under, besides its main Locality above.
+                            </small>
+                        </div>
                         <div class="col-md-4">
                             <label class="form-label">Status <span class="text-danger">*</span></label>
                             <select id="e_status" class="form-select">
@@ -1298,6 +1312,7 @@ $('#saveEditPost').on('click', function() {
     fd.append('category_id',$('#e_category_id').val());
     fd.append('subcategory_id',$('#e_subcategory_id').val());
     fd.append('locality_id',$('#e_locality_id').val());
+    ($('#e_locality_ids').val() || []).forEach(id => fd.append('locality_ids[]', id));
     fd.append('status',$('#e_status').val());
     fd.append('company_name', $('#e_company_name').val());
     fd.append('phone_number',  $('#e_phone_number').val());
