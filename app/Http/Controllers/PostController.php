@@ -372,6 +372,7 @@ public function destroy(Post $post)
             'whatsapp_number'  => 'nullable|string|max:20',
             'offer_percentage' => 'nullable|string|max:50',
             // Media / SEO
+            'video'            => 'nullable|file|mimetypes:video/mp4,video/quicktime,video/webm|max:51200',
             'video_url'        => 'nullable|string|max:500',
             'meta_title'       => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',
