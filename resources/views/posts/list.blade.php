@@ -1135,35 +1135,47 @@ $('#savePost').on('click', function() {
         facebook:  $('#post_share_facebook').is(':checked'),
         instagram: $('#post_share_instagram').is(':checked'),
     };
+    var fd = new FormData();
+    fd.append('_token', '{{ csrf_token() }}');
+    fd.append('_method', isEditMode ? 'PUT' : 'POST');
+    fd.append('title', $('#post_title').val());
+    fd.append('user_id', $('#post_user_id').val());
+    fd.append('category_id', $('#post_category_id').val());
+    fd.append('subcategory_id', $('#post_subcategory_id').val());
+    fd.append('locality_id', $('#post_locality_id').val());
+    ($('#post_locality_ids').val() || []).forEach(function(id) {
+        fd.append('locality_ids[]', id);
+    });
+    fd.append('status', $('#post_status').val());
+    fd.append('expiry_date', $('#post_expiry_date').val());
+    fd.append('offer_percentage', $('#post_offer_percentage').val());
+    fd.append('is_featured', $('#post_is_featured').is(':checked') ? 1 : 0);
+    fd.append('is_active', $('#post_is_active').is(':checked') ? 1 : 0);
+    fd.append('description', editorInstance.getData());
+    fd.append('disclaimer', $('#post_disclaimer').val());
+    fd.append('country', $('#post_country').val());
+    fd.append('state', $('#post_state').val());
+    fd.append('city', $('#post_city').val());
+    fd.append('location', $('#post_location').val());
+    fd.append('latitude', $('#post_latitude').val());
+    fd.append('longitude', $('#post_longitude').val());
+    fd.append('company_name', $('#post_company_name').val());
+    fd.append('phone_number', $('#post_phone_number').val());
+    fd.append('whatsapp_number', $('#post_whatsapp_number').val());
+    fd.append('google_map_url', $('#post_google_map_url').val());
+    fd.append('video_url', $('#post_video_url').val());
+    fd.append('meta_title', $('#post_meta_title').val());
+    fd.append('meta_description', $('#post_meta_description').val());
+    fd.append('keywords', $('#post_keywords').val());
+    if ($('#post_video')[0].files.length > 0) {
+        fd.append('video', $('#post_video')[0].files[0]);
+    }
     $.ajax({
         url  : isEditMode ? '{{ url("admin/posts") }}/' + postId : '{{ route("posts.ajaxStore") }}',
         type : 'POST',
-        data : {
-            _token:'{{ csrf_token() }}', _method: isEditMode ? 'PUT' : 'POST',
-            title:$('#post_title').val(), user_id:$('#post_user_id').val(),
-            category_id:$('#post_category_id').val(),
-            subcategory_id:$('#post_subcategory_id').val(),
-            locality_id:$('#post_locality_id').val(),
-            locality_ids: $('#post_locality_ids').val() || [],
-            status:$('#post_status').val(),
-            expiry_date:$('#post_expiry_date').val(),
-            offer_percentage: $('#post_offer_percentage').val(),
-            is_featured:$('#post_is_featured').is(':checked')?1:0,
-            is_active:$('#post_is_active').is(':checked')?1:0,
-            description:editorInstance.getData(),
-            disclaimer:$('#post_disclaimer').val(),
-            country:$('#post_country').val(), state:$('#post_state').val(),
-            city:$('#post_city').val(), location:$('#post_location').val(),
-            latitude:$('#post_latitude').val(), longitude:$('#post_longitude').val(),            
-            company_name:$('#post_company_name').val(),
-            phone_number:$('#post_phone_number').val(),
-            whatsapp_number:$('#post_whatsapp_number').val(),
-            google_map_url:$('#post_google_map_url').val(),
-            video_url:$('#post_video_url').val(),
-            meta_title:$('#post_meta_title').val(),
-            meta_description:$('#post_meta_description').val(),
-            keywords:$('#post_keywords').val(),
-        },
+        data : fd,
+        processData : false,
+        contentType : false,
         success: function(res) {
             if (!res.success) return;
             postId = res.data.id;

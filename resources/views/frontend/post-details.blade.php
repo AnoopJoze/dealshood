@@ -403,6 +403,21 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     .dh-thumb:hover { opacity: .85; }
     .dh-thumb.active { border-color: #fff; opacity: 1; }
     .dh-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .dh-thumb video { width: 100%; height: 100%; object-fit: cover; }
+    .dh-thumb-video { position: relative; }
+    .dh-thumb-play {
+        position: absolute; inset: 0;
+        display: flex; align-items: center; justify-content: center;
+        color: #fff; font-size: .7rem; background: rgba(0,0,0,.35);
+        pointer-events: none;
+    }
+
+    /* Video inside carousel — match image sizing */
+    .dh-carousel .carousel-item video {
+        display: block; width: 100%;
+        height: clamp(220px, 55vw, 480px);
+        object-fit: contain; background: #111;
+    }
 
     /* ── Content section ── */
     .dh-content-section { padding: 56px 0 80px; background: var(--white); }
@@ -908,18 +923,27 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                 </div>
 
                 {{-- MEDIA COLUMN --}}
+                @php
+                    $hasVideo   = (bool) $video;
+                    $imageCount = $images->count();
+                    $totalMedia = ($hasVideo ? 1 : 0) + $imageCount;
+                    // carousel slide offset for images when a video occupies slide 0
+                    $imgOffset  = $hasVideo ? 1 : 0;
+                @endphp
                 <div class="dh-media-col">
                     <div class="dh-media-card">
-                        @if($video)
-                            <span class="dh-media-badge">▶ Video</span>
-                            <video controls><source src="{{ $video }}"></video>
-
-                        @elseif($images->count() > 1)
-                            <span class="dh-media-count">1 / {{ $images->count() }}</span>
-                            <div id="dhCarousel" class="carousel slide dh-carousel" data-bs-ride="carousel">
+                        @if($totalMedia > 1)
+                            {{-- Combined gallery: video (if any) first, then images --}}
+                            <span class="dh-media-count">1 / {{ $totalMedia }}</span>
+                            <div id="dhCarousel" class="carousel slide dh-carousel" data-bs-ride="{{ $hasVideo ? 'false' : 'carousel' }}">
                                 <div class="carousel-inner">
+                                    @if($hasVideo)
+                                        <div class="carousel-item active">
+                                            <video controls preload="metadata"><source src="{{ $video }}"></video>
+                                        </div>
+                                    @endif
                                     @foreach($images as $k => $media)
-                                        <div class="carousel-item {{ $k == 0 ? 'active' : '' }}">
+                                        <div class="carousel-item {{ (!$hasVideo && $k == 0) ? 'active' : '' }}">
                                             <img src="{{ $media->getUrl() }}"
                                                  alt="Post image {{ $k + 1 }}"
                                                  class="openGallery"
@@ -936,14 +960,24 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                                 </button>
                             </div>
                             <div class="dh-thumbs">
+                                @if($hasVideo)
+                                    <div class="dh-thumb dh-thumb-video active" data-index="0">
+                                        <video muted preload="metadata"><source src="{{ $video }}"></video>
+                                        <span class="dh-thumb-play"><i class="fas fa-play"></i></span>
+                                    </div>
+                                @endif
                                 @foreach($images as $k => $media)
-                                    <div class="dh-thumb {{ $k == 0 ? 'active' : '' }}" data-index="{{ $k }}">
+                                    <div class="dh-thumb {{ (!$hasVideo && $k == 0) ? 'active' : '' }}" data-index="{{ $k + $imgOffset }}">
                                         <img src="{{ $media->getUrl() }}" alt="">
                                     </div>
                                 @endforeach
                             </div>
 
-                        @elseif($images->count() == 1)
+                        @elseif($hasVideo)
+                            <span class="dh-media-badge">▶ Video</span>
+                            <video controls><source src="{{ $video }}"></video>
+
+                        @elseif($imageCount == 1)
                             <img src="{{ $images->first()->getUrl() }}"
                                  class="dh-single-img openGallery"
                                  data-image="{{ $images->first()->getUrl() }}"
