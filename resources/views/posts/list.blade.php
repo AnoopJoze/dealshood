@@ -623,7 +623,17 @@
                             </span>
                         </div>
                     </div>
-                    <small style="font-size:.72rem;color:var(--muted2);">
+                    <div class="mt-2">
+                        <label class="form-label mb-1" style="font-size:.78rem;" for="post_share_hashtags">
+                            <i class="fas fa-hashtag me-1" style="color:#64748b;"></i> Post hashtags <span style="color:var(--muted2);font-weight:400;">(optional)</span>
+                        </label>
+                        <input type="text" id="post_share_hashtags" class="form-control form-control-sm"
+                               placeholder="e.g. summersale kochi electronics">
+                        <small style="font-size:.7rem;color:var(--muted2);">
+                            Added on top of the default hashtags from Settings. Space or comma separated — the <code>#</code> is optional.
+                        </small>
+                    </div>
+                    <small style="font-size:.72rem;color:var(--muted2);display:block;margin-top:.4rem;">
                         Requires Facebook/Instagram API credentials configured in Settings. Instagram needs at least one image on this post.
                     </small>
                     @endif
@@ -1002,6 +1012,7 @@ function resetModal() {
     $('#post_meta_title, #post_meta_description, #post_keywords').val('');
     $('#post_share_facebook, #post_share_instagram').prop('checked', false);
     $('#fbSharedBadge, #igSharedBadge').addClass('d-none');
+    $('#post_share_hashtags').val('');
 }
 
 $('#addPostBtn').on('click', resetModal);
@@ -1078,7 +1089,7 @@ $(document).on('click', '.editPost', function() {
 
 // Flag to track whether modal should close after upload
 let pendingModalClose = false;
-let pendingSocialShare = { facebook: false, instagram: false };
+let pendingSocialShare = { facebook: false, instagram: false, hashtags: '' };
 
 // Close modal + refresh table + show success toast
 function finishSave() {
@@ -1088,7 +1099,8 @@ function finishSave() {
     const platforms = [];
     if (pendingSocialShare.facebook)  platforms.push('facebook');
     if (pendingSocialShare.instagram) platforms.push('instagram');
-    pendingSocialShare = { facebook: false, instagram: false };
+    const shareHashtags = pendingSocialShare.hashtags || '';
+    pendingSocialShare = { facebook: false, instagram: false, hashtags: '' };
 
     if (!platforms.length) {
         Swal.fire({
@@ -1110,6 +1122,7 @@ function finishSave() {
     $.post('{{ url("admin/posts") }}/' + postId + '/share', {
         _token: '{{ csrf_token() }}',
         platforms: platforms,
+        hashtags: shareHashtags,
     }).done(function (res) {
         const results = res.results || {};
         const allOk = Object.values(results).every(r => r.success);
@@ -1134,6 +1147,7 @@ $('#savePost').on('click', function() {
     pendingSocialShare = {
         facebook:  $('#post_share_facebook').is(':checked'),
         instagram: $('#post_share_instagram').is(':checked'),
+        hashtags:  $('#post_share_hashtags').val().trim(),
     };
     var fd = new FormData();
     fd.append('_token', '{{ csrf_token() }}');
