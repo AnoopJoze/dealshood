@@ -47,7 +47,9 @@ class SocialShareService
     {
         $parts = array_filter([
             $post->title,
-            $post->offer_percentage ? rtrim(rtrim(number_format($post->offer_percentage, 2), '0'), '.') . '% OFF' : null,
+            // offer_percentage is a free-text field ("20% OFF", "Buy 1 Get 1 Free"),
+            // so use it verbatim — matching how every frontend view renders it.
+            $post->offer_percentage ?: null,
             strip_tags($post->description ?? ''),
         ]);
 
