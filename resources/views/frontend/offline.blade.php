@@ -18,10 +18,6 @@
            border-radius:100px;font-size:.88rem;font-weight:700;cursor:pointer;}
     button:hover{background:#0f3f7e;}
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-    body{ font-family:'Poppins',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif; }
-    </style>
 </head>
 <body>
     <div class="card">

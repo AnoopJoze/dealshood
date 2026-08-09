@@ -796,22 +796,6 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 .dh-rate-card { margin-top: 24px; }
 .dh-rate-card .dh-rating-input { margin-bottom: 0; }
 </style>
-
-    {{-- ══════════ NEW NAVY THEME ALIGNMENT ══════════ --}}
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-    :root{
-        --accent:#123f8f;
-        --font-serif:'Poppins',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
-        --font-sans:'Poppins',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
-    }
-    body{ font-family:'Poppins',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif; }
-    .dh-title,.dh-contact-title,.dh-section-label,.dh-eyebrow{ color:#0a2a68; }
-    .dh-btn-read{ background:#0a2a68; }
-    .dh-btn-read:hover{ background:#071e4d; }
-    </style>
 </head>
 
 <body>
