@@ -2,12 +2,10 @@
 
 @section('content')
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
-body{ font-family:'Poppins',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif; }
 :root {
     --ink:#0f172a; --ink-2:#334155; --ink-3:#64748b;
     --surf:#f8fafc; --surf-2:#f1f5f9; --surf-3:#e2e8f0;
-    --white:#fff; --accent:#123f8f;
+    --white:#fff; --accent:#0f3f7e;
     --r:12px; --sh:0 1px 4px rgba(0,0,0,.06),0 4px 20px rgba(0,0,0,.08);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -131,7 +129,7 @@ body{ font-family:'Poppins',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetic
 /* Submit */
 .btn-primary {
     width: 100%; padding: 13px; border: none; border-radius: var(--r);
-    background: #0a2a68; color: #fff;
+    background: var(--ink); color: #fff;
     font-size: .9rem; font-weight: 700; cursor: pointer;
     display: flex; align-items: center; justify-content: center; gap: 8px;
     transition: background .15s, transform .15s, box-shadow .15s;

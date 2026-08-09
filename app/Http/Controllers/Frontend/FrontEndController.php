@@ -148,16 +148,8 @@ class FrontEndController extends Controller
             ->latest()
             ->paginate(5);
 
-        /* ── Trending: top by engagement (views + likes + shares) ── */
-        $trending = Post::with(['category', 'subcategory', 'locality'])
-            ->withCount(['likesData', 'sharesData'])
-            ->where('status', 'published')
-            ->orderByRaw('(views + likes_data_count + shares_data_count) DESC')
-            ->limit(6)
-            ->get();
-
         return view('frontend.frontend-app', compact(
-            'posts', 'categories', 'categoryCarousels', 'localities', 'trending'
+            'posts', 'categories', 'categoryCarousels', 'localities'
         ));
     }
 
