@@ -215,12 +215,19 @@ public function share(Request $request, Post $post)
     $request->validate([
         'platforms'   => 'required|array',
         'platforms.*' => 'in:facebook,instagram',
+        'hashtags'    => 'nullable|string|max:500',
     ]);
+
+    // Per-post hashtags typed at share time — merged with the global
+    // defaults inside SocialShareService.
+    $hashtags = $request->filled('hashtags')
+        ? preg_split('/[\s,]+/', $request->hashtags, -1, PREG_SPLIT_NO_EMPTY)
+        : [];
 
     $results = [];
 
     if (in_array('facebook', $request->platforms)) {
-        $result = $this->socialShare->shareToFacebook($post);
+        $result = $this->socialShare->shareToFacebook($post, $hashtags);
         $results['facebook'] = $result;
         if ($result['success']) {
             $post->update(['shared_to_facebook' => true, 'facebook_post_id' => $result['id'] ?? null]);
@@ -228,7 +235,7 @@ public function share(Request $request, Post $post)
     }
 
     if (in_array('instagram', $request->platforms)) {
-        $result = $this->socialShare->shareToInstagram($post);
+        $result = $this->socialShare->shareToInstagram($post, $hashtags);
         $results['instagram'] = $result;
         if ($result['success']) {
             $post->update(['shared_to_instagram' => true, 'instagram_post_id' => $result['id'] ?? null]);

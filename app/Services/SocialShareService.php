@@ -43,7 +43,7 @@ class SocialShareService
         }
     }
 
-    private function caption(Post $post): string
+    private function caption(Post $post, array $extraHashtags = []): string
     {
         $parts = array_filter([
             $post->title,
@@ -51,17 +51,59 @@ class SocialShareService
             // so use it verbatim — matching how every frontend view renders it.
             $post->offer_percentage ?: null,
             strip_tags($post->description ?? ''),
+            '👉 View this deal: ' . $this->shortUrl($post),
+            $this->disclaimer(),
+            $this->hashtags($extraHashtags),
         ]);
 
-        $caption = implode("\n\n", $parts) . "\n\n" . $this->shortUrl($post);
+        // Instagram caption limit is 2,200 characters; keep within it.
+        return Str::limit(implode("\n\n", $parts), 2200);
+    }
 
-        return Str::limit($caption, 2000);
+    /**
+     * Global disclaimer from Settings, appended to every share (or null).
+     */
+    private function disclaimer(): ?string
+    {
+        $text = trim((string) Setting::get('social_share_disclaimer'));
+
+        return $text !== '' ? $text : null;
+    }
+
+    /**
+     * Merge the global default hashtags (Settings) with any per-post tags,
+     * normalise each to a single "#tag", de-duplicate case-insensitively,
+     * and return a space-separated string (or null when there are none).
+     */
+    private function hashtags(array $extra = []): ?string
+    {
+        $global = preg_split('/[\s,]+/', (string) Setting::get('social_share_hashtags'), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+
+        $seen = [];
+        $tags = [];
+
+        foreach (array_merge($global, $extra) as $raw) {
+            $clean = preg_replace('/[^\p{L}\p{N}_]+/u', '', $raw);
+            if ($clean === '') {
+                continue;
+            }
+
+            $key = mb_strtolower($clean);
+            if (isset($seen[$key])) {
+                continue;
+            }
+
+            $seen[$key] = true;
+            $tags[]     = '#' . $clean;
+        }
+
+        return $tags ? implode(' ', $tags) : null;
     }
 
     /**
      * @return array{success: bool, message: string, id?: string|null}
      */
-    public function shareToFacebook(Post $post): array
+    public function shareToFacebook(Post $post, array $hashtags = []): array
     {
         $token  = $this->accessToken();
         $pageId = Setting::get('fb_page_id');
@@ -76,11 +118,11 @@ class SocialShareService
             $response = $image
                 ? Http::timeout(20)->asForm()->post(self::GRAPH_BASE . "/{$pageId}/photos", [
                     'url'          => $image,
-                    'caption'      => $this->caption($post),
+                    'caption'      => $this->caption($post, $hashtags),
                     'access_token' => $token,
                 ])
                 : Http::timeout(20)->asForm()->post(self::GRAPH_BASE . "/{$pageId}/feed", [
-                    'message'      => $this->caption($post),
+                    'message'      => $this->caption($post, $hashtags),
                     'link'         => $this->shortUrl($post),
                     'access_token' => $token,
                 ]);
@@ -107,7 +149,7 @@ class SocialShareService
     /**
      * @return array{success: bool, message: string, id?: string|null}
      */
-    public function shareToInstagram(Post $post): array
+    public function shareToInstagram(Post $post, array $hashtags = []): array
     {
         $token = $this->accessToken();
         $igId  = Setting::get('ig_business_account_id');
@@ -125,7 +167,7 @@ class SocialShareService
             // Step 1 — create the media container
             $create = Http::timeout(20)->asForm()->post(self::GRAPH_BASE . "/{$igId}/media", [
                 'image_url'    => $image,
-                'caption'      => $this->caption($post),
+                'caption'      => $this->caption($post, $hashtags),
                 'access_token' => $token,
             ]);
             $createData = $create->json() ?? [];

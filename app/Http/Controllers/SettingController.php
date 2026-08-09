@@ -39,6 +39,8 @@ class SettingController extends Controller
             'fb_page_id'            => 'nullable|string|max:100',
             'fb_page_access_token'  => 'nullable|string|max:1000',
             'ig_business_account_id' => 'nullable|string|max:100',
+            'social_share_disclaimer' => 'nullable|string|max:1000',
+            'social_share_hashtags'   => 'nullable|string|max:500',
             'site_logo'        => 'nullable|image|mimes:png,jpg,jpeg,svg,webp|max:2048',
             'site_favicon'     => 'nullable|image|mimes:png,ico,svg|max:512',
             'og_image'         => 'nullable|image|mimes:png,jpg,jpeg,webp|max:3072',
@@ -53,6 +55,7 @@ class SettingController extends Controller
             'address','google_analytics_id','footer_text','posts_per_page',
             'maintenance_mode','admin_email_notify',
             'fb_page_id','ig_business_account_id',
+            'social_share_disclaimer','social_share_hashtags',
         ];
 
         foreach ($textFields as $field) {

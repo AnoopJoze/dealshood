@@ -441,6 +441,26 @@
                         Used for both Facebook and Instagram publishing. Stored encrypted — never re-displayed once saved.
                     </div>
                 </div>
+
+                <div class="col-12">
+                    <label class="form-label fw-semibold" style="font-size:.8rem;">Share Disclaimer</label>
+                    <textarea name="social_share_disclaimer" class="form-control form-control-sm" rows="2"
+                              placeholder="e.g. *Offers are subject to availability. Terms &amp; conditions apply.">{{ $settings['social_share_disclaimer'] ?? '' }}</textarea>
+                    <div class="form-text">
+                        Appended to the bottom of every Facebook &amp; Instagram caption.
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label fw-semibold" style="font-size:.8rem;">Default Hashtags</label>
+                    <input type="text" name="social_share_hashtags" class="form-control form-control-sm"
+                           value="{{ $settings['social_share_hashtags'] ?? '' }}"
+                           placeholder="e.g. deals offers dealshood shopping">
+                    <div class="form-text">
+                        Added to every share. Space or comma separated — the <code>#</code> is optional.
+                        Post-specific tags can be added at share time.
+                    </div>
+                </div>
             </div>
 
         </div>
