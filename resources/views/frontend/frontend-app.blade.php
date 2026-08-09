@@ -36,6 +36,11 @@
     $heroBannerUrl = !empty(setting('banner_image'))
         ? Storage::url(setting('banner_image'))
         : '/frontend/img/illustrations/IMG_4871.png';
+
+    /* ── Primary district name for eyebrow copy ─────── */
+    $nearYou = optional($localities->firstWhere('type','district'))->name
+             ?? optional($localities->first())->name
+             ?? 'your area';
     @endphp
 
     <title>{{ $siteName }} — {{ $siteTagline }}</title>
@@ -70,939 +75,459 @@
 
     {{-- ── PWA / Mobile ────────────────────────────────── --}}
     <link rel="manifest"                        href="/manifest.json">
-    <meta name="theme-color"                    content="#0f172a">
+    <meta name="theme-color"                    content="#0a2a68">
     <meta name="mobile-web-app-capable"         content="yes">
     <meta name="apple-mobile-web-app-capable"   content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title"     content="{{ $siteName }}">
     <link rel="apple-touch-icon"                href="/frontend/img/icons/icon-192x192.png">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link href="/frontend/css/soft-design-system.css?v=1.1.0" rel="stylesheet">
 
     <style>
-    :root {
-        --ink:#0d0d0d; --ink-mid:#3a3a3a; --ink-muted:#6b6b6b;
-        --surf:#faf9f7; --surf-2:#f2f1ef;
-        --white:#ffffff; --accent:#0f3f7e;
-        --r:14px; --rlg:20px;
-        --sh-sm:0 2px 12px rgba(0,0,0,.07);
-        --sh-md:0 6px 32px rgba(0,0,0,.10);
-        --nav-h:64px;
+    :root{
+        --navy:#0a2a68; --navy-deep:#071e4d; --blue:#123f8f; --blue-2:#1b4dc4;
+        --green:#16a34a; --orange:#f97316;
+        --ink:#0f172a; --muted:#5b6b8c; --muted-2:#8090ad;
+        --bg:#ffffff; --bg-soft:#f4f6fa; --line:#e4e9f2;
+        --r:16px; --r-lg:22px; --r-sm:10px;
+        --sh-sm:0 2px 10px rgba(10,42,104,.06);
+        --sh-md:0 10px 30px rgba(10,42,104,.10);
+        --sh-lg:0 24px 60px rgba(10,42,104,.16);
+        --nav-h:74px;
+        --font:'Poppins',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
     }
-    *,*::before,*::after { box-sizing:border-box; }
-    body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
-           background:var(--surf); color:var(--ink); margin:0; }
-    .wrap { max-width:1180px; margin:0 auto; padding:0 24px; }
+    *,*::before,*::after{ box-sizing:border-box; }
+    body{ font-family:var(--font); background:var(--bg); color:var(--ink); margin:0;
+          -webkit-font-smoothing:antialiased; }
+    a{ text-decoration:none; }
+    img{ max-width:100%; }
+    .wrap{ max-width:1240px; margin:0 auto; padding:0 24px; }
 
-    /* ── Navbar ── */
-    .dh-nav { position:sticky; top:0; left:0; right:0; height:var(--nav-h);
-              background:#fff; border-bottom:1px solid rgba(0,0,0,.07);
-              z-index:1000; display:flex; align-items:center; }
-    .dh-nav-inner { display:flex; align-items:center; justify-content:space-between;
-                    width:100%; max-width:1180px; margin:0 auto; padding:0 24px;
-                    position:relative; }
-    .dh-nav-logo img { height:45px; display:block; }
-    .dh-nav-actions { display:flex; align-items:center; gap:10px; }
-    .dh-btn-nav { display:inline-flex; align-items:center; gap:6px; font-size:.75rem;
-                  font-weight:500; letter-spacing:.04em; border:none; cursor:pointer;
-                  border-radius:100px; padding:9px 18px; text-decoration:none; transition:transform .15s; }
-    .dh-btn-nav:hover { transform:translateY(-1px); }
-    .dh-btn-ig { background:#e1306c; color:#fff; }
-    .dh-btn-wa { background:#25d366; color:#fff; }
-    .dh-nav-toggle { display:none; background:none; border:none; cursor:pointer;
-                     flex-direction:column; gap:5px; padding:6px; }
-    .dh-nav-toggle span { display:block; width:22px; height:2px; background:var(--ink); border-radius:2px; }
-    @media(max-width:640px){
-        .dh-nav-toggle { display:flex; }
-        .dh-nav-actions { display:none; position:absolute; top:var(--nav-h); left:0; right:0;
-                          background:#fff; border-bottom:1px solid rgba(0,0,0,.08);
-                          padding:16px 24px; flex-direction:column; align-items:flex-start; gap:10px; }
-        .dh-nav-actions.open { display:flex; }
+    .nd-eyebrow{ font-size:.72rem; font-weight:600; letter-spacing:.22em;
+                 text-transform:uppercase; color:var(--navy); text-align:center; }
+    .nd-h2{ font-family:var(--font); font-size:clamp(1.9rem,3.4vw,2.9rem); font-weight:700;
+            color:var(--navy); text-align:center; margin:10px 0 12px; letter-spacing:-.01em; }
+    .nd-sub{ text-align:center; color:var(--blue); font-size:1rem; font-weight:400;
+             max-width:640px; margin:0 auto; opacity:.9; }
+    .nd-sec{ padding:72px 0; }
+
+    /* ══════════ NAVBAR ══════════ */
+    .dh-nav{ position:absolute; top:0; left:0; right:0; height:var(--nav-h);
+             z-index:50; display:flex; align-items:center; }
+    .dh-nav-inner{ display:flex; align-items:center; gap:18px;
+                   width:100%; max-width:1240px; margin:0 auto; padding:0 24px; position:relative; }
+    .dh-nav-logo img{ height:42px; display:block;filter: brightness(0) invert(1); }
+    .dh-nav-links{ display:flex; align-items:center; gap:6px; margin-left:8px;
+                   background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22);
+                   padding:6px; border-radius:100px; backdrop-filter:blur(8px); }
+    .dh-nav-links a{ color:#fff; font-size:.82rem; font-weight:500; padding:7px 14px;
+                     border-radius:100px; transition:background .15s; opacity:.92; }
+    .dh-nav-links a:hover{ background:rgba(255,255,255,.16); opacity:1; }
+    .dh-nav-search{ display:flex; align-items:center; gap:8px; color:rgba(255,255,255,.8);
+                    background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22);
+                    border-radius:100px; padding:9px 18px; font-size:.82rem; min-width:150px;
+                    backdrop-filter:blur(8px); }
+    .dh-nav-spacer{ flex:1; }
+    .dh-nav-actions{ display:flex; align-items:center; gap:10px; }
+    .dh-btn-signin{ color:#fff; border:1.5px solid rgba(255,255,255,.5); border-radius:100px;
+                    padding:9px 22px; font-size:.82rem; font-weight:600; transition:all .15s; }
+    .dh-btn-signin:hover{ background:#fff; color:var(--navy); }
+    .dh-btn-download{ color:#fff; background:var(--blue-2); border-radius:100px;
+                      padding:10px 22px; font-size:.82rem; font-weight:600; transition:transform .15s; }
+    .dh-btn-download:hover{ transform:translateY(-1px); color:#fff; }
+    .dh-nav-toggle{ display:none; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3);
+                    width:44px; height:44px; border-radius:50%; cursor:pointer;
+                    align-items:center; justify-content:center; }
+    .dh-nav-toggle span{ display:block; width:18px; height:2px; background:#fff; border-radius:2px;
+                         position:relative; }
+    .dh-nav-toggle span::before,.dh-nav-toggle span::after{ content:''; position:absolute; left:0;
+                         width:18px; height:2px; background:#fff; border-radius:2px; }
+    .dh-nav-toggle span::before{ top:-6px; } .dh-nav-toggle span::after{ top:6px; }
+
+    /* Location trigger (kept for JS + location popup) */
+    .loc-trigger{ display:inline-flex; align-items:center; gap:8px;
+                  background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22);
+                  color:#fff; border-radius:100px; padding:8px 16px 8px 12px; font-size:.82rem;
+                  font-weight:500; cursor:pointer; transition:all .18s; white-space:nowrap;
+                  max-width:210px; backdrop-filter:blur(8px); }
+    .loc-trigger:hover{ background:rgba(255,255,255,.2); }
+    .lt-pin{ font-size:.72rem; flex-shrink:0; }
+    .lt-dot{ width:7px; height:7px; border-radius:50%; background:#22c55e; flex-shrink:0; display:none; }
+    .loc-trigger.has-loc .lt-dot{ display:block; }
+    .lt-label{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:130px; }
+    .lt-chevron{ font-size:.55rem; opacity:.6; flex-shrink:0; }
+
+    /* ══════════ HERO ══════════ */
+    .dh-hero{ position:relative; overflow:hidden; min-height:760px;
+              display:flex; flex-direction:column; align-items:center; justify-content:center;
+              padding:calc(var(--nav-h) + 40px) 0 70px; background:var(--navy-deep); }
+    .dh-hero-bg{ position:absolute; inset:0; background-size:cover; background-position:center;
+                 will-change:transform; }
+    .dh-hero-overlay{ position:absolute; inset:0; z-index:1;
+        background:linear-gradient(180deg,rgba(7,30,77,.62) 0%,rgba(7,30,77,.35) 40%,rgba(7,30,77,.72) 100%); }
+    .dh-hero-inner{ position:relative; z-index:3; width:100%; max-width:900px; padding:0 24px;
+                    text-align:center; animation:fadeUp .6s .1s both; }
+    .dh-hero-badge{ display:inline-flex; align-items:center; gap:8px; color:#fff; font-size:.78rem;
+                    font-weight:500; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.28);
+                    border-radius:100px; padding:8px 18px; margin-bottom:22px; backdrop-filter:blur(6px); }
+    .dh-hero-badge i{ color:#ffd34d; font-size:.7rem; }
+    .dh-hero-title{ font-size:clamp(2.4rem,6vw,4.6rem); font-weight:700; color:#fff;
+                    line-height:1.06; letter-spacing:-.02em; margin:0 0 20px; }
+    .dh-hero-lead{ font-size:clamp(1rem,1.6vw,1.18rem); color:rgba(255,255,255,.86); font-weight:300;
+                   max-width:620px; margin:0 auto 30px; line-height:1.6; }
+    .dh-hero-search{ display:flex; align-items:center; max-width:560px; margin:0 auto 22px;
+                     background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3);
+                     border-radius:100px; padding:6px 6px 6px 22px; backdrop-filter:blur(8px); }
+    .dh-hero-search i.fa-magnifying-glass{ color:rgba(255,255,255,.8); font-size:.9rem; }
+    .dh-hero-search input{ flex:1; background:transparent; border:none; outline:none; color:#fff;
+                           font-family:var(--font); font-size:.95rem; padding:12px 14px; }
+    .dh-hero-search input::placeholder{ color:rgba(255,255,255,.7); }
+    .dh-hero-search .hs-loc{ width:44px; height:44px; border-radius:50%; background:#fff; color:var(--navy);
+                             border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+    .dh-hero-cta{ display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-bottom:44px; }
+    .dh-btn-explore{ display:inline-flex; align-items:center; gap:10px; background:#fff; color:var(--navy);
+                     font-weight:600; font-size:.9rem; border-radius:100px; padding:14px 30px; transition:transform .15s; }
+    .dh-btn-explore:hover{ transform:translateY(-2px); color:var(--navy); }
+    .dh-btn-cats{ display:inline-flex; align-items:center; gap:10px; color:#fff; font-weight:600;
+                  font-size:.9rem; border:1.5px solid rgba(255,255,255,.6); border-radius:100px;
+                  padding:14px 30px; transition:all .15s; }
+    .dh-btn-cats:hover{ background:rgba(255,255,255,.14); color:#fff; }
+    .dh-hero-stats{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; max-width:660px; margin:0 auto; }
+    .dh-stat{ border:1px solid rgba(255,255,255,.28); border-radius:var(--r); padding:18px 12px;
+              text-align:center; background:rgba(255,255,255,.06); backdrop-filter:blur(4px); }
+    .dh-stat-num{ font-size:1.5rem; font-weight:700; color:#fff; line-height:1; }
+    .dh-stat-lbl{ font-size:.64rem; font-weight:500; letter-spacing:.12em; text-transform:uppercase;
+                  color:rgba(255,255,255,.7); margin-top:6px; }
+
+    /* ══════════ SHOP BY CATEGORIES ══════════ */
+    .dh-cat-grid{ display:grid; grid-template-columns:1fr 1fr; gap:22px; margin-top:44px; }
+    .dh-cat-chip{ position:relative; overflow:hidden; display:flex; flex-direction:column;
+                  justify-content:space-between; min-height:210px; padding:30px 30px 24px;
+                  border-radius:var(--r-lg); color:#fff;
+                  background:linear-gradient(135deg,var(--blue-2),var(--navy));
+                  box-shadow:var(--sh-md); transition:transform .2s, box-shadow .2s; }
+    .dh-cat-chip:nth-child(4n+2){ background:linear-gradient(135deg,#1f57d6,#0a2a68); }
+    .dh-cat-chip:nth-child(4n+3){ background:linear-gradient(135deg,#2148b8,#08214f); }
+    .dh-cat-chip:nth-child(4n){ background:linear-gradient(135deg,#173fa6,#0a2a68); }
+    .dh-cat-chip:hover{ transform:translateY(-4px); box-shadow:var(--sh-lg); color:#fff; }
+    .dh-cat-chip::after{ content:''; position:absolute; right:-60px; top:-60px; width:220px; height:220px;
+                         border-radius:50%; background:radial-gradient(circle at 40% 40%,rgba(255,255,255,.18),transparent 70%);
+                         pointer-events:none; }
+    .cat-head{ position:relative; z-index:1; }
+    .cat-illus{ position:absolute; right:20px; bottom:20px; width:104px; height:104px; border-radius:26px;
+                background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.22);
+                display:flex; align-items:center; justify-content:center; z-index:1;
+                box-shadow:inset 0 2px 20px rgba(255,255,255,.12); transition:transform .25s; }
+    .dh-cat-chip:hover .cat-illus{ transform:scale(1.06) rotate(-4deg); }
+    .cat-illus i{ font-size:2.9rem; color:#fff; opacity:.92; }
+    .dh-cat-name{ font-size:1.6rem; font-weight:700; line-height:1.1; position:relative; z-index:1; max-width:60%; }
+    .dh-cat-count{ font-size:.9rem; opacity:.82; margin-top:6px; position:relative; z-index:1; }
+    .dh-cat-more{ display:inline-flex; align-items:center; gap:10px; font-size:.72rem; font-weight:600;
+                  letter-spacing:.12em; text-transform:uppercase; position:relative; z-index:1; }
+    .dh-cat-more .cm-ico{ width:26px; height:26px; border-radius:50%; background:var(--green);
+                          display:flex; align-items:center; justify-content:center; font-size:.7rem; }
+    .ripple-wrap{ position:absolute; inset:0; overflow:hidden; border-radius:inherit; z-index:0; }
+    .ripple-circle{ position:absolute; border-radius:50%; background:rgba(255,255,255,.35);
+                    width:20px; height:20px; left:50%; top:50%; transform:translate(-50%,-50%) scale(0);
+                    animation:ripple .45s ease-out; }
+    @keyframes ripple{ to{ transform:translate(-50%,-50%) scale(24); opacity:0; } }
+
+    /* ══════════ SECTION HEAD (reusable) ══════════ */
+    .dh-sec-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; gap:12px; }
+    .dh-eyebrow{ font-size:.7rem; font-weight:600; letter-spacing:.18em; text-transform:uppercase;
+                 color:var(--blue); margin-bottom:4px; }
+    .dh-sec-title{ font-size:1.4rem; font-weight:700; color:var(--navy); margin:0; }
+    .dh-view-all{ display:inline-flex; align-items:center; gap:6px; color:var(--blue); font-weight:600;
+                  font-size:.85rem; }
+
+    /* ══════════ EVERYTHING LOCAL FEED ══════════ */
+    .dh-feed{ background:var(--bg); }
+    #carouselContent{ display:flex; flex-direction:column; gap:34px; }
+    .dh-carousel-block{ border:1px solid var(--line); border-radius:var(--r-lg); padding:26px 26px 30px;
+                        box-shadow:var(--sh-sm); background:#fff; }
+    .dh-carousel-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; gap:12px; }
+    .dh-carousel-title{ display:flex; align-items:center; gap:14px; margin:0; font-size:1.35rem;
+                        font-weight:700; color:var(--navy); }
+    .dh-cat-badge-icon,.dh-carousel-title>span:first-child{ width:44px; height:44px; border-radius:12px;
+                        display:flex; align-items:center; justify-content:center; font-size:1rem;
+                        background:var(--navy); color:#fff; flex-shrink:0; }
+    .dh-carousel-title small{ display:block; font-size:.8rem; font-weight:400; color:var(--muted); margin-top:2px; }
+    .dh-carousel-controls{ display:flex; align-items:center; gap:10px; }
+    .dh-c-btn{ width:42px; height:42px; border-radius:50%; border:1px solid var(--line); background:#fff;
+               color:var(--navy); cursor:pointer; display:flex; align-items:center; justify-content:center;
+               transition:all .15s; }
+    .dh-c-btn:hover{ background:var(--navy); color:#fff; border-color:var(--navy); }
+    .dh-track-outer{ position:relative; }
+    .dh-track{ display:flex; gap:18px; overflow-x:auto; scroll-snap-type:x mandatory;
+               scrollbar-width:none; -webkit-overflow-scrolling:touch; padding-bottom:4px; }
+    .dh-track::-webkit-scrollbar{ display:none; }
+    .dh-track .dh-card{ scroll-snap-align:start; }
+
+    /* ══════════ POST CARD (shared partial) ══════════ */
+    .dh-card{ flex:0 0 290px; width:290px; background:#fff; border:1px solid var(--line);
+              border-radius:var(--r); overflow:hidden; display:flex; flex-direction:column;
+              transition:transform .18s, box-shadow .18s; }
+    .dh-grid .dh-card{ flex:none; width:auto; }
+    .dh-card:hover{ transform:translateY(-3px); box-shadow:var(--sh-md); }
+    .dh-card-media{ position:relative; aspect-ratio:16/11; background:#0b1e42; overflow:hidden; }
+    .dh-card-media a{ display:block; width:100%; height:100%; }
+    .dh-card-media img,.dh-card-media video{ width:100%; height:100%; object-fit:cover; display:block; }
+    .dh-card-loc{ position:absolute; left:10px; bottom:10px; display:inline-flex; align-items:center; gap:5px;
+                  background:rgba(10,20,40,.6); color:#fff; font-size:.72rem; font-weight:500;
+                  padding:5px 11px; border-radius:100px; backdrop-filter:blur(4px); }
+    .dh-card-fav{ position:absolute; right:10px; top:10px; width:34px; height:34px; border-radius:50%;
+                  background:rgba(255,255,255,.9); border:none; color:var(--navy); cursor:pointer;
+                  display:flex; align-items:center; justify-content:center; font-size:.82rem; transition:all .15s; }
+    .dh-card-fav.liked{ background:#e11d48; color:#fff; }
+    .dh-card-badge{ position:absolute; left:10px; top:10px; font-size:.6rem; font-weight:700;
+                    letter-spacing:.06em; text-transform:uppercase; padding:5px 10px; border-radius:6px; color:#fff; }
+    .dh-card-badge.hot{ background:var(--orange); } .dh-card-badge.trend{ background:#eab308; color:#3a2c00; }
+    .dh-card-badge.free{ background:var(--green); }
+    .dh-card-body{ padding:16px 16px 18px; display:flex; flex-direction:column; flex:1; }
+    .dh-badges{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
+    .dh-b{ font-size:.64rem; font-weight:600; letter-spacing:.04em; text-transform:uppercase;
+           color:var(--muted); background:var(--bg-soft); border-radius:6px; padding:5px 9px; }
+    .dh-card-title-row{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:12px; }
+    .dh-card-title{ font-size:1rem; font-weight:600; color:var(--navy); line-height:1.32; }
+    .dh-rating-view{ display:flex; align-items:center; gap:4px; flex-shrink:0; }
+    .dh-star-big-wrap{ position:relative; font-size:.85rem; color:#e2e8f0; line-height:1; }
+    .dh-star-big-fg{ position:absolute; top:0; left:0; overflow:hidden; white-space:nowrap; color:#f59e0b; }
+    .dh-rating-avg-sm{ font-size:.8rem; font-weight:700; color:var(--navy); }
+    .dh-rating-count-sm{ font-size:.72rem; color:var(--muted); }
+    .dh-card-biz{ display:flex; align-items:center; gap:7px; font-size:.78rem; font-weight:600;
+                  color:var(--ink); text-transform:uppercase; letter-spacing:.02em; margin-bottom:12px; }
+    .dh-card-biz i{ color:var(--muted); }
+    .dh-card-desc{ display:none; }
+    .dh-card-meta{ display:flex; align-items:center; gap:14px; padding-top:12px; margin-top:auto;
+                   border-top:1px solid var(--line); font-size:.74rem; color:var(--muted); }
+    .dh-meta-btn{ background:none; border:none; padding:0; cursor:pointer; display:flex; align-items:center;
+                  gap:5px; color:var(--muted); font-family:var(--font); font-size:.74rem; }
+    .dh-meta-btn.liked{ color:#e11d48; }
+    .dh-meta-box{ display:flex; align-items:center; gap:5px; }
+    .dh-meta-time{ margin-left:auto; display:flex; align-items:center; gap:5px; font-size:.72rem; white-space:nowrap; }
+    .dh-card-actions{ display:flex; gap:8px; margin-top:14px; }
+    .dh-btn{ display:inline-flex; align-items:center; justify-content:center; gap:6px; font-family:var(--font);
+             font-size:.82rem; font-weight:600; border-radius:10px; padding:11px 16px; cursor:pointer;
+             border:none; transition:all .15s; }
+    .dh-btn-primary{ flex:1; background:var(--navy); color:#fff; }
+    .dh-btn-primary:hover{ background:var(--navy-deep); color:#fff; }
+    .dh-btn-ghost{ width:46px; background:#fff; border:1.5px solid var(--line); color:var(--navy); }
+    .dh-btn-ghost:hover{ border-color:var(--navy); }
+    .badge-feat,.badge-offer{ position:absolute; z-index:2; font-size:.62rem; font-weight:700;
+                  padding:5px 10px; border-radius:6px; }
+    .badge-feat{ right:52px; top:10px; background:#fff; color:var(--navy); }
+    .badge-offer{ left:10px; top:10px; background:var(--orange); color:#fff; }
+
+    /* ══════════ LATEST GRID ══════════ */
+    .dh-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:22px; }
+    .dh-empty{ grid-column:1/-1; text-align:center; color:var(--muted); padding:50px 0; }
+    .dh-show-more{ text-align:center; margin-top:38px; }
+    .dh-more-btn{ display:inline-flex; align-items:center; gap:10px; background:var(--navy); color:#fff;
+                  font-weight:600; font-size:.9rem; border:none; border-radius:100px; padding:14px 34px;
+                  cursor:pointer; font-family:var(--font); transition:transform .15s; }
+    .dh-more-btn:hover{ transform:translateY(-2px); color:#fff; }
+
+    /* ══════════ TRENDING (navy) ══════════ */
+    .dh-trend{ background:var(--navy); color:#fff; padding:76px 0; }
+    .dh-trend .nd-eyebrow{ color:#fff; }
+    .dh-trend .nd-h2{ color:#fff; }
+    .dh-trend .nd-sub{ color:rgba(255,255,255,.75); }
+    .dh-trend-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-top:44px; }
+    .dh-trend-card{ background:#fff; border-radius:var(--r); overflow:hidden; color:var(--ink);
+                    display:flex; flex-direction:column; }
+    .dh-trend-img{ aspect-ratio:16/10; background:#0b1e42; overflow:hidden; }
+    .dh-trend-img img{ width:100%; height:100%; object-fit:cover; }
+    .dh-trend-body{ padding:18px 20px 20px; display:flex; flex-direction:column; flex:1; }
+    .dh-trend-biz{ display:flex; align-items:center; gap:7px; color:var(--blue); font-size:.78rem; font-weight:600; margin-bottom:6px; }
+    .dh-trend-title{ font-size:.98rem; font-weight:600; color:var(--ink); line-height:1.4; margin-bottom:12px; }
+    .dh-trend-price{ display:flex; align-items:baseline; gap:8px; margin-bottom:10px; }
+    .dh-trend-off{ font-size:1.35rem; font-weight:700; color:var(--navy); }
+    .dh-trend-ends{ display:flex; align-items:center; gap:6px; font-size:.78rem; color:var(--muted); margin-bottom:14px; }
+    .dh-trend-btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; margin-top:auto;
+                   background:var(--navy); color:#fff; font-weight:600; font-size:.85rem; border-radius:10px; padding:12px; }
+    .dh-trend-btn:hover{ background:var(--navy-deep); color:#fff; }
+    .dh-trend-all{ display:flex; justify-content:center; margin-top:40px; }
+    .dh-trend-all a{ border:1.5px solid rgba(255,255,255,.5); color:#fff; border-radius:100px;
+                     padding:13px 34px; font-weight:600; font-size:.88rem; }
+    .dh-trend-all a:hover{ background:#fff; color:var(--navy); }
+
+    /* ══════════ FLASH SALE ══════════ */
+    .dh-flash{ background:var(--navy); padding:0 0 76px; }
+    .dh-flash-card{ display:grid; grid-template-columns:1fr 1fr; background:#fff; border-radius:var(--r-lg);
+                    overflow:hidden; box-shadow:var(--sh-lg); }
+    .dh-flash-left{ padding:48px 44px; }
+    .dh-flash-tag{ display:inline-flex; align-items:center; gap:8px; font-size:.72rem; font-weight:600;
+                   letter-spacing:.14em; text-transform:uppercase; color:var(--orange); margin-bottom:16px; }
+    .dh-flash-h{ font-size:clamp(2rem,3.6vw,3rem); font-weight:700; color:var(--navy); line-height:1.08; margin:0 0 12px; }
+    .dh-flash-p{ color:var(--blue); font-size:.95rem; max-width:360px; margin:0 0 26px; }
+    .dh-count{ display:flex; gap:26px; margin-bottom:28px; }
+    .dh-count-unit .cu-num{ font-size:2.4rem; font-weight:700; color:var(--orange); line-height:1; }
+    .dh-count-unit .cu-lbl{ font-size:.66rem; font-weight:600; letter-spacing:.14em; text-transform:uppercase;
+                            color:var(--muted); margin-top:6px; }
+    .dh-flash-btn{ display:inline-flex; align-items:center; gap:10px; background:var(--navy); color:#fff;
+                   font-weight:600; border-radius:100px; padding:14px 30px; font-size:.9rem; }
+    .dh-flash-btn:hover{ color:#fff; background:var(--navy-deep); }
+    .dh-flash-right{ background:#e11d48 center/cover; min-height:320px; position:relative;
+                     display:flex; align-items:center; justify-content:center; color:#fff; text-align:center; }
+    .dh-flash-right .fr-inner{ padding:30px; }
+    .dh-flash-right .fr-big{ font-size:clamp(3rem,6vw,5.5rem); font-weight:800; line-height:.95;
+                             text-shadow:0 4px 0 rgba(0,0,0,.15); }
+
+    /* ══════════ WHY CHOOSE ══════════ */
+    .dh-why-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:22px; margin-top:44px; }
+    .dh-why-card{ background:linear-gradient(150deg,var(--blue-2),var(--navy)); color:#fff;
+                  border-radius:var(--r-lg); padding:30px 26px; min-height:200px; box-shadow:var(--sh-md); }
+    .dh-why-ic{ width:46px; height:46px; border-radius:12px; background:rgba(255,255,255,.16);
+                display:flex; align-items:center; justify-content:center; font-size:1.1rem; margin-bottom:20px; }
+    .dh-why-h{ font-size:1.12rem; font-weight:700; margin:0 0 8px; }
+    .dh-why-p{ font-size:.85rem; color:rgba(255,255,255,.82); line-height:1.55; margin:0; }
+
+    /* ══════════ PROMO STRIP ══════════ */
+    .dh-promo-strip{ display:grid; grid-template-columns:repeat(3,1fr); gap:0; }
+    .dh-promo-tile{ position:relative; aspect-ratio:4/3; overflow:hidden; display:block; background:#0b1e42; }
+    .dh-promo-tile img{ width:100%; height:100%; object-fit:cover; transition:transform .3s; }
+    .dh-promo-tile:hover img{ transform:scale(1.05); }
+    .dh-promo-tile .pt-label{ position:absolute; left:0; right:0; bottom:0; padding:26px 20px 22px;
+        background:linear-gradient(0deg,rgba(0,0,0,.55),transparent); color:#fff; font-size:.9rem; font-weight:600; }
+
+    /* ══════════ FAQ ══════════ */
+    .dh-faq{ max-width:820px; margin:44px auto 0; display:flex; flex-direction:column; gap:14px; }
+    .dh-faq-item{ border:1px solid var(--line); border-radius:var(--r); overflow:hidden; background:#fff; }
+    .dh-faq-q{ display:flex; align-items:center; justify-content:space-between; gap:14px; width:100%;
+               background:none; border:none; cursor:pointer; padding:22px 26px; text-align:left;
+               font-family:var(--font); font-size:1rem; font-weight:600; color:var(--navy); }
+    .dh-faq-q i{ transition:transform .2s; color:var(--blue); }
+    .dh-faq-item.open .dh-faq-q i{ transform:rotate(180deg); }
+    .dh-faq-a{ max-height:0; overflow:hidden; transition:max-height .28s ease; }
+    .dh-faq-a p{ padding:0 26px 22px; margin:0; color:var(--muted); font-size:.92rem; line-height:1.65; }
+
+    /* ══════════ FOOTER ══════════ */
+    .dh-footer{ background:var(--navy-deep); color:rgba(255,255,255,.72); padding:64px 0 0; }
+    .dh-footer-grid{ display:grid; grid-template-columns:1.6fr repeat(3,1fr); gap:40px; padding-bottom:44px; }
+    .dh-footer-logo img{ height:34px; filter:brightness(0) invert(1); }
+    .dh-footer-tag{ font-size:.85rem; color:rgba(255,255,255,.55); max-width:280px; margin:16px 0 20px; line-height:1.6; }
+    .dh-footer-social{ display:flex; gap:10px; }
+    .dh-footer-social a{ width:38px; height:38px; border-radius:50%; border:1px solid rgba(255,255,255,.2);
+        display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.7); transition:all .15s; }
+    .dh-footer-social a:hover{ border-color:#fff; color:#fff; }
+    .dh-footer-col-title{ font-size:.9rem; font-weight:700; color:#fff; margin-bottom:16px; }
+    .dh-footer-links{ list-style:none; padding:0; margin:0; }
+    .dh-footer-links li{ margin-bottom:11px; }
+    .dh-footer-links a{ color:rgba(255,255,255,.6); font-size:.88rem; }
+    .dh-footer-links a:hover{ color:#fff; }
+    .dh-footer-bottom{ border-top:1px solid rgba(255,255,255,.1); padding:22px 0; display:flex;
+        align-items:center; justify-content:space-between; font-size:.78rem; color:rgba(255,255,255,.4); }
+
+    /* ══════════ SPINNER (AJAX reload) ══════════ */
+    .sec-spinner{ display:flex; gap:8px; justify-content:center; padding:44px 0; }
+    .sec-spinner span{ width:12px; height:12px; border-radius:50%; background:var(--blue); opacity:.5;
+                       animation:bounce .8s infinite; }
+    .sec-spinner span:nth-child(2){ animation-delay:.15s; } .sec-spinner span:nth-child(3){ animation-delay:.3s; }
+    @keyframes bounce{ 0%,80%,100%{ transform:scale(.6); opacity:.4; } 40%{ transform:scale(1); opacity:1; } }
+    @keyframes fadeUp{ from{ opacity:0; transform:translateY(24px); } to{ opacity:1; transform:none; } }
+
+    /* ══════════ PWA banner / iOS sheet ══════════ */
+    .pwa-banner{ position:fixed; left:16px; right:16px; bottom:16px; z-index:2000; display:flex;
+        align-items:center; gap:12px; background:#fff; border-radius:16px; padding:12px 14px; box-shadow:var(--sh-lg); }
+    .pwa-banner-icon img{ width:44px; height:44px; border-radius:10px; }
+    .pwa-banner-body{ flex:1; } .pwa-banner-title{ font-weight:700; font-size:.9rem; color:var(--ink); }
+    .pwa-banner-sub{ font-size:.74rem; color:var(--muted); }
+    .pwa-banner-actions{ display:flex; align-items:center; gap:8px; }
+    .pwa-install-btn{ background:var(--navy); color:#fff; border:none; border-radius:100px; padding:9px 18px;
+        font-weight:600; font-size:.82rem; cursor:pointer; }
+    .pwa-dismiss-btn{ background:none; border:none; color:var(--muted); font-size:1rem; cursor:pointer; }
+    .pwa-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:2000; display:none; }
+    .pwa-backdrop.open{ display:block; }
+    .pwa-ios-sheet{ position:fixed; left:0; right:0; bottom:0; z-index:2001; background:#fff;
+        border-radius:20px 20px 0 0; padding:20px; transform:translateY(110%); transition:transform .3s; }
+    .pwa-ios-sheet.open{ transform:none; }
+    .pwa-ios-handle{ width:40px; height:4px; border-radius:2px; background:#cbd5e1; margin:0 auto 16px; }
+    .pwa-ios-steps{ list-style:none; padding:0; margin:16px 0 0; }
+    .pwa-ios-step{ display:flex; gap:12px; align-items:flex-start; margin-bottom:14px; font-size:.85rem; color:var(--ink); }
+    .pwa-ios-step-num{ width:24px; height:24px; border-radius:50%; background:var(--navy); color:#fff;
+        display:flex; align-items:center; justify-content:center; font-size:.75rem; font-weight:700; flex-shrink:0; }
+    .pwa-ios-icon{ display:inline-flex; align-items:center; gap:4px; font-weight:600; color:var(--navy); }
+
+    /* ══════════ RESPONSIVE ══════════ */
+    @media(max-width:1024px){
+        .dh-grid{ grid-template-columns:repeat(3,1fr); }
+        .dh-trend-grid{ grid-template-columns:repeat(2,1fr); }
+        .dh-why-grid{ grid-template-columns:repeat(2,1fr); }
     }
-
-    /* ── Hero ── */
-    .dh-hero { position:relative; overflow:hidden;
-               background:var(--ink); display:flex; flex-direction:column;
-               align-items:center; justify-content:center; }
-    .dh-hero-bg { position:absolute; inset:0;
-                  opacity:.52; }
-    .dh-hero-overlay { position:absolute; inset:0;
-                       /* background:linear-gradient(160deg,rgba(13,13,13,.78) 0%,rgba(13,13,13,.32) 55%,rgba(15,63,126,.2) 100%);  */
-                    }
-    .dh-hero-wave { position:absolute; bottom:-1px; left:0; right:0; z-index:3; line-height:0; pointer-events:none; }
-    .dh-hero-wave svg { display:block; width:100%; }
-
-    .dh-hero-text { position:relative; z-index:4; text-align:center;
-                    max-width:620px; padding:40px 24px 0; animation:fadeUp .55s .1s both; }
-    .dh-hero-title { font-size:clamp(2rem,4.5vw,3.2rem); font-weight:800; color:#fff;
-                     line-height:1.14; letter-spacing:-.025em; margin:0 0 8px; }
-    .dh-hero-sub { font-size:.9rem; color:rgba(255,255,255,.5); font-weight:300; margin:0 0 22px; }
-
-    /* ── Location trigger button ── */
-    .loc-trigger {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--surf);
-    border: 1.5px solid rgba(0,0,0,.1);
-    color: var(--ink);
-    border-radius: 100px;
-    padding: 8px 14px 8px 10px;
-    font-size: .78rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all .18s;
-    -webkit-tap-highlight-color: transparent;
-    white-space: nowrap;
-    max-width: 200px;
-    margin-left: auto;      /* ← pushes to right side */
-}
-.loc-trigger:hover {
-    background: var(--surf-2);
-    border-color: var(--accent);
-    color: var(--accent);
-    transform: translateY(-1px);
-}
-.loc-trigger:active { transform: scale(.97); }
-
-/* Pin icon — small coloured circle */
-.lt-pin {
-    width: 24px; height: 24px;
-    border-radius: 50%;
-    background: var(--accent);
-    display: flex; align-items: center; justify-content: center;
-    font-size: .62rem; flex-shrink: 0; color: #fff;
-    transition: background .15s;
-}
-.loc-trigger:hover .lt-pin { background: #0c3166; }
-
-/* Active location dot */
-.lt-dot {
-    width: 7px; height: 7px;
-    border-radius: 50%; background: #22c55e;
-    flex-shrink: 0; display: none;
-    box-shadow: 0 0 0 2px rgba(34,197,94,.25);
-}
-.loc-trigger.has-loc .lt-dot { display: block; }
-
-/* Label — truncate if long locality name */
-.lt-label {
-    flex: 1; text-align: left;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: 130px;
-}
-
-.lt-chevron { font-size: .55rem; opacity: .5; flex-shrink: 0; }
-
-    .loc-pill { display:none; margin-top:9px; background:rgba(255,255,255,.12);
-                backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,.2);
-                border-radius:100px; padding:5px 8px 5px 12px; color:#fff;
-                font-size:.74rem; font-weight:500; align-items:center; gap:8px;
-                cursor:pointer; transition:background .15s; }
-    .loc-pill.show { display:inline-flex; }
-    .loc-pill:hover { background:rgba(255,255,255,.2); }
-    .lp-clear { width:18px; height:18px; border-radius:50%; background:rgba(255,255,255,.2);
-                border:none; color:#fff; font-size:.55rem; cursor:pointer;
-                display:flex; align-items:center; justify-content:center;
-                -webkit-tap-highlight-color:transparent; flex-shrink:0; transition:background .14s; }
-    .lp-clear:hover { background:rgba(255,255,255,.38); }
-
-    /* ══════════════════════════════════════════
-       CATEGORY TILE GRID
-       Panel: full width, no max-width constraint.
-       Grid: 2 columns, capped at 640px, centred.
-       Tiles: horizontal (icon-left, text-right).
-    ══════════════════════════════════════════ */
-    /* ── Category section ── */
-/* ── Category section — 2×2 grid, all visible ── */
-.dh-cat-sec {
-    /* background: #fff; */
-    border-bottom: 1px solid rgba(0,0,0,.06);
-    padding: 25px;
-    margin-bottom:70px;
-}
-
-.dh-cat-scroll {
-    display: grid;
-    grid-template-columns: 1fr 1fr;   /* exactly 2 columns */
-    gap: 10px;
-    overflow: visible;                 /* no scroll */
-    padding: 0;
-}
-
-/* Each chip */
-.dh-cat-chip {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: #f8fafc;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 14px;
-    padding: 12px 14px;
-    text-decoration: none;
-    cursor: pointer;
-    transition: all .18s;
-    -webkit-tap-highlight-color: transparent;
-    position: relative;
-    overflow: hidden;
-}
-.dh-cat-chip:hover {
-    background: #eff6ff;
-    border-color: #bfdbfe;
-    transform: translateY(-2px);
-}
-.dh-cat-chip:active {
-    transform: scale(.96);
-    background: #dbeafe;
-}
-.dh-cat-chip.active {
-    background: #eff6ff;
-    border-color: var(--accent);
-}
-.dh-cat-chip.active .dh-cat-name {
-    color: var(--accent);
-}
-
-/* Icon */
-.dh-cat-icon {
-    width: 42px; height: 42px;
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.1rem; flex-shrink: 0;
-    transition: transform .2s;
-}
-.dh-cat-chip:hover .dh-cat-icon { transform: scale(1.1); }
-.dh-cat-chip.active .dh-cat-icon { transform: scale(1.08); }
-
-/* Name */
-.dh-cat-name {
-    font-size: .82rem;
-    font-weight: 700;
-    color: var(--ink);
-    line-height: 1.3;
-    white-space: normal;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-}
-
-/* Ripple */
-.ripple-wrap {
-    position: absolute; inset: 0;
-    border-radius: 14px; overflow: hidden;
-    pointer-events: none;
-}
-@keyframes ripple { to { transform: scale(6); opacity: 0; } }
-.ripple-circle {
-    position: absolute; border-radius: 50%;
-    background: rgba(15,63,126,.15);
-    width: 20px; height: 20px;
-    top: 50%; left: 50%;
-    transform: translate(-50%,-50%) scale(0);
-    animation: ripple .4s ease-out forwards;
-}
-
-/* Result bar */
-.dh-cat-result {
-    display: flex; align-items: center; gap: 8px;
-    margin-top: 12px;
-    padding: 10px 14px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-}
-.dh-cat-result-dot {
-    width: 7px; height: 7px; border-radius: 50%;
-    background: #22c55e; flex-shrink: 0;
-}
-.dh-cat-result-txt { font-size: .76rem; color: var(--ink-muted); flex: 1; }
-.dh-cat-result-count { font-size: .76rem; font-weight: 700; color: var(--accent); }
-
-/* Desktop — single row, centered */
-@media(min-width: 769px) {
-    .dh-cat-sec { padding: 16px 24px; }
-    .dh-cat-scroll {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 10px;
-        max-width: 640px;
-        margin: 0 auto;
+    @media(max-width:900px){
+        .dh-nav-links,.dh-nav-search,.dh-btn-signin{ display:none; }
+        .dh-nav-toggle{ display:flex; }
+        .dh-nav-actions.mobile-hidden{ }
     }
-    .dh-cat-chip {
-        flex: 0 0 auto;
-        width: 140px;
-    }
-}
-
-    /* ── Sections ── */
-    .dh-sec-head { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:24px; }
-    .dh-eyebrow { display:inline-flex; align-items:center; gap:8px; font-size:.67rem;
-                  font-weight:500; letter-spacing:.14em; text-transform:uppercase;
-                  color:var(--accent); margin-bottom:5px; }
-    .dh-eyebrow::before { content:''; display:inline-block; width:18px; height:2px;
-                           background:var(--accent); border-radius:2px; }
-    .dh-sec-title { font-size:1.5rem; font-weight:700; color:var(--ink); margin:0; }
-    .dh-view-all { font-size:.77rem; font-weight:500; color:var(--ink-muted); text-decoration:none;
-                   display:inline-flex; align-items:center; gap:4px; transition:color .15s; }
-    .dh-view-all:hover { color:var(--accent); }
-
-    /* ── Carousels ── */
-    .dh-carousel-sec { padding:32px 0 12px; background:var(--surf); }
-    .dh-carousel-block { margin-bottom:40px; }
-    .dh-carousel-block:last-child { margin-bottom:0; }
-    .dh-carousel-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
-    .dh-carousel-title { font-size:1.12rem; font-weight:700; color:var(--ink); margin:0;
-                          display:flex; align-items:center; gap:10px; }
-    .cat-badge { font-size:.61rem; font-weight:600; letter-spacing:.07em; text-transform:uppercase;
-                 padding:3px 10px; border-radius:100px; }
-    .dh-carousel-controls { display:flex; align-items:center; gap:8px; }
-    .dh-c-btn { width:32px; height:32px; border-radius:50%; border:1.5px solid rgba(0,0,0,.12);
-                background:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center;
-                font-size:.8rem; color:var(--ink-muted); transition:all .15s; }
-    .dh-c-btn:hover { background:var(--ink); color:#fff; border-color:var(--ink); }
-    .dh-track-outer { position:relative; overflow:hidden; }
-    .dh-track { display:flex; gap:20px; overflow-x:auto; padding-bottom:16px;
-                scroll-behavior:smooth; scroll-snap-type:x mandatory;
-                -ms-overflow-style:none; scrollbar-width:none; cursor:grab; user-select:none; }
-    .dh-track.is-dragging { cursor:grabbing; scroll-behavior:auto; }
-    .dh-track::-webkit-scrollbar { display:none; }
-    .dh-track-outer::after { content:''; position:absolute; right:0; top:0; bottom:16px; width:64px;
-                              pointer-events:none; z-index:1;
-                              background:linear-gradient(to left,var(--surf),transparent); }
-    .dh-track .dh-card { flex:0 0 350px; scroll-snap-align:start; }
-    .dh-track.is-dragging .dh-card { pointer-events:none; }
-    @media(max-width:560px){ .dh-track .dh-card { flex:0 0 260px; } }
-
-    .sec-spinner { text-align:center; padding:40px 0; }
-    .sec-spinner span { display:inline-block; width:9px; height:9px; border-radius:50%;
-                        background:var(--accent); margin:0 3px; animation:dotPulse 1.2s infinite both; }
-    .sec-spinner span:nth-child(2){ animation-delay:.2s; }
-    .sec-spinner span:nth-child(3){ animation-delay:.4s; }
-
-    /* ── Post cards ── */
-    .dh-latest-sec { padding:0 0 80px; background:var(--surf); }
-    .dh-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
-    @media(max-width:900px){ .dh-grid { grid-template-columns:repeat(2,1fr); } }
-    @media(max-width:560px){ .dh-grid { grid-template-columns:1fr; } }
-    .dh-card { background:#fff; border-radius:var(--rlg); overflow:hidden; box-shadow:var(--sh-sm);
-               border:1px solid rgba(0,0,0,.05); display:flex; flex-direction:column;
-               transition:transform .22s,box-shadow .22s; }
-    .dh-card:hover { transform:translateY(-5px); box-shadow:var(--sh-md); }
-    .dh-card-media { position:relative; overflow:hidden; flex-shrink:0; }
-    .dh-card-media img:not(.dh-card-bg):not(.dh-card-fg),.dh-card-media video { width:100%; height:200px; object-fit:cover;
-                                              display:block; transition:transform .35s; }
-    .dh-card:hover .dh-card-media img:not(.dh-card-bg):not(.dh-card-fg) { transform:scale(1.04); }
-    .dh-card-media .ratio { height:200px; }
-    .badge-feat { position:absolute; top:10px; right:10px; background:#f59e0b; color:#fff;
-                  font-size:.6rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase;
-                  padding:4px 10px; border-radius:100px; }
-    .dh-card-body { padding:16px 18px 18px; display:flex; flex-direction:column; flex:1; }
-    .dh-badges { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px; }
-    .dh-b { font-size:.6rem; font-weight:500; letter-spacing:.07em; text-transform:uppercase;
-             padding:3px 9px; border-radius:100px; }
-    .dh-b-loc { background:var(--surf-2); color:var(--ink-muted); }
-    .dh-b-cat { background:rgba(15,63,126,.08); color:var(--accent); }
-    .dh-b-sub { background:rgba(59,130,246,.08); color:#1d4ed8; }
-    .dh-card-title { font-size:.98rem; font-weight:700; color:var(--ink); line-height:1.35;
-                     margin:0 0 7px; text-decoration:none; display:block; transition:color .15s; }
-    .dh-card-title:hover { color:var(--accent); }
-    .dh-card-desc { font-size:.8rem; line-height:1.6; color:var(--ink-muted);
-                    font-weight:300; flex:1; margin-bottom:12px; }
-    .dh-card-meta { display:flex; align-items:center; gap:8px; flex-wrap:wrap;
-                    padding-top:10px; border-top:1px solid rgba(0,0,0,.06); margin-bottom:12px; }
-    .dh-meta-btn,.dh-meta-box { display:flex; align-items:center; gap:6px; padding:4px 9px;
-                                 border-radius:14px; background:#fff; border:1px solid #edf0f5;
-                                 transition:all .2s; box-shadow:0 2px 8px rgba(0,0,0,.04); }
-    .dh-meta-btn { cursor:pointer; outline:none; }
-    .dh-meta-btn:hover,.dh-meta-box:hover { transform:translateY(-2px); box-shadow:0 4px 14px rgba(0,0,0,.08); }
-    .dh-meta-icon { font-size:11px; color:#6b7280; }
-    .dh-meta-count { font-size:12px; font-weight:600; color:#1f2937; }
-    .dh-meta-time { margin-left:auto; display:flex; align-items:center; gap:5px; font-size:11px; color:#6b7280; }
-    .likeBtn.liked { background:rgba(255,77,109,.08); border-color:rgba(255,77,109,.18); }
-    .likeBtn.liked .dh-meta-icon { color:#ff4d6d; }
-    .likeBtn.liked .dh-meta-count { color:#ff4d6d; }
-    .dh-card-actions { display:flex; gap:8px; }
-    .dh-btn { display:inline-flex; align-items:center; justify-content:center; gap:6px;
-               font-size:.74rem; font-weight:500; border-radius:100px; padding:8px 16px;
-               text-decoration:none; border:1.5px solid; cursor:pointer; transition:all .15s; flex:1; }
-    .dh-btn-primary { background:var(--ink); color:#fff; border-color:var(--ink); }
-    .dh-btn-primary:hover { background:var(--accent); border-color:var(--accent); color:#fff; }
-    .dh-btn-ghost { background:transparent; color:var(--ink-muted);
-                    border-color:rgba(0,0,0,.12); flex:0 0 auto; padding:8px 12px; }
-    .dh-btn-ghost:hover { background:var(--surf-2); color:var(--ink); }
-    .dh-empty { grid-column:1/-1; text-align:center; padding:64px 24px; color:var(--ink-muted); }
-    .dh-show-more { text-align:center; margin-top:36px; }
-    .dh-more-btn { display:inline-flex; align-items:center; gap:8px; font-size:.79rem;
-                   font-weight:500; color:var(--ink); background:#fff; cursor:pointer;
-                   border:1.5px solid rgba(0,0,0,.14); border-radius:100px; padding:12px 28px;
-                   transition:all .18s; }
-    .dh-more-btn:hover { background:var(--ink); color:#fff; transform:translateY(-2px); }
-
-    /* ── Footer ── */
-    .dh-footer { background:var(--ink); color:rgba(255,255,255,.7); padding:60px 0 0; font-size:.84rem; }
-    .dh-footer-grid { display:grid; grid-template-columns:1.6fr 1fr 1fr; gap:48px; padding-bottom:48px; }
-    @media(max-width:720px){ .dh-footer-grid { grid-template-columns:1fr 1fr; } }
-    @media(max-width:440px){ .dh-footer-grid { grid-template-columns:1fr; } }
-    .dh-footer-brand { font-size:1.1rem; color:#fff; margin:12px 0 5px; }
-    .dh-footer-tag { font-size:.77rem; color:rgba(255,255,255,.38); margin:0; }
-    .dh-footer-social { display:flex; gap:8px; margin-top:18px; }
-    .dh-footer-social a { width:34px; height:34px; border-radius:50%; border:1px solid rgba(255,255,255,.15);
-                           display:flex; align-items:center; justify-content:center;
-                           color:rgba(255,255,255,.6); font-size:.88rem; text-decoration:none; transition:.15s; }
-    .dh-footer-social a:hover { border-color:rgba(255,255,255,.5); color:#fff; }
-    .dh-footer-col-title { font-size:.64rem; font-weight:600; letter-spacing:.14em; text-transform:uppercase;
-                            color:var(--accent); margin-bottom:14px; }
-    .dh-footer-links { list-style:none; padding:0; margin:0; }
-    .dh-footer-links li { margin-bottom:10px; }
-    .dh-footer-links a { color:rgba(255,255,255,.52); text-decoration:none; transition:color .15s; }
-    .dh-footer-links a:hover { color:#fff; }
-    .dh-footer-bottom { border-top:1px solid rgba(255,255,255,.08); text-align:center;
-                         padding:20px 0; font-size:.74rem; color:rgba(255,255,255,.3); }
-    .dh-footer-bottom a { color:rgba(255,255,255,.48); text-decoration:none; }
-
-    @keyframes fadeUp { from{opacity:0;transform:translateY(18px);} to{opacity:1;transform:translateY(0);} }
-    @keyframes dotPulse { 0%,80%,100%{opacity:.2;transform:scale(.75);} 40%{opacity:1;transform:scale(1);} }
-
-    /* ══════════════════════════════════════════
-       MOBILE  ≤ 768px
-       Panel goes edge-to-edge.
-       Grid fills the full panel width with 2 cols.
-    ══════════════════════════════════════════ */
     @media(max-width:768px){
-    .dh-hero-panel {
-        padding: 12px 16px 44px;
-        align-self: stretch;
+        .nd-sec{ padding:52px 0; }
+        .dh-hero{ min-height:auto; padding:calc(var(--nav-h) + 24px) 0 48px; }
+        .dh-cat-grid{ gap:14px; }
+        .dh-cat-chip{ min-height:150px; padding:20px; }
+        .dh-cat-name{ font-size:1.15rem; max-width:70%; }
+        .cat-illus{ width:60px; height:60px; border-radius:16px; right:14px; bottom:14px; }
+        .cat-illus i{ font-size:1.6rem; }
+        .dh-grid{ grid-template-columns:1fr 1fr; gap:14px; }
+        .dh-trend-grid{ grid-template-columns:1fr 1fr; gap:14px; }
+        .dh-why-grid{ grid-template-columns:1fr 1fr; gap:14px; }
+        .dh-flash-card{ grid-template-columns:1fr; } .dh-flash-right{ order:-1; min-height:200px; }
+        .dh-flash-left{ padding:32px 26px; }
+        .dh-promo-strip{ grid-template-columns:1fr; }
+        .dh-footer-grid{ grid-template-columns:1fr 1fr; gap:28px; }
+        .dh-card{ flex-basis:78vw; width:78vw; }
+        .dh-carousel-block{ padding:20px 16px 24px; }
     }
-
-    .dh-glass-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        overflow-x: visible;
-        gap: 9px;
-        width: 100%;
-        max-width: 100%;
-        padding: 4px 0 12px;
-        margin: 0;
+    @media(max-width:480px){
+        .dh-hero-stats{ gap:10px; } .dh-stat{ padding:14px 6px; } .dh-stat-num{ font-size:1.2rem; }
+        .dh-grid{ grid-template-columns:1fr; }
+        .dh-trend-grid,.dh-why-grid,.dh-footer-grid{ grid-template-columns:1fr; }
+        .dh-count{ gap:16px; } .dh-count-unit .cu-num{ font-size:1.8rem; }
     }
-
-    /* Medium square — fixed height instead of aspect-ratio */
-    .dh-gtile {
-    flex: unset;
-    width: 70%;                  /* ← 80% of column width */
-    height: 80px;                /* ← fixed height */
-    aspect-ratio: unset;
-    margin: 0 auto;              /* ← centre the 80% tile in its grid cell */
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 10px 6px;
-    border-radius: 14px;
-    text-align: center;
-}
-
-    .dh-gtile .gtile-icon {
-        width: 32px; height: 32px;
-        border-radius: 9px;
-        font-size: .8rem;
-        flex-shrink: 0;
-    }
-
-    .dh-gtile .gtile-name {
-        white-space: normal;
-        overflow: hidden;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        font-size: .6rem;
-        line-height: 1.2;
-        text-align: center;
-        width: 100%;
-    }
-
-    /* Everything else unchanged */
-    .dh-hero-text  { padding:28px 24px 0; }
-    .dh-track { padding-left:16px; }
-    .dh-track .dh-card:last-child { margin-right:16px; }
-    .dh-grid { grid-template-columns:repeat(2,1fr); gap:12px; }
-    .dh-card-body { padding:12px 14px 14px; }
-    .dh-card-title { font-size:.88rem; }
-    .dh-card-desc  { display:none; }
-    .dh-sec-head   { margin-bottom:14px; }
-    .dh-sec-title  { font-size:1.15rem; }
-    .dh-more-btn   { width:100%; justify-content:center; }
-    .dh-footer-grid { grid-template-columns:1fr !important; gap:28px; }
-    .dh-footer { padding:36px 0 0; }
-    input,select,textarea { font-size:16px !important; }
-}
-
-    * { -webkit-tap-highlight-color:transparent; -webkit-overflow-scrolling:touch; }
-    .pwa-banner {
-    position: fixed;
-    bottom: calc(var(--bot-nav-h, 60px) + env(safe-area-inset-bottom, 0px) + 8px);
-    left: 12px; right: 12px;
-    background: #0f172a;
-    border-radius: 16px;
-    padding: 14px 16px;
-    display: flex; align-items: center; gap: 12px;
-    z-index: 8000;
-    box-shadow: 0 8px 32px rgba(0,0,0,.35);
-    animation: slideUp .35s cubic-bezier(.4,0,.2,1) both;
-    max-width: 480px;
-    margin: 0 auto;
-}
-@keyframes slideUp {
-    from { opacity:0; transform:translateY(20px); }
-    to   { opacity:1; transform:translateY(0); }
-}
-.pwa-banner-icon {
-    width: 44px; height: 44px; border-radius: 10px;
-    flex-shrink: 0; overflow: hidden;
-}
-.pwa-banner-icon img { width:100%; height:100%; object-fit:cover; }
-.pwa-banner-body { flex:1; min-width:0; }
-.pwa-banner-title {
-    font-size: .85rem; font-weight: 700; color: #fff;
-    margin-bottom: 2px;
-}
-.pwa-banner-sub {
-    font-size: .72rem; color: rgba(255,255,255,.55);
-}
-.pwa-banner-actions { display:flex; gap:7px; flex-shrink:0; }
-.pwa-install-btn {
-    background: #fff; color: #0f172a;
-    border: none; border-radius: 100px;
-    padding: 8px 16px; font-size: .78rem; font-weight: 700;
-    cursor: pointer; white-space: nowrap;
-    transition: background .15s;
-}
-.pwa-install-btn:hover { background: #f1f5f9; }
-.pwa-dismiss-btn {
-    background: rgba(255,255,255,.12); color: rgba(255,255,255,.7);
-    border: none; border-radius: 100px;
-    padding: 8px 12px; font-size: .78rem; font-weight: 600;
-    cursor: pointer; white-space: nowrap;
-    transition: background .15s;
-}
-.pwa-dismiss-btn:hover { background: rgba(255,255,255,.2); }
-
-/* iOS instruction sheet */
-.pwa-ios-sheet {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    background: #fff;
-    border-radius: 20px 20px 0 0;
-    padding: 24px 24px calc(24px + env(safe-area-inset-bottom, 0px));
-    z-index: 8000;
-    box-shadow: 0 -8px 40px rgba(0,0,0,.18);
-    transform: translateY(100%);
-    transition: transform .3s cubic-bezier(.4,0,.2,1);
-    max-width: 480px;
-    margin: 0 auto;
-}
-.pwa-ios-sheet.open { transform: translateY(0); }
-.pwa-ios-handle {
-    width: 36px; height: 4px; background: #e2e8f0;
-    border-radius: 2px; margin: 0 auto 20px;
-}
-.pwa-ios-steps { list-style: none; padding: 0; margin: 16px 0 0; }
-.pwa-ios-step {
-    display: flex; align-items: flex-start; gap: 12px;
-    padding: 10px 0; border-bottom: 1px solid #f1f5f9;
-    font-size: .88rem; color: #374151;
-}
-.pwa-ios-step:last-child { border-bottom: none; }
-.pwa-ios-step-num {
-    width: 24px; height: 24px; border-radius: 50%;
-    background: #0f172a; color: #fff;
-    font-size: .7rem; font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; margin-top: 1px;
-}
-.pwa-ios-icon {
-    display: inline-flex; align-items: center; justify-content: center;
-    background: #f1f5f9; border-radius: 6px;
-    padding: 2px 7px; font-size: .8rem;
-    margin: 0 3px; vertical-align: middle;
-}
-.pwa-backdrop {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,.5);
-    z-index: 7999; display: none;
-}
-.pwa-backdrop.open { display: block; }
-@media(max-width: 768px) {
-    .loc-trigger {
-        padding: 7px 10px 7px 8px;
-        font-size: .74rem;
-        max-width: 160px;
-    }
-    .lt-pin { width: 22px; height: 22px; font-size: .58rem; }
-    .lt-label { max-width: 90px; }
-}
-
-/* Hide loc-pill since it was in hero — no longer needed */
-.loc-pill { display: none !important; }
-.badge-offer {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: linear-gradient(135deg, #dc2626, #f97316);
-    color: #fff;
-    font-size: .72rem;
-    font-weight: 800;
-    letter-spacing: .02em;
-    padding: 5px 11px;
-    border-radius: 8px 8px 8px 2px;
-    box-shadow: 0 3px 10px rgba(220,38,38,.3);
-    z-index: 5;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-}
-.badge-offer i { font-size: .65rem; }
-
-@media (max-width: 768px) {
-    .dh-nav-toggle,
-    .dh-nav-actions {
-        display: none !important;
-    }
-}
     </style>
-    {{-- ═══════════════════════════════════════════════════
-     DROP THIS <style> BLOCK into frontend-app.blade.php
-     Replace / merge with existing carousel CSS rules.
-     Search for ".dh-carousel-sec" and replace that block.
-═══════════════════════════════════════════════════ --}}
-<style>
-/* ── Carousel section wrapper ──────────────────── */
-.dh-carousel-sec {
-    padding: 28px 0 8px;
-    background: var(--surf);
-}
-
-.dh-carousel-block {
-    margin-bottom: 36px;
-}
-.dh-carousel-block:last-child { margin-bottom: 0; }
-
-/* ── Carousel header ───────────────────────────── */
-.dh-carousel-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 14px;
-    padding: 0 2px;
-}
-.dh-carousel-title {
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: var(--ink);
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-.dh-cat-badge-icon {
-    width: 34px; height: 34px;
-    border-radius: 10px; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-size: .82rem;
-}
-.dh-carousel-controls {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-.dh-c-btn {
-    width: 30px; height: 30px;
-    border-radius: 50%;
-    border: 1.5px solid rgba(0,0,0,.1);
-    background: #fff;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: .75rem;
-    color: var(--ink-muted);
-    transition: all .15s;
-    -webkit-tap-highlight-color: transparent;
-    flex-shrink: 0;
-}
-.dh-c-btn:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
-.dh-c-btn:active { transform: scale(.92); }
-
-/* ── Track outer (fade edges) ──────────────────── */
-.dh-track-outer {
-    position: relative;
-    /* Negative margin so cards bleed to edge on mobile */
-    margin: 0 -24px;
-    padding: 0 24px;
-}
-/* Fade-out right edge */
-.dh-track-outer::after {
-    content: '';
-    position: absolute;
-    right: 0; top: 0; bottom: 4px;
-    width: 60px;
-    pointer-events: none;
-    z-index: 2;
-    background: linear-gradient(to left, var(--surf) 10%, transparent);
-}
-
-/* ── Scrollable track ──────────────────────────── */
-.dh-track {
-    display: flex;
-    gap: 14px;
-    overflow-x: auto;
-    padding: 4px 24px 16px;
-    /* Smooth momentum on iOS */
-    -webkit-overflow-scrolling: touch;
-    /* Snap to cards */
-    scroll-snap-type: x mandatory;
-    /* Hide scrollbar everywhere */
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    /* Smooth arrow-button scrolling */
-    scroll-behavior: smooth;
-    /* Allow grab cursor for drag */
-    cursor: grab;
-    user-select: none;
-}
-.dh-track::-webkit-scrollbar { display: none; }
-.dh-track.is-dragging {
-    cursor: grabbing;
-    scroll-behavior: auto; /* disable smooth during drag for 1:1 feel */
-}
-
-/* ── Cards inside track ────────────────────────── */
-.dh-track .dh-card {
-    flex: 0 0 260px;
-    scroll-snap-align: start;
-    /* Slight scale-up on hover for desktop */
-    transition: transform .2s, box-shadow .2s;
-}
-.dh-track .dh-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--sh-md);
-}
-/* Prevent click-through during drag */
-.dh-track.is-dragging .dh-card { pointer-events: none; }
-
-/* ── Card image height in carousel ──────────────── */
-.dh-track .dh-card-media img:not(.dh-card-bg):not(.dh-card-fg),
-.dh-track .dh-card-media video {
-    height: 195px;
-}
-.dh-track .dh-card-media .ratio { height: 170px; }
-
-/* ── Compact card body in carousel ─────────────── */
-.dh-track .dh-card-body {
-    padding: 12px 14px 14px;
-}
-.dh-track .dh-card-title {
-    font-size: .88rem;
-    -webkit-line-clamp: 2;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    margin-bottom: 6px;
-}
-.dh-track .dh-card-desc { display: none; } /* hide desc in carousel */
-.dh-track .dh-card-meta { margin-bottom: 10px; }
-.dh-track .dh-card-actions .dh-btn {
-    padding: 7px 12px;
-    font-size: .72rem;
-}
-
-/* ── Mobile tweaks ──────────────────────────────── */
-@media (max-width: 640px) {
-    .dh-track .dh-card {
-        flex: 0 0 220px;
-    }
-    .dh-track .dh-card-media img:not(.dh-card-bg):not(.dh-card-fg),
-    .dh-track .dh-card-media video {
-        height: 195px;
-    }
-    .dh-track-outer {
-        margin: 0 -16px;
-        padding: 0 16px;
-    }
-    .dh-track {
-        padding: 4px 16px 14px;
-        gap: 12px;
-    }
-    /* Wider first card peek — shows half the next card */
-    .dh-track .dh-card { flex: 0 0 75vw; max-width: 260px; }
-}
-
-/* ── Spinner ────────────────────────────────────── */
-.sec-spinner { text-align: center; padding: 40px 0; }
-.sec-spinner span {
-    display: inline-block; width: 9px; height: 9px;
-    border-radius: 50%; background: var(--accent);
-    margin: 0 3px;
-    animation: dotPulse 1.2s infinite both;
-}
-.sec-spinner span:nth-child(2) { animation-delay: .2s; }
-.sec-spinner span:nth-child(3) { animation-delay: .4s; }
-/* ── Equal height cards in carousel ── */
-.dh-track {
-    align-items: stretch;  /* stretch all cards to tallest */
-}
-.dh-track .dh-card {
-    flex: 0 0 260px;
-    display: flex;
-    flex-direction: column;
-    height: auto;          /* let stretch handle it */
-}
-.dh-track .dh-card-media img:not(.dh-card-bg):not(.dh-card-fg),
-.dh-track .dh-card-media video {
-    height: 195px;
-    object-fit: cover;
-}
-.dh-track .dh-card-body {
-    flex: 1;               /* body grows to fill remaining height */
-    display: flex;
-    flex-direction: column;
-}
-.dh-track .dh-card-actions {
-    margin-top: auto;      /* pins actions to bottom */
-}
-
-@media (max-width: 640px) {
-    .dh-track .dh-card { flex: 0 0 75vw; max-width: 260px; }
-    .dh-track .dh-card-media img:not(.dh-card-bg):not(.dh-card-fg),
-    .dh-track .dh-card-media video { height: 195px; }
-}
-/* ── Fix meta row alignment in carousel ── */
-.dh-track .dh-card-meta {
-    flex-wrap: nowrap;
-    align-items: center;
-}
-.dh-track .dh-card .dh-meta-time {
-    margin-left: auto;
-    flex-shrink: 0;
-    font-size: 10px;
-    white-space: nowrap;
-}
-.dh-card-meta{
-    gap:0px !important;
-}
-
-.dh-card-title-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-}
-.dh-card-title-row .dh-card-title {
-    flex: 1;
-    min-width: 0;           /* lets Str::limit'd text truncate/wrap without pushing the rating off */
-}
-
-.dh-rating-view {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    flex-shrink: 0;          /* rating never gets squeezed by a long title */
-    margin: 0;                /* no longer needs its own-line spacing */
-}
-.dh-rating-view .dh-star-big-wrap {
-    position: relative;
-    display: inline-block;
-    font-size: 1rem;          /* slightly smaller to sit comfortably inline with the title */
-    line-height: 1;
-    color: rgba(0,0,0,.15);
-}
-.dh-rating-view .dh-star-big-fg {
-    position: absolute;
-    top: 0; left: 0;
-    overflow: hidden;
-    white-space: nowrap;
-    color: #f59e0b;
-}
-.dh-rating-view .dh-rating-avg-sm { font-size: .76rem; font-weight: 700; color: var(--ink); }
-.dh-rating-view .dh-rating-count-sm { font-size: .68rem; color: var(--ink-muted); }
-.dh-card-media {
-    position: relative;
-    aspect-ratio: 4 / 3;      /* uniform card height regardless of source image shape */
-    overflow: hidden;
-    background: var(--surface-2, #f1f1f1);
-}
-
-.dh-card-img-wrap { position: absolute; inset: 0; }
-
-/* Blurred, scaled copy fills the frame edge-to-edge */
-.dh-card-bg {
-    display: block;
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter: blur(18px) brightness(.85) saturate(1.15);
-    transform: scale(1.15); /* hides blur edge fringing */
-}
-
-/* Real image sits on top, always shown in full — no cropping */
-.dh-card-fg {
-    display: block;
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-</style>
 </head>
 <body>
 
 <nav class="dh-nav">
     <div class="dh-nav-inner">
-        <a href="{{ route('home') }}">
-            <img src="{{ site_logo_url() }}" alt="{{ $siteName }}" style="height:45px;">
+        <a href="{{ route('home') }}" class="dh-nav-logo">
+            <img src="{{ site_logo_url() }}" alt="{{ $siteName }}">
         </a>
+        <div class="dh-nav-links">
+            <a href="{{ route('posts.listing') }}">All Deals</a>
+            @foreach($categories->take(3) as $navCat)
+                <a href="{{ route('posts.listing', ['category_id' => $navCat->slug]) }}">{{ Str::limit($navCat->name, 16) }}</a>
+            @endforeach
+            <a href="{{ route('contact') }}">Contact</a>
+        </div>
+        <a href="{{ route('posts.listing') }}" class="dh-nav-search">
+            <i class="fas fa-magnifying-glass"></i> search
+        </a>
+        <div class="dh-nav-spacer"></div>
         <button class="loc-trigger" id="locTrigger" type="button"
                 onclick="window.openLocationPopup && window.openLocationPopup()">
             <span class="lt-pin"><i class="fas fa-map-marker-alt"></i></span>
             <span class="lt-dot"></span>
-            <span class="lt-label" id="locLabel">Choose your area</span>
+            <span class="lt-label" id="locLabel">Location</span>
             <i class="fas fa-chevron-down lt-chevron"></i>
         </button>
-        <button class="dh-nav-toggle" id="navToggle" aria-label="Menu">
-            <span></span><span></span><span></span>
-        </button>
+        <button class="dh-nav-toggle" id="navToggle" aria-label="Menu"><span></span></button>
         <div class="dh-nav-actions" id="navActions">
-            <a href="https://www.instagram.com/dealshood?igsh=NHJpdDhkYmJ2dTlj"
-               target="_blank" class="dh-btn-nav dh-btn-ig">
-                <i class="bi bi-instagram"></i> Follow
-            </a>
-            <a href="https://wa.me/918086087050?text=Hello%20I%20am%20interested%20in%20your%20listing"
-               target="_blank" class="dh-btn-nav dh-btn-wa">
-                <i class="bi bi-whatsapp"></i> Contact
+            <a href="{{ Route::has('login') ? route('login') : '#' }}" class="dh-btn-signin">Sign In</a>
+            <a href="#" class="dh-btn-download" onclick="return dhInstallApp(event)">
+                <i class="fas fa-download" style="font-size:.72rem;"></i> Download App
             </a>
         </div>
     </div>
-    {{-- <button id="pwaInstallBtn"
-        onclick="installPWA()"
-        style="display:none;align-items:center;gap:6px;
-               font-size:.75rem;font-weight:600;
-               border:1.5px solid rgba(0,0,0,.1);
-               background:#fff;color:var(--ink);
-               border-radius:100px;padding:8px 16px;
-               cursor:pointer;transition:all .15s;">
-    <i class="fas fa-download"></i> Install App
-</button> --}}
-{{-- Android/Chrome banner --}}
+
+{{-- Android/Chrome PWA banner --}}
 <div class="pwa-banner" id="pwaBanner" style="display:none;">
-    <div class="pwa-banner-icon">
-        <img src="/frontend/img/icons/icon-192x192.png" alt="DealsHood">
-    </div>
+    <div class="pwa-banner-icon"><img src="/frontend/img/icons/icon-192x192.png" alt="DealsHood"></div>
     <div class="pwa-banner-body">
         <div class="pwa-banner-title">Install DealsHood</div>
         <div class="pwa-banner-sub">Add to home screen for quick access</div>
@@ -1018,8 +543,7 @@
 <div class="pwa-ios-sheet" id="pwaIosSheet">
     <div class="pwa-ios-handle"></div>
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
-        <img src="/frontend/img/icons/icon-72x72.png"
-             style="width:44px;height:44px;border-radius:10px;" alt="">
+        <img src="/frontend/img/icons/icon-72x72.png" style="width:44px;height:44px;border-radius:10px;" alt="">
         <div>
             <div style="font-size:1rem;font-weight:800;color:#0f172a;">Install DealsHood</div>
             <div style="font-size:.78rem;color:#64748b;">Add to your home screen</div>
@@ -1028,36 +552,22 @@
     <ul class="pwa-ios-steps">
         <li class="pwa-ios-step">
             <span class="pwa-ios-step-num">1</span>
-            <span>
-                Tap the <span class="pwa-ios-icon">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
-                        <polyline points="16 6 12 2 8 6"/>
-                        <line x1="12" y1="2" x2="12" y2="15"/>
-                    </svg>
-                    Share
-                </span>
-                button at the bottom of Safari
-            </span>
+            <span>Tap the <span class="pwa-ios-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/>
+                    <line x1="12" y1="2" x2="12" y2="15"/></svg> Share</span> button at the bottom of Safari</span>
         </li>
         <li class="pwa-ios-step">
             <span class="pwa-ios-step-num">2</span>
-            <span>
-                Scroll down and tap
-                <span class="pwa-ios-icon">＋ Add to Home Screen</span>
-            </span>
+            <span>Scroll down and tap <span class="pwa-ios-icon">＋ Add to Home Screen</span></span>
         </li>
         <li class="pwa-ios-step">
             <span class="pwa-ios-step-num">3</span>
             <span>Tap <strong>Add</strong> in the top right corner</span>
         </li>
     </ul>
-    <button onclick="closePwaIos()"
-            style="width:100%;margin-top:16px;padding:13px;
-                   background:#0f172a;color:#fff;border:none;
-                   border-radius:12px;font-size:.88rem;font-weight:700;cursor:pointer;">
-        Got it
-    </button>
+    <button onclick="closePwaIos()" style="width:100%;margin-top:16px;padding:13px;background:#0a2a68;color:#fff;
+            border:none;border-radius:12px;font-size:.88rem;font-weight:700;cursor:pointer;">Got it</button>
 </div>
 </nav>
 
@@ -1078,100 +588,102 @@ $palette = [
 ];
 @endphp
 
+{{-- ═══════════════════════ HERO ═══════════════════════ --}}
 <header class="dh-hero">
-    <div class="dh-hero-bg" id="heroBg" style="background-image:url('{{ $heroBannerUrl }}');background-size:cover;background-position:center;"></div>
+    <div class="dh-hero-bg" id="heroBg" style="background-image:url('{{ $heroBannerUrl }}');"></div>
     <div class="dh-hero-overlay"></div>
 
-    <div class="dh-hero-text">
-        <h1 class="dh-hero-title">Discover the best deals near you.</h1>
-        {{-- <p class="dh-hero-sub" id="heroSub">Pick your area or browse by category below</p> --}}
+    <div class="dh-hero-inner">
+        <span class="dh-hero-badge"><i class="fas fa-bolt"></i> Over {{ max(20, $categories->sum('posts_count')) }}+ Live Offers Today</span>
+        <h1 class="dh-hero-title">Discover the Best Deals Around You</h1>
+        <p class="dh-hero-lead">Never miss a discount. Find verified promo codes for fashion, electronics, food, travel, and more.</p>
 
-        {{-- <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
-            <button class="loc-trigger" id="locTrigger" type="button"
+        <form class="dh-hero-search" action="{{ route('posts.listing') }}" method="GET">
+            <i class="fas fa-magnifying-glass"></i>
+            <input type="text" name="keyword" placeholder="Search deals, stores, brands">
+            <button class="hs-loc" type="button" title="Choose your area"
                     onclick="window.openLocationPopup && window.openLocationPopup()">
-                <span class="lt-pin"><i class="fas fa-map-marker-alt"></i></span>
-                <span class="lt-dot"></span>
-                <span class="lt-label" id="locLabel">Choose your area</span>
-                <i class="fas fa-chevron-down lt-chevron"></i>
+                <i class="fas fa-location-dot"></i>
             </button>
-            {{-- <div class="loc-pill" id="locPill"
-                 onclick="window.openLocationPopup && window.openLocationPopup()">
-                <i class="fas fa-map-marker-alt" style="font-size:.62rem;opacity:.75;"></i>
-                <span id="locPillName"></span>
-                <button class="lp-clear" id="locPillClear" title="Change area"
-                        onclick="event.stopPropagation();clearLoc();">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div> --}}
-        {{-- </div> --}}
-    </div>
+        </form>
 
-
-<div class="dh-cat-sec">
-    <div class="dh-cat-scroll" id="catGrid">
-
-        @foreach ($categories as $i => $cat)
-            @php $p = $palette[$i % count($palette)]; @endphp
-            <a href="{{ route('posts.listing', ['category_id' => $cat->slug]) }}"
-               class="dh-cat-chip"
-               data-base="{{ route('posts.listing', ['category_id' => $cat->slug]) }}">
-                <div class="ripple-wrap"></div>
-                <div class="dh-cat-icon" style="background:{{ $p['bg'] }};">
-                    <i class="fas {{ $p['icon'] }}" style="color:{{ $p['ic'] }};"></i>
-                </div>
-                <span class="dh-cat-name">{{ $cat->name }}</span>
+        <div class="dh-hero-cta">
+            <a href="{{ route('posts.listing') }}" class="dh-btn-explore">
+                Explore Deals
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </a>
-        @endforeach
+            <a href="#categories" class="dh-btn-cats">View Categories</a>
+        </div>
 
-    </div>
-
-</div>
-
-    <div class="dh-hero-wave">
-        <svg viewBox="0 0 1440 56" fill="none">
-            <path d="M0 56H1440V28C1200 56 960 8 720 8C480 8 240 56 0 28V56Z" fill="#faf9f7"/>
-        </svg>
+        <div class="dh-hero-stats">
+            <div class="dh-stat">
+                <div class="dh-stat-num">{{ max(1, $localities->count()) }}+</div>
+                <div class="dh-stat-lbl">Localities</div>
+            </div>
+            <div class="dh-stat">
+                <div class="dh-stat-num">{{ max(1, $categories->sum('posts_count')) }}+</div>
+                <div class="dh-stat-lbl">Local Businesses</div>
+            </div>
+            <div class="dh-stat">
+                <div class="dh-stat-num">24 hrs</div>
+                <div class="dh-stat-lbl">Ad Review Time</div>
+            </div>
+        </div>
     </div>
 </header>
 
-
-<section class="dh-carousel-sec">
+{{-- ═══════════════════════ SHOP BY CATEGORIES ═══════════════════════ --}}
+<section class="nd-sec" id="categories">
     <div class="wrap">
-        <div class="dh-sec-head">
-            <div>
-                {{-- <div class="dh-eyebrow">Popular</div>
-                <h2 class="dh-sec-title" id="carouselHeading">Top Deals by Category</h2> --}}
-            </div>
-            {{-- <a href="{{ route('posts.listing') }}" class="dh-view-all" id="carouselViewAll">
-                See all <i class="bi bi-arrow-right"></i>
-            </a> --}}
+        <p class="nd-eyebrow">Explore</p>
+        <h2 class="nd-h2">Shop by Categories</h2>
+        <p class="nd-sub">Handpicked deals across every category you love.</p>
+
+        <div class="dh-cat-grid" id="catGrid">
+            @foreach ($categories as $i => $cat)
+                @php $p = $palette[$i % count($palette)]; @endphp
+                <a href="{{ route('posts.listing', ['category_id' => $cat->slug]) }}"
+                   class="dh-cat-chip" data-base="{{ route('posts.listing', ['category_id' => $cat->slug]) }}">
+                    <div class="ripple-wrap"></div>
+                    <div class="cat-illus"><i class="fas {{ $p['icon'] }}"></i></div>
+                    <div class="cat-head">
+                        <div class="dh-cat-name">{{ $cat->name }}</div>
+                        <div class="dh-cat-count">{{ number_format($cat->posts_count) }}+ deals</div>
+                    </div>
+                    <span class="dh-cat-more">
+                        <span class="cm-ico"><i class="fas fa-arrow-up-right-from-square" style="font-size:.55rem;"></i></span>
+                        Learn More
+                    </span>
+                </a>
+            @endforeach
         </div>
-        <div id="carouselContent">
+    </div>
+</section>
+
+{{-- ═══════════════════════ EVERYTHING LOCAL FEED ═══════════════════════ --}}
+<section class="nd-sec dh-feed" id="feed" style="padding-top:0;">
+    <div class="wrap">
+        <p class="nd-eyebrow">Near you in {{ $nearYou }}</p>
+        <h2 class="nd-h2">Everything Local, In One Clean Feed</h2>
+        <p class="nd-sub">Offers worth grabbing, services worth booking and deliveries that reach your door.</p>
+
+        <div id="carouselContent" style="margin-top:44px;">
             @foreach ($categoryCarousels as $i => $cat)
                 @if ($cat->posts->isNotEmpty())
                     @php $p = $palette[$i % count($palette)]; @endphp
                     <div class="dh-carousel-block">
                         <div class="dh-carousel-head">
                             <h3 class="dh-carousel-title">
-                                <span style="width:34px;height:34px;border-radius:9px;flex-shrink:0;
-                                             display:flex;align-items:center;justify-content:center;
-                                             font-size:.85rem;background:{{ $p['bg'] }};color:{{ $p['ic'] }};">
-                                    <i class="fas {{ $p['icon'] }}"></i>
+                                <span><i class="fas {{ $p['icon'] }}"></i></span>
+                                <span>
+                                    {{ $cat->name }}
+                                    <small>Limited-time offers from businesses near you</small>
                                 </span>
-                                {{ $cat->name }}
                             </h3>
                             <div class="dh-carousel-controls">
-                                {{-- <a href="{{ route('posts.listing', ['category_id' => $cat->slug]) }}"
-                                   class="dh-view-all me-1">
-                                    See all {{ number_format($cat->posts_count) }}
-                                    <i class="bi bi-arrow-right"></i>
-                                </a> --}}
-                                <button class="dh-c-btn c-prev" data-target="cr-{{ $cat->id }}">
-                                    <i class="bi bi-chevron-left"></i>
-                                </button>
-                                <button class="dh-c-btn c-next" data-target="cr-{{ $cat->id }}">
-                                    <i class="bi bi-chevron-right"></i>
-                                </button>
+                                <a href="{{ route('posts.listing', ['category_id' => $cat->slug]) }}" class="dh-view-all me-1">See all</a>
+                                <button class="dh-c-btn c-prev" data-target="cr-{{ $cat->id }}" aria-label="Previous"><i class="bi bi-chevron-left"></i></button>
+                                <button class="dh-c-btn c-next" data-target="cr-{{ $cat->id }}" aria-label="Next"><i class="bi bi-chevron-right"></i></button>
                             </div>
                         </div>
                         <div class="dh-track-outer">
@@ -1188,278 +700,390 @@ $palette = [
     </div>
 </section>
 
-<section class="dh-latest-sec">
+{{-- ═══════════════════════ TODAY'S TRENDING DEALS ═══════════════════════ --}}
+@if($trending->isNotEmpty())
+<section class="dh-trend" id="trending">
+    <div class="wrap">
+        <p class="nd-eyebrow">Hot right now</p>
+        <h2 class="nd-h2">Today's Trending Deals</h2>
+        <p class="nd-sub">Curated by our team. Updated every hour.</p>
+
+        <div class="dh-trend-grid">
+            @foreach($trending as $t)
+                @php $timg = $t->getFirstMediaUrl('posts') ?: asset('frontend/img/default.jpg'); @endphp
+                <div class="dh-trend-card">
+                    <a href="{{ $t->url }}" class="dh-trend-img"><img src="{{ $timg }}" alt="{{ $t->title }}" loading="lazy"></a>
+                    <div class="dh-trend-body">
+                        @if($t->company_name)<div class="dh-trend-biz"><i class="fas fa-store"></i> {{ $t->company_name }}</div>@endif
+                        <div class="dh-trend-title">{{ Str::limit($t->title, 70) }}</div>
+                        @if($t->offer_percentage)
+                            <div class="dh-trend-price"><span class="dh-trend-off">{{ $t->offer_percentage }}</span></div>
+                        @endif
+                        <div class="dh-trend-ends">
+                            <i class="far fa-clock"></i>
+                            @if($t->expiry_date && !\Carbon\Carbon::parse($t->expiry_date)->isPast())
+                                Ends {{ \Carbon\Carbon::parse($t->expiry_date)->diffForHumans(['parts'=>1]) }}
+                            @else
+                                Limited time offer
+                            @endif
+                        </div>
+                        <a href="{{ $t->url }}" class="dh-trend-btn">View Deal
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                        </a>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
+        <div class="dh-trend-all"><a href="{{ route('posts.listing', ['sort'=>'trending']) }}">View all deals</a></div>
+    </div>
+</section>
+
+{{-- ═══════════════════════ FLASH SALE ═══════════════════════ --}}
+<section class="dh-flash">
+    <div class="wrap">
+        <div class="dh-flash-card">
+            <div class="dh-flash-left">
+                <div class="dh-flash-tag"><i class="fas fa-bolt"></i> Flash Sale — Limited Time</div>
+                <h2 class="dh-flash-h">Up to 50% on top brands</h2>
+                <p class="dh-flash-p">Blink and you'll miss it. Our biggest flash sale of the week ends soon.</p>
+                <div class="dh-count" id="flashCountdown">
+                    <div class="dh-count-unit"><div class="cu-num" data-h>05</div><div class="cu-lbl">Hours</div></div>
+                    <div class="dh-count-unit"><div class="cu-num" data-m>42</div><div class="cu-lbl">Minutes</div></div>
+                    <div class="dh-count-unit"><div class="cu-num" data-s>10</div><div class="cu-lbl">Seconds</div></div>
+                </div>
+                <a href="{{ route('posts.listing', ['sort'=>'trending']) }}" class="dh-flash-btn">Shop the Sale
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </a>
+            </div>
+            <div class="dh-flash-right">
+                <div class="fr-inner">
+                    <div style="font-size:.9rem;font-weight:700;letter-spacing:.1em;">SPECIAL OFFER</div>
+                    <div class="fr-big">50%</div>
+                    <div style="font-weight:700;">LIMITED TIME ONLY</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@endif
+
+{{-- ═══════════════════════ WHY CHOOSE ═══════════════════════ --}}
+<section class="nd-sec">
+    <div class="wrap">
+        <p class="nd-eyebrow">Our Promise</p>
+        <h2 class="nd-h2">Why Choose {{ $siteName }}</h2>
+        <p class="nd-sub">Built for shoppers who love a good bargain — without the hassle.</p>
+        <div class="dh-why-grid">
+            <div class="dh-why-card">
+                <div class="dh-why-ic"><i class="fas fa-shield-halved"></i></div>
+                <h3 class="dh-why-h">Verified Coupons</h3>
+                <p class="dh-why-p">Every code is tested by our team before publishing.</p>
+            </div>
+            <div class="dh-why-card">
+                <div class="dh-why-ic"><i class="fas fa-arrows-rotate"></i></div>
+                <h3 class="dh-why-h">Updated Daily</h3>
+                <p class="dh-why-p">Fresh deals dropped every single day, all year round.</p>
+            </div>
+            <div class="dh-why-card">
+                <div class="dh-why-ic"><i class="fas fa-wallet"></i></div>
+                <h3 class="dh-why-h">Cashback Rewards</h3>
+                <p class="dh-why-p">Earn real cash on every eligible purchase.</p>
+            </div>
+            <div class="dh-why-card">
+                <div class="dh-why-ic"><i class="fas fa-award"></i></div>
+                <h3 class="dh-why-h">Trusted Brands</h3>
+                <p class="dh-why-p">Only official partnerships with top local retailers.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{-- ═══════════════════════ PROMO STRIP ═══════════════════════ --}}
+@if($trending->count() >= 3)
+<section class="dh-promo-strip">
+    @foreach($trending->take(3) as $t)
+        @php $pimg = $t->getFirstMediaUrl('posts') ?: asset('frontend/img/default.jpg'); @endphp
+        <a href="{{ $t->url }}" class="dh-promo-tile">
+            <img src="{{ $pimg }}" alt="{{ $t->title }}" loading="lazy">
+            <span class="pt-label">(view offer)</span>
+        </a>
+    @endforeach
+</section>
+@endif
+
+{{-- ═══════════════════════ LATEST DEALS ═══════════════════════ --}}
+<section class="nd-sec dh-latest-sec">
     <div class="wrap">
         <div class="dh-sec-head">
             <div>
                 <div class="dh-eyebrow">Just in</div>
                 <h2 class="dh-sec-title" id="latestHeading">Latest Deals</h2>
             </div>
-            <a href="{{ route('posts.listing') }}" class="dh-view-all" id="latestViewAll">
-                View all <i class="bi bi-arrow-right"></i>
-            </a>
+            <a href="{{ route('posts.listing') }}" class="dh-view-all" id="latestViewAll">View all <i class="bi bi-arrow-right"></i></a>
         </div>
         <div class="dh-grid" id="postsGrid">
             @forelse ($posts as $post)
                 @include('frontend.post-single-card', ['post' => $post])
             @empty
-                <div class="dh-empty">
-                    <p style="font-size:2rem;opacity:.3;">🔍</p>
-                    <p>No deals yet — check back soon!</p>
-                </div>
+                <div class="dh-empty"><p style="font-size:2rem;opacity:.3;">🔍</p><p>No deals yet — check back soon!</p></div>
             @endforelse
         </div>
-            <div class="dh-show-more" id="showMoreWrap">
-               <a href="{{ route('posts.listing') }}" class="dh-more-btn" >
-                    Load More Deals
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </a>
-            </div>
+        <div class="dh-show-more" id="showMoreWrap">
+            <a href="{{ route('posts.listing') }}" class="dh-more-btn">Load More Deals
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+        </div>
     </div>
 </section>
 
+{{-- ═══════════════════════ FAQ ═══════════════════════ --}}
+<section class="nd-sec" id="faq" style="background:var(--bg-soft);">
+    <div class="wrap">
+        <p class="nd-eyebrow">FAQ</p>
+        <h2 class="nd-h2">Frequently Asked</h2>
+        <p class="nd-sub">Everything you need to know about {{ $siteName }}.</p>
+        <div class="dh-faq">
+            @php
+            $faqs = [
+                ['How does '.$siteName.' work?', 'We aggregate the best coupons, deals and offers from local brands and businesses. Browse a deal, tap View Details, and contact the business directly to redeem.'],
+                ['Are the deals verified?', 'Yes. Every listing is reviewed by our team before it goes live, typically within 24 hours.'],
+                ['How do I find deals near me?', 'Use the Location selector to pick your area — the whole feed updates to show offers, services and deliveries around you.'],
+                ['Is '.$siteName.' free to use?', 'Absolutely. Browsing deals and contacting businesses is completely free for shoppers.'],
+                ['Can I list my business?', 'Yes — reach out through the Contact page and our team will help you get your offers in front of local shoppers.'],
+            ];
+            @endphp
+            @foreach($faqs as $f)
+                <div class="dh-faq-item">
+                    <button class="dh-faq-q" type="button">{{ $f[0] }} <i class="fas fa-chevron-down"></i></button>
+                    <div class="dh-faq-a"><p>{{ $f[1] }}</p></div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+</section>
+
+{{-- ═══════════════════════ FOOTER ═══════════════════════ --}}
 <footer class="dh-footer">
     <div class="wrap">
         <div class="dh-footer-grid">
             <div>
-                <img src="{{ site_logo_url() }}" alt="{{ $siteName }}"
-                     style="height:32px;filter:brightness(0) invert(1);opacity:.8;">
-                <p class="dh-footer-brand">DealsHood</p>
-                <p class="dh-footer-tag">Discover the best deals around you.</p>
+                <div class="dh-footer-logo"><img src="{{ site_logo_url() }}" alt="{{ $siteName }}"></div>
+                <p class="dh-footer-tag">Your most trusted local deals, offers and services platform. Save smarter, shop happier.</p>
                 <div class="dh-footer-social">
-                    <a href="https://www.facebook.com/share/1DA56kRCJp"><i class="fab fa-facebook"></i></a>
                     <a href="https://www.instagram.com/dealshood" target="_blank"><i class="fab fa-instagram"></i></a>
-                    {{-- <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a> --}}
+                    <a href="https://www.facebook.com/share/1DA56kRCJp" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://wa.me/918086087050" target="_blank"><i class="fab fa-whatsapp"></i></a>
                 </div>
             </div>
-            {{-- <div>
+            <div>
                 <p class="dh-footer-col-title">Company</p>
                 <ul class="dh-footer-links">
-                    <li><a href="#">About Us</a></li>
-                    <li><a href="#">Advertise</a></li>
+                    <li><a href="{{ route('contact') }}">Contact Us</a></li>
+                    <li><a href="#categories">Categories</a></li>
+                    <li><a href="#trending">Trending</a></li>
+                    <li><a href="#faq">FAQ</a></li>
                 </ul>
             </div>
             <div>
-                <p class="dh-footer-col-title">Support</p>
+                <p class="dh-footer-col-title">Categories</p>
                 <ul class="dh-footer-links">
-                    <li><a href="#">Contact Us</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
+                    @foreach($categories->take(5) as $cat)
+                        <li><a href="{{ route('posts.listing', ['category_id' => $cat->slug]) }}">{{ $cat->name }}</a></li>
+                    @endforeach
                 </ul>
-            </div> --}}
+            </div>
+            <div>
+                <p class="dh-footer-col-title">Resources</p>
+                <ul class="dh-footer-links">
+                    <li><a href="{{ route('posts.listing') }}">All Deals</a></li>
+                    <li><a href="{{ route('contact') }}">Help Center</a></li>
+                    <li><a href="#faq">Privacy</a></li>
+                    <li><a href="#faq">Terms</a></li>
+                </ul>
+            </div>
         </div>
         <div class="dh-footer-bottom">
-            <p>&copy; <span id="footerYear"></span> <a href="#">DealsHood</a>. All rights reserved.</p>
+            <span>&copy; <span id="footerYear"></span> {{ $siteName }}. All rights reserved.</span>
+            <span>Made with ♥ locally</span>
         </div>
     </div>
 </footer>
 
 @include('frontend.frontend-mobile')
 @include('frontend.post-ad-modal')
-<style>
-@media(max-width: 768px) {
-    #postsGrid {
-        grid-template-columns: 1fr !important;
-        gap: 16px;
-    }
-}
-</style>
+
 <script src="/frontend/js/core/popper.min.js"></script>
 <script src="/frontend/js/core/bootstrap.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
 <script>
-$(document).on('mouseenter', '.dh-star', function () {
-            const val = $(this).data('value');
-            $(this).parent().children('.dh-star').each(function () {
-                $(this).toggleClass('hover', $(this).data('value') <= val);
-            });
-        });
-        $(document).on('mouseleave', '.dh-rating-stars', function () {
-            $(this).children('.dh-star').removeClass('hover');
-        });
-    $(document).on('click', '.dh-star', function () {
-    const val    = $(this).data('value');
-    const wrap   = $(this).closest('.dh-rating');
-    const postId = wrap.data('post-id');
-    const current = parseInt(wrap.data('current') || 0);
-
-    if (val === current) {
-        // Same star clicked again — remove rating
-        $.ajax({
-            url: '/posts/' + postId + '/rate',
-            type: 'DELETE',
-            data: { _token: '{{ csrf_token() }}' },
-            success: function (res) {
-                wrap.data('current', 0);
-                wrap.find('.dh-star').removeClass('active');
-                wrap.find('.dh-rating-avg').text(res.avg_rating.toFixed(1));
-                wrap.find('.dh-rating-count').text('(' + res.total + ' ratings)');
-            }
-        });
-        return;
-    }
-
-    $.ajax({
-        url: '/posts/' + postId + '/rate',
-        type: 'POST',
-        data: { _token: '{{ csrf_token() }}', rating: val },
-        success: function (res) {
-            wrap.data('current', val);
-            wrap.find('.dh-star').each(function () {
-                $(this).toggleClass('active', $(this).data('value') <= val);
-            });
-            wrap.find('.dh-rating-avg').text(res.avg_rating.toFixed(1));
-            wrap.find('.dh-rating-count').text('(' + res.total + ' ratings)');
-        }
-    });
-});
-    
-const CSRF        = '{{ csrf_token() }}';
-const LISTING_URL = '{{ route("posts.listing") }}';
-const HOME_URL    = '{{ route("home") }}';
-
+/* ══════════ Vanilla-JS features (independent of jQuery) ══════════ */
 document.getElementById('footerYear').textContent = new Date().getFullYear();
 
 document.getElementById('navToggle') && document.getElementById('navToggle').addEventListener('click', function () {
     document.getElementById('navActions').classList.toggle('open');
 });
 
-const heroBg = document.getElementById('heroBg');
+var heroBg = document.getElementById('heroBg');
 window.addEventListener('scroll', function () {
-    if (heroBg) heroBg.style.transform = 'translateY(' + (scrollY * .25) + 'px)';
+    if (heroBg) heroBg.style.transform = 'translateY(' + (scrollY * .18) + 'px)';
 }, { passive: true });
 
-// /* ── Smooth drag-to-scroll for every .dh-track ───── */
-// function makeDraggable(el) {
-//     if (!el) return;
-
-//     let isDown = false, startX = 0, scrollLeft = 0, wasDragged = false;
-//     let velX = 0, lastX = 0, lastT = 0, rafId = null;
-
-//     /* ── Mouse ── */
-//     el.addEventListener('mousedown', e => {
-//         isDown    = true;
-//         wasDragged = false;
-//         startX    = e.pageX - el.offsetLeft;
-//         scrollLeft = el.scrollLeft;
-//         lastX     = e.pageX;
-//         lastT     = Date.now();
-//         velX      = 0;
-//         el.classList.add('is-dragging');
-//         cancelAnimationFrame(rafId);
-//     });
-//     el.addEventListener('mouseleave', () => {
-//         if (!isDown) return;
-//         isDown = false;
-//         el.classList.remove('is-dragging');
-//         startMomentum(el);
-//     });
-//     el.addEventListener('mouseup', () => {
-//         isDown = false;
-//         el.classList.remove('is-dragging');
-//         startMomentum(el);
-//         setTimeout(() => wasDragged = false, 50);
-//     });
-//     el.addEventListener('mousemove', e => {
-//         if (!isDown) return;
-//         e.preventDefault();
-//         const x    = e.pageX - el.offsetLeft;
-//         const walk = (x - startX) * 1.2;
-//         if (Math.abs(walk) > 5) wasDragged = true;
-
-//         const now = Date.now();
-//         velX = (e.pageX - lastX) / (now - lastT || 1); // px per ms
-//         lastX = e.pageX;
-//         lastT = now;
-
-//         el.scrollLeft = scrollLeft - walk;
-//     });
-//     /* Block click after drag */
-//     el.addEventListener('click', e => {
-//         if (wasDragged) { e.preventDefault(); e.stopPropagation(); }
-//     }, true);
-
-//     /* ── Touch (native, momentum handled by OS) ── */
-//     let tx = 0, ts = 0;
-//     el.addEventListener('touchstart', e => {
-//         tx = e.touches[0].pageX;
-//         ts = el.scrollLeft;
-//         cancelAnimationFrame(rafId); // stop any ongoing momentum
-//     }, { passive: true });
-//     el.addEventListener('touchmove', e => {
-//         el.scrollLeft = ts + (tx - e.touches[0].pageX);
-//     }, { passive: true });
-
-//     /* ── Momentum (mouse only) ── */
-//     function startMomentum(track) {
-//         if (Math.abs(velX) < 0.05) return;
-//         let v = velX * 14; // initial momentum speed
-
-//         function step() {
-//             if (Math.abs(v) < 0.5) return;
-//             track.scrollLeft -= v;
-//             v *= 0.88; // friction
-//             rafId = requestAnimationFrame(step);
-//         }
-//         rafId = requestAnimationFrame(step);
-//     }
-// }
-
-// function initDrag() {
-//     document.querySelectorAll('.dh-track:not([data-drag])').forEach(el => {
-//         el.setAttribute('data-drag', '1');
-//         makeDraggable(el);
-//     });
-// }
-// initDrag();
-
-/* ── Arrow buttons — vanilla JS, no jQuery needed ── */
+/* ── Carousel arrows ── */
 document.addEventListener('click', function (e) {
     const btn = e.target.closest('.c-prev, .c-next');
     if (!btn) return;
     const track = document.getElementById(btn.dataset.target);
     if (!track) return;
     const card = track.querySelector('.dh-card');
-    const cardW = card ? (card.offsetWidth + 14) : 260;
+    const cardW = card ? (card.offsetWidth + 18) : 300;
     const dir   = btn.classList.contains('c-prev') ? -1 : 1;
     track.style.scrollBehavior = 'smooth';
     track.scrollBy({ left: dir * cardW * 2 });
     setTimeout(() => track.style.scrollBehavior = '', 500);
 });
 
+/* ── FAQ accordion ── */
+document.addEventListener('click', function (e) {
+    const q = e.target.closest('.dh-faq-q');
+    if (!q) return;
+    const item = q.closest('.dh-faq-item');
+    const ans  = item.querySelector('.dh-faq-a');
+    const open = item.classList.toggle('open');
+    ans.style.maxHeight = open ? ans.scrollHeight + 'px' : '0';
+});
+
+/* ── Flash sale countdown (rolling 6h window) ── */
+(function () {
+    const box = document.getElementById('flashCountdown');
+    if (!box) return;
+    const h = box.querySelector('[data-h]'), m = box.querySelector('[data-m]'), s = box.querySelector('[data-s]');
+    let end = parseInt(localStorage.getItem('dh_flash_end') || '0', 10);
+    if (!end || end < Date.now()) { end = Date.now() + 6 * 3600 * 1000; localStorage.setItem('dh_flash_end', end); }
+    function pad(n){ return String(n).padStart(2,'0'); }
+    function tick() {
+        let diff = Math.max(0, end - Date.now());
+        const hh = Math.floor(diff / 3600000); diff -= hh * 3600000;
+        const mm = Math.floor(diff / 60000);   diff -= mm * 60000;
+        const ss = Math.floor(diff / 1000);
+        h.textContent = pad(hh); m.textContent = pad(mm); s.textContent = pad(ss);
+        if (hh + mm + ss === 0) { end = Date.now() + 6 * 3600 * 1000; localStorage.setItem('dh_flash_end', end); }
+    }
+    tick(); setInterval(tick, 1000);
+})();
+
+/* ── Service worker ── */
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('SW registered:', reg.scope))
+            .catch(err => console.log('SW failed:', err));
+    });
+}
+
+/* ── PWA install ── */
+(function () {
+    var STORAGE_KEY  = 'dh_pwa_dismissed';
+    var isIOS        = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    var isSafari     = /safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent);
+    var isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+    var deferredPrompt = null, bannerShown = false;
+
+    // Exposed for the nav "Download App" button (works even if the passive banner was dismissed)
+    window.dhInstallApp = function (e) {
+        if (e) e.preventDefault();
+        if (isStandalone) { alert('DealsHood is already installed on this device.'); return false; }
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then(function (c) {
+                if (c.outcome === 'accepted') localStorage.setItem(STORAGE_KEY, '1');
+                deferredPrompt = null;
+            });
+        } else if (isIOS) { openIosSheet(); }
+        else { showManualInstruct(); }
+        return false;
+    };
+
+    function showBanner() { if (bannerShown || isStandalone || localStorage.getItem(STORAGE_KEY)) return; bannerShown = true; document.getElementById('pwaBanner').style.display = 'flex'; }
+    function hideBanner() { document.getElementById('pwaBanner').style.display = 'none'; }
+    window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); deferredPrompt = e; setTimeout(showBanner, 3000); });
+    var installBtn = document.getElementById('pwaInstallBtn');
+    if (installBtn) installBtn.addEventListener('click', function () { hideBanner(); window.dhInstallApp(); });
+    var dismissBtn = document.getElementById('pwaDismissBtn');
+    if (dismissBtn) dismissBtn.addEventListener('click', function () { hideBanner(); localStorage.setItem(STORAGE_KEY, '1'); });
+    window.addEventListener('appinstalled', function () { hideBanner(); deferredPrompt = null; localStorage.setItem(STORAGE_KEY, '1'); });
+    if (isIOS && isSafari && !isStandalone && !localStorage.getItem(STORAGE_KEY)) setTimeout(function () { openIosSheet(); }, 3000);
+    function openIosSheet() { document.getElementById('pwaIosSheet').classList.add('open'); document.getElementById('pwaBackdrop').classList.add('open'); }
+    window.closePwaIos = function () { document.getElementById('pwaIosSheet').classList.remove('open'); document.getElementById('pwaBackdrop').classList.remove('open'); localStorage.setItem(STORAGE_KEY, '1'); };
+    var backdrop = document.getElementById('pwaBackdrop');
+    if (backdrop) backdrop.addEventListener('click', function () { window.closePwaIos(); });
+    function showManualInstruct() {
+        var ua = navigator.userAgent.toLowerCase(), msg = 'Open your browser menu → "Add to Home Screen"';
+        if (ua.includes('samsung')) msg = 'Tap the ☰ menu → "Add page to" → "Home screen"';
+        else if (ua.includes('firefox')) msg = 'Tap the ⋮ menu → "Install" or "Add to Home Screen"';
+        else if (ua.includes('opera')) msg = 'Tap the ⋮ menu → "Add to Home Screen"';
+        var toast = document.createElement('div');
+        toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#0a2a68;color:#fff;padding:12px 20px;border-radius:100px;font-size:.82rem;font-weight:500;z-index:9999;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.3);';
+        toast.textContent = msg; document.body.appendChild(toast); setTimeout(() => toast.remove(), 5000);
+    }
+})();
+</script>
+
+<script>
+/* ══════════ jQuery-powered features ══════════ */
+const CSRF        = '{{ csrf_token() }}';
+const LISTING_URL = '{{ route("posts.listing") }}';
+const HOME_URL    = '{{ route("home") }}';
+
+$(document).on('mouseenter', '.dh-star', function () {
+    const val = $(this).data('value');
+    $(this).parent().children('.dh-star').each(function () {
+        $(this).toggleClass('hover', $(this).data('value') <= val);
+    });
+});
+$(document).on('mouseleave', '.dh-rating-stars', function () {
+    $(this).children('.dh-star').removeClass('hover');
+});
+$(document).on('click', '.dh-star', function () {
+    const val    = $(this).data('value');
+    const wrap   = $(this).closest('.dh-rating');
+    const postId = wrap.data('post-id');
+    const current = parseInt(wrap.data('current') || 0);
+    if (val === current) {
+        $.ajax({ url: '/posts/' + postId + '/rate', type: 'DELETE', data: { _token: CSRF },
+            success: function (res) {
+                wrap.data('current', 0); wrap.find('.dh-star').removeClass('active');
+                wrap.find('.dh-rating-avg').text(res.avg_rating.toFixed(1));
+                wrap.find('.dh-rating-count').text('(' + res.total + ' ratings)');
+            } });
+        return;
+    }
+    $.ajax({ url: '/posts/' + postId + '/rate', type: 'POST', data: { _token: CSRF, rating: val },
+        success: function (res) {
+            wrap.data('current', val);
+            wrap.find('.dh-star').each(function () { $(this).toggleClass('active', $(this).data('value') <= val); });
+            wrap.find('.dh-rating-avg').text(res.avg_rating.toFixed(1));
+            wrap.find('.dh-rating-count').text('(' + res.total + ' ratings)');
+        } });
+});
+
+/* ── Location filter (AJAX) ── */
 let activeLocSlug = '';
 let activeLocName = '';
 
 function setLocUI(slug, name) {
     activeLocSlug = slug || '';
     activeLocName = name || '';
-
-    document.getElementById('locLabel').textContent = slug ? name : 'Choose your area';
-
-    slug
-        ? document.getElementById('locTrigger').classList.add('has-loc')
-        : document.getElementById('locTrigger').classList.remove('has-loc');
-
-    // Update hero subtitle if it exists
-    const heroSub = document.getElementById('heroSub');
-    if (heroSub) {
-        heroSub.textContent = slug
-            ? 'Showing deals in ' + name
-            : 'Pick your area or browse by category below';
-    }
-
+    document.getElementById('locLabel').textContent = slug ? name : 'Location';
+    slug ? document.getElementById('locTrigger').classList.add('has-loc')
+         : document.getElementById('locTrigger').classList.remove('has-loc');
     refreshLinks();
 }
-
 function clearLoc() {
-    setLocUI('', '');
-    reloadContent();
+    setLocUI('', ''); reloadContent();
     try { localStorage.setItem('dh_locality_v1', JSON.stringify({slug:'',name:'All Areas',ts:Date.now()})); } catch(e){}
 }
-
 function refreshLinks() {
     document.querySelectorAll('#catGrid .dh-cat-chip[data-base]').forEach(el => {
         let href = el.dataset.base;
@@ -1467,12 +1091,9 @@ function refreshLinks() {
         el.href = href;
     });
     const base = LISTING_URL + (activeLocSlug ? '?locality_id=' + activeLocSlug : '');
-    const cvAll = document.getElementById('carouselViewAll');
-    if (cvAll) cvAll.href = base;
     const lvAll = document.getElementById('latestViewAll');
     if (lvAll) lvAll.href = base;
 }
-
 function reloadContent() {
     const spinner = '<div class="sec-spinner"><span></span><span></span><span></span></div>';
     $('#carouselContent').html(spinner);
@@ -1484,7 +1105,7 @@ function reloadContent() {
         headers: { 'X-Requested-With': 'XMLHttpRequest' },
         success: function (res) {
             $('#carouselContent').html(res.carousel_html ||
-                '<p style="text-align:center;color:var(--ink-muted);padding:32px 0;font-size:.85rem;">No popular deals in this area yet.</p>');
+                '<p style="text-align:center;color:var(--muted);padding:32px 0;font-size:.9rem;">No popular deals in this area yet.</p>');
             $('#postsGrid').html(res.posts_html || '');
             if (res.next_page) {
                 const btn = '<div class="dh-show-more" id="showMoreWrap"><button class="dh-more-btn" id="loadMoreBtn" data-next="'
@@ -1493,10 +1114,8 @@ function reloadContent() {
                     ? $('#showMoreWrap').show().find('#loadMoreBtn').data('next', res.next_page)
                     : $('#postsGrid').after(btn);
             } else { $('#showMoreWrap').hide(); }
-            $('#carouselHeading').text(activeLocSlug ? activeLocName + ' — Popular Deals' : 'Top Deals by Category');
             $('#latestHeading').text(activeLocSlug ? activeLocName + ' — Latest Deals' : 'Latest Deals');
             refreshLinks();
-            //initDrag();
         },
         error: function () { $('#carouselContent').html(''); }
     });
@@ -1512,7 +1131,6 @@ $(document).on('click', '.likeBtn', function () {
 $(document).on('click', '.shareBtn', async function () {
     const id = $(this).data('id');
     let url = $(this).data('url');
-
     try {
         const res  = await fetch('{{ route("shorten") }}', {
             method: 'POST',
@@ -1521,8 +1139,7 @@ $(document).on('click', '.shareBtn', async function () {
         });
         const data = await res.json();
         if (res.ok && data.short_url) url = data.short_url;
-    } catch (e) { /* keep the full URL */ }
-
+    } catch (e) {}
     navigator.share ? navigator.share({url}) : (navigator.clipboard.writeText(url), alert('Link copied!'));
     $.post('/posts/'+id+'/share', {_token:CSRF, platform:'web'});
 });
@@ -1540,175 +1157,14 @@ $(document).on('click', '#loadMoreBtn', function () {
     }).fail(()=> btn.text('Load More Deals').prop('disabled',false));
 });
 
-    // Register service worker
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js')
-                .then(reg => console.log('SW registered:', reg.scope))
-                .catch(err => console.log('SW failed:', err));
-        });
-    }
-
-
-
-
-(function () {
-    var STORAGE_KEY  = 'dh_pwa_dismissed';
-    var isIOS        = /iphone|ipad|ipod/i.test(navigator.userAgent);
-    var isSafari     = /safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent);
-    var isStandalone = window.navigator.standalone === true
-                    || window.matchMedia('(display-mode: standalone)').matches;
-
-    // Already installed or dismissed — stop here
-    if (isStandalone) return;
-    if (localStorage.getItem(STORAGE_KEY)) return;
-
-    var deferredPrompt = null;
-    var bannerShown    = false;
-
-    function showBanner() {
-        if (bannerShown) return;
-        bannerShown = true;
-        document.getElementById('pwaBanner').style.display = 'flex';
-    }
-
-    function hideBanner() {
-        document.getElementById('pwaBanner').style.display = 'none';
-    }
-
-    // ── Capture the install prompt ────────────────────
-    window.addEventListener('beforeinstallprompt', function (e) {
-    // Don't call e.preventDefault() — let Chrome show its native prompt
-    deferredPrompt = e;
-    console.log('PWA: beforeinstallprompt captured ✓');
-
-    // Still show our custom banner after 3s as extra nudge
-    setTimeout(showBanner, 3000);
-});
-
-    // ── Install button click ──────────────────────────
-   document.getElementById('pwaInstallBtn').addEventListener('click', async function () {
-    console.log('PWA: install clicked, prompt =', deferredPrompt);
-
-    hideBanner();
-
-    if (!deferredPrompt) {
-        if (isIOS) {
-            openIosSheet();
-        } else {
-            showManualInstruct();
-        }
-        return;
-    }
-
-    try {
-        // Show the native install dialog
-        await deferredPrompt.prompt();
-
-        // Wait for user response
-        const { outcome } = await deferredPrompt.userChoice;
-        console.log('PWA: user choice =', outcome);
-
-        if (outcome === 'accepted') {
-            localStorage.setItem(STORAGE_KEY, '1');
-        }
-    } catch (err) {
-        console.error('PWA prompt error:', err);
-        showManualInstruct();
-    } finally {
-        deferredPrompt = null;
-    }
-});
-
-    // ── Dismiss button ────────────────────────────────
-    document.getElementById('pwaDismissBtn').addEventListener('click', function () {
-        hideBanner();
-        localStorage.setItem(STORAGE_KEY, '1');
-    });
-
-    // ── Successfully installed ────────────────────────
-    window.addEventListener('appinstalled', function () {
-        console.log('PWA: installed successfully ✓');
-        hideBanner();
-        deferredPrompt = null;
-        localStorage.setItem(STORAGE_KEY, '1');
-    });
-
-    // ── iOS Safari ────────────────────────────────────
-    if (isIOS && isSafari) {
-        setTimeout(function () {
-            openIosSheet();
-        }, 3000);
-    }
-
-    function openIosSheet() {
-        document.getElementById('pwaIosSheet').classList.add('open');
-        document.getElementById('pwaBackdrop').classList.add('open');
-    }
-
-    window.closePwaIos = function () {
-        document.getElementById('pwaIosSheet').classList.remove('open');
-        document.getElementById('pwaBackdrop').classList.remove('open');
-        localStorage.setItem(STORAGE_KEY, '1');
-    };
-
-    document.getElementById('pwaBackdrop').addEventListener('click', function () {
-        window.closePwaIos();
-    });
-
-    // ── Manual install instructions (non-iOS, no prompt) ──
-    function showManualInstruct() {
-        var ua = navigator.userAgent.toLowerCase();
-        var msg = '';
-
-        if (ua.includes('samsung'))
-            msg = 'Tap the ☰ menu → "Add page to" → "Home screen"';
-        else if (ua.includes('firefox'))
-            msg = 'Tap the ⋮ menu → "Install" or "Add to Home Screen"';
-        else if (ua.includes('opera'))
-            msg = 'Tap the ⋮ menu → "Add to Home Screen"';
-        else
-            msg = 'Open your browser menu → "Add to Home Screen"';
-
-        // Show a small toast instead of alert
-        var toast = document.createElement('div');
-        toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);'
-            + 'background:#0f172a;color:#fff;padding:12px 20px;border-radius:100px;'
-            + 'font-size:.82rem;font-weight:500;z-index:9999;white-space:nowrap;'
-            + 'box-shadow:0 4px 20px rgba(0,0,0,.3);';
-        toast.textContent = msg;
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 5000);
-    }
-})();
+/* ── Category card ripple ── */
 $(document).on('click', '.dh-cat-chip', function(e) {
-    e.preventDefault();
-
-    // Active state
-    $('.dh-cat-chip').removeClass('active');
-    $(this).addClass('active');
-
-    // Ripple
     const wrap = $(this).find('.ripple-wrap')[0];
-    const r = document.createElement('span');
-    r.className = 'ripple-circle';
-    wrap.appendChild(r);
-    setTimeout(() => r.remove(), 450);
-
-    // Result bar
-    const name = $(this).find('.dh-cat-name').text().trim();
-    $('#catResultTxt').text(
-        name === 'All Deals' ? 'Showing all deals' : 'Showing ' + name + ' deals'
-    );
-
-    // Navigate after ripple finishes
-    const base = $(this).data('base');
-    let href = base;
-    if (activeLocSlug) href += (href.includes('?') ? '&' : '?') + 'locality_id=' + activeLocSlug;
-    setTimeout(() => { window.location.href = href; }, 180);
+    if (wrap) { const r = document.createElement('span'); r.className = 'ripple-circle'; wrap.appendChild(r); setTimeout(() => r.remove(), 450); }
 });
 </script>
-{{-- ── Structured Data: WebSite (enables Google Sitelinks Search) ── --}}
+
+{{-- ── Structured Data: WebSite ── --}}
 <script type="application/ld+json">
 {!! json_encode([
     '@context'        => 'https://schema.org',
@@ -1719,16 +1175,13 @@ $(document).on('click', '.dh-cat-chip', function(e) {
     'logo'            => $ogImage,
     'potentialAction' => [
         '@type'       => 'SearchAction',
-        'target'      => [
-            '@type'       => 'EntryPoint',
-            'urlTemplate' => url('/listing') . '?keyword={search_term_string}',
-        ],
+        'target'      => ['@type' => 'EntryPoint', 'urlTemplate' => url('/listing') . '?keyword={search_term_string}'],
         'query-input' => 'required name=search_term_string',
     ],
 ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
 </script>
 
-{{-- ── Structured Data: LocalBusiness / Organization ─────────────── --}}
+{{-- ── Structured Data: LocalBusiness / Organization ── --}}
 <script type="application/ld+json">
 {!! json_encode([
     '@context'  => 'https://schema.org',
@@ -1738,14 +1191,11 @@ $(document).on('click', '.dh-cat-chip', function(e) {
     'logo'      => $ogImage,
     'image'     => $ogImage,
     'description' => $siteDesc,
-    'sameAs'    => array_filter([
-        'https://www.instagram.com/dealshood',
-        'https://www.facebook.com/share/1DA56kRCJp',
-    ]),
+    'sameAs'    => array_filter(['https://www.instagram.com/dealshood','https://www.facebook.com/share/1DA56kRCJp']),
 ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
 </script>
 
-{{-- ── Structured Data: ItemList of categories ───────────────────── --}}
+{{-- ── Structured Data: ItemList of categories ── --}}
 <script type="application/ld+json">
 {!! json_encode([
     '@context'        => 'https://schema.org',
@@ -1762,7 +1212,6 @@ $(document).on('click', '.dh-cat-chip', function(e) {
 ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
 </script>
 
-{{-- ── Structured Data: ItemList of localities ───────────────────── --}}
 @if ($localities->count())
 <script type="application/ld+json">
 {!! json_encode([
@@ -1779,6 +1228,7 @@ $(document).on('click', '.dh-cat-chip', function(e) {
 ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
 </script>
 @endif
+
 @include('frontend.location-popup', ['localities' => $localities])
 </body>
 </html>
