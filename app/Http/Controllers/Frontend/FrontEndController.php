@@ -212,7 +212,7 @@ class FrontEndController extends Controller
         match ($request->sort) {
             'popular'  => $query->orderByDesc('views'),
             'trending' => $query->orderByRaw('(views + likes_data_count + shares_data_count) DESC'),
-            default    => $query->manualFirst()->latest(),
+            default    => $query->latest(),
         };
 
         $posts = $query->paginate(12)->withQueryString();
