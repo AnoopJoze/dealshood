@@ -780,6 +780,83 @@
     object-fit: contain;
 }
 </style>
+
+    {{-- ══════════ NEW NAVY THEME OVERRIDE ══════════ --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+    :root{
+        --navy:#0a2a68; --navy-deep:#071e4d; --blue:#123f8f; --blue-2:#1b4dc4;
+        --accent:#123f8f; --line:#e4e9f2; --muted:#5b6b8c;
+    }
+    body{ font-family:'Poppins',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif; }
+
+    /* Nav / hero accents */
+    .dh-nav{ box-shadow:0 2px 12px rgba(10,42,104,.05); }
+    .dh-hero-overlay{ background:linear-gradient(180deg,rgba(7,30,77,.72),rgba(7,30,77,.45)); }
+    .dh-hero-title{ font-weight:700; }
+    .dh-hero-eyebrow{ color:#fff; }
+
+    /* Chips / sort pills / search — navy active state */
+    .dh-chip.active{ background:var(--navy); border-color:var(--navy); }
+    .dh-chip:hover{ border-color:var(--navy); color:var(--navy); }
+    .dh-sort-pill.active{ background:var(--navy); border-color:var(--navy); }
+    .dh-sort-pill:hover{ border-color:var(--navy); color:var(--navy); }
+    .dh-search-btn{ background:var(--navy); }
+    .dh-search-btn:hover{ background:var(--navy-deep); }
+    .dh-search-input:focus{ border-color:var(--navy); box-shadow:0 0 0 3px rgba(10,42,104,.08); }
+    .dh-result-info strong{ color:var(--navy); }
+
+    /* ══════════ POST CARD (matches redesigned partial) ══════════ */
+    .dh-card{ background:#fff; border:1px solid var(--line); border-radius:16px; overflow:hidden;
+              display:flex; flex-direction:column; transition:transform .18s, box-shadow .18s; box-shadow:none; }
+    .dh-card:hover{ transform:translateY(-3px); box-shadow:0 10px 30px rgba(10,42,104,.10); }
+    .dh-card-media{ position:relative; aspect-ratio:16/11; background:#0b1e42; overflow:hidden; }
+    .dh-card-media a{ display:block; width:100%; height:100%; }
+    .dh-card-media img,.dh-card-media video{ width:100%; height:100%; object-fit:cover; display:block; }
+    .dh-card-loc{ position:absolute; left:10px; bottom:10px; display:inline-flex; align-items:center; gap:5px;
+                  background:rgba(10,20,40,.6); color:#fff; font-size:.72rem; font-weight:500;
+                  padding:5px 11px; border-radius:100px; backdrop-filter:blur(4px); }
+    .dh-card-fav{ position:absolute; right:10px; top:10px; width:34px; height:34px; border-radius:50%;
+                  background:rgba(255,255,255,.9); border:none; color:var(--navy); cursor:pointer;
+                  display:flex; align-items:center; justify-content:center; font-size:.82rem; transition:all .15s; }
+    .dh-card-fav.liked{ background:#e11d48; color:#fff; }
+    .dh-card-badge{ position:absolute; left:10px; top:10px; font-size:.6rem; font-weight:700;
+                    letter-spacing:.06em; text-transform:uppercase; padding:5px 10px; border-radius:6px; color:#fff; z-index:2; }
+    .dh-card-badge.hot{ background:#f97316; } .dh-card-badge.trend{ background:#eab308; color:#3a2c00; }
+    .dh-card-badge.free{ background:#16a34a; }
+    .dh-card-body{ padding:16px 16px 18px; display:flex; flex-direction:column; flex:1; }
+    .dh-badges{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
+    .dh-b{ font-size:.64rem; font-weight:600; letter-spacing:.04em; text-transform:uppercase;
+           color:var(--muted); background:#f4f6fa; border-radius:6px; padding:5px 9px; }
+    .dh-card-title-row{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:12px; }
+    .dh-card-title{ font-size:1rem; font-weight:600; color:var(--navy); line-height:1.32; text-decoration:none; }
+    .dh-rating-view{ display:flex; align-items:center; gap:4px; flex-shrink:0; }
+    .dh-star-big-wrap{ position:relative; font-size:.85rem; color:#e2e8f0; line-height:1; }
+    .dh-star-big-fg{ position:absolute; top:0; left:0; overflow:hidden; white-space:nowrap; color:#f59e0b; }
+    .dh-rating-avg-sm{ font-size:.8rem; font-weight:700; color:var(--navy); }
+    .dh-rating-count-sm{ font-size:.72rem; color:var(--muted); }
+    .dh-card-biz{ display:flex; align-items:center; gap:7px; font-size:.78rem; font-weight:600;
+                  color:#0f172a; text-transform:uppercase; letter-spacing:.02em; margin-bottom:12px; }
+    .dh-card-biz i{ color:var(--muted); }
+    .dh-card-desc{ display:none; }
+    .dh-card-meta{ display:flex; align-items:center; gap:14px; padding-top:12px; margin-top:auto;
+                   border-top:1px solid var(--line); font-size:.74rem; color:var(--muted); }
+    .dh-meta-btn{ background:none; border:none; padding:0; cursor:pointer; display:flex; align-items:center;
+                  gap:5px; color:var(--muted); font-family:inherit; font-size:.74rem; }
+    .dh-meta-btn.liked{ color:#e11d48; }
+    .dh-meta-box{ display:flex; align-items:center; gap:5px; }
+    .dh-meta-time{ margin-left:auto; display:flex; align-items:center; gap:5px; font-size:.72rem; white-space:nowrap; }
+    .dh-card-actions{ display:flex; gap:8px; margin-top:14px; }
+    .dh-btn{ display:inline-flex; align-items:center; justify-content:center; gap:6px;
+             font-size:.82rem; font-weight:600; border-radius:10px; padding:11px 16px; cursor:pointer;
+             border:none; transition:all .15s; text-decoration:none; }
+    .dh-btn-primary{ flex:1; background:var(--navy); color:#fff; }
+    .dh-btn-primary:hover{ background:var(--navy-deep); color:#fff; }
+    .dh-btn-ghost{ width:46px; background:#fff; border:1.5px solid var(--line); color:var(--navy); }
+    .dh-btn-ghost:hover{ border-color:var(--navy); }
+    </style>
 </head>
 <body>
 {{-- <nav class="dh-nav">
