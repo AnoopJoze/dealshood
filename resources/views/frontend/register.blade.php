@@ -172,6 +172,16 @@
             animation:spin .6s linear infinite; }
     @keyframes spin { to{transform:rotate(360deg);} }
     </style>
+    {{-- ══════════ NEW NAVY THEME ══════════ --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+    :root{ --accent:#123f8f; }
+    body{ font-family:'Poppins',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif; }
+    .btn-submit,.btn-primary,.auth-btn,.sort-pill.active,.dh-btn-primary{ background:#0a2a68; border-color:#0a2a68; }
+    .btn-submit:hover,.btn-primary:hover,.auth-btn:hover,.dh-btn-primary:hover{ background:#071e4d; }
+    </style>
 </head>
 <body>
 
