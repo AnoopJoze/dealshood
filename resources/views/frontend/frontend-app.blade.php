@@ -484,7 +484,8 @@
         .dh-flash-left{ padding:32px 26px; }
         .dh-promo-strip{ grid-template-columns:1fr; }
         .dh-footer-grid{ grid-template-columns:1fr 1fr; gap:28px; }
-        .dh-card{ flex-basis:78vw; width:78vw; }
+        /* size carousel cards to the track so the next card clearly peeks in */
+        .dh-card{ flex-basis:80%; width:80%; }
         .dh-carousel-block{ padding:20px 16px 24px; }
     }
     @media(max-width:480px){
@@ -652,7 +653,7 @@ $palette = [
                     <div class="cat-illus"><i class="fas {{ $p['icon'] }}"></i></div>
                     <div class="cat-head">
                         <div class="dh-cat-name">{{ $cat->name }}</div>
-                        <div class="dh-cat-count">{{ number_format($cat->posts_count) }}+ deals</div>
+                        <div class="dh-cat-count">{{ number_format($cat->posts_count) }}+ listings</div>
                     </div>
                 </a>
             @endforeach
