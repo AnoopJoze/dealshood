@@ -613,10 +613,10 @@ $palette = [
         </form>
 
         <div class="dh-hero-cta">
-            <a href="{{ route('posts.listing') }}" class="dh-btn-explore">
+            {{-- <a href="{{ route('posts.listing') }}" class="dh-btn-explore">
                 Explore Deals
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            </a>
+            </a> --}}
             <a href="#categories" class="dh-btn-cats">View Categories</a>
         </div>
 
@@ -853,10 +853,10 @@ $palette = [
         <div class="dh-faq">
             @php
             $faqs = [
-                ['How does '.$siteName.' work?', 'We aggregate the best coupons, deals and offers from local brands and businesses. Browse a deal, tap View Details, and contact the business directly to redeem.'],
-                ['Are the deals verified?', 'Yes. Every listing is reviewed by our team before it goes live, typically within 24 hours.'],
+                ['How does '.$siteName.' work?', 'We aggregate the best deals and offers from local brands and businesses. Browse a deal, tap View Details, and contact the business directly.'],
+                // ['Are the deals verified?', 'Yes. Every listing is reviewed by our team before it goes live, typically within 24 hours.'],
                 ['How do I find deals near me?', 'Use the Location selector to pick your area — the whole feed updates to show offers, services and deliveries around you.'],
-                ['Is '.$siteName.' free to use?', 'Absolutely. Browsing deals and contacting businesses is completely free for shoppers.'],
+                // ['Is '.$siteName.' free to use?', 'Absolutely. Browsing deals and contacting businesses is completely free for shoppers.'],
                 ['Can I list my business?', 'Yes — reach out through the Contact page and our team will help you get your offers in front of local shoppers.'],
             ];
             @endphp
