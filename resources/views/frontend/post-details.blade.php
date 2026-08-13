@@ -147,9 +147,14 @@
 
     /* Media column */
     .dh-media-card{ position:relative; border-radius:var(--r-lg); overflow:hidden; background:#0b1e42; aspect-ratio:4/3; box-shadow:var(--sh-md); }
-    .dh-media-card img,.dh-media-card video,.dh-carousel .carousel-item img,.dh-carousel .carousel-item video{ width:100%; height:100%; object-fit:cover; display:block; }
+    .dh-media-card video{ width:100%; height:100%; object-fit:cover; display:block; }
     .dh-carousel,.dh-carousel .carousel-inner,.dh-carousel .carousel-item{ height:100%; }
-    .dh-single-img{ width:100%; height:100%; object-fit:cover; cursor:zoom-in; }
+    .dh-carousel .carousel-item{ position:relative; }
+    /* blurred copy fills the frame edge-to-edge */
+    .dh-media-bg{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:blur(24px) brightness(.6) saturate(1.25); transform:scale(1.2); }
+    /* real image on top — shown in full, never cropped */
+    .dh-media-fg{ position:relative; z-index:1; width:100%; height:100%; object-fit:contain; display:block; cursor:zoom-in; }
+    .dh-single-img{ cursor:zoom-in; }
     .dh-media-count{ position:absolute; right:14px; top:14px; z-index:3; background:rgba(7,30,77,.7); color:#fff; font-size:.75rem; font-weight:600; padding:5px 12px; border-radius:100px; }
     .dh-media-badge{ position:absolute; left:14px; top:14px; z-index:3; background:var(--orange); color:#fff; font-size:.7rem; font-weight:700; padding:5px 12px; border-radius:100px; }
     .dh-thumbs{ display:flex; gap:12px; margin-top:14px; }
@@ -366,7 +371,8 @@
                                 @endif
                                 @foreach($images as $k => $media)
                                     <div class="carousel-item {{ (!$hasVideo && $k == 0) ? 'active' : '' }}">
-                                        <img src="{{ $media->getUrl() }}" alt="Post image {{ $k + 1 }}" class="openGallery" data-image="{{ $media->getUrl() }}" data-index="{{ $k }}">
+                                        <img class="dh-media-bg" src="{{ $media->getUrl() }}" alt="" aria-hidden="true">
+                                        <img src="{{ $media->getUrl() }}" alt="Post image {{ $k + 1 }}" class="dh-media-fg openGallery" data-image="{{ $media->getUrl() }}" data-index="{{ $k }}">
                                     </div>
                                 @endforeach
                             </div>
@@ -377,9 +383,11 @@
                         <span class="dh-media-badge">▶ Video</span>
                         <video controls><source src="{{ $video }}"></video>
                     @elseif($imageCount == 1)
-                        <img src="{{ $images->first()->getUrl() }}" class="dh-single-img openGallery" data-image="{{ $images->first()->getUrl() }}" data-index="0" alt="{{ $post->title }}">
+                        <img class="dh-media-bg" src="{{ $images->first()->getUrl() }}" alt="" aria-hidden="true">
+                        <img src="{{ $images->first()->getUrl() }}" class="dh-media-fg dh-single-img openGallery" data-image="{{ $images->first()->getUrl() }}" data-index="0" alt="{{ $post->title }}">
                     @else
-                        <img src="{{ asset('frontend/img/default.jpg') }}" class="dh-single-img" alt="Default">
+                        <img class="dh-media-bg" src="{{ asset('frontend/img/default.jpg') }}" alt="" aria-hidden="true">
+                        <img src="{{ asset('frontend/img/default.jpg') }}" class="dh-media-fg dh-single-img" alt="Default">
                     @endif
                 </div>
 
