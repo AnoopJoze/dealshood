@@ -277,7 +277,11 @@
     .dh-card:hover{ transform:translateY(-3px); box-shadow:var(--sh-md); }
     .dh-card-media{ position:relative; aspect-ratio:16/11; background:#0b1e42; overflow:hidden; }
     .dh-card-media a{ display:block; width:100%; height:100%; }
-    .dh-card-media img,.dh-card-media video{ width:100%; height:100%; object-fit:cover; display:block; }
+    .dh-card-media video,.dh-card-media iframe{ width:100%; height:100%; object-fit:cover; display:block; border:0; }
+    /* blurred copy fills the frame edge-to-edge */
+    .dh-card-media .dh-card-bg{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:blur(20px) brightness(.65) saturate(1.2); transform:scale(1.2); display:block; }
+    /* real image on top — shown in full, never cropped */
+    .dh-card-media .dh-card-fg{ position:relative; z-index:1; width:100%; height:100%; object-fit:contain; display:block; }
     .dh-card-loc{ position:absolute; left:10px; bottom:10px; display:inline-flex; align-items:center; gap:5px;
                   background:rgba(10,20,40,.6); color:#fff; font-size:.72rem; font-weight:500;
                   padding:5px 11px; border-radius:100px; backdrop-filter:blur(4px); }
@@ -801,7 +805,8 @@ $palette = [
 @endif
 
 {{-- ═══════════════════════ PROMO STRIP ═══════════════════════ --}}
-@if($trending->count() >= 3)
+{{-- HIDDEN: 3 promo tiles before "Just in". To restore, change @if(false) back to @if($trending->count() >= 3) --}}
+@if(false)
 <section class="dh-promo-strip">
     @foreach($trending->take(3) as $t)
         @php $pimg = $t->getFirstMediaUrl('posts') ?: asset('frontend/img/default.jpg'); @endphp
