@@ -227,7 +227,7 @@ class FrontEndController extends Controller
 
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
-                'html'      => view('frontend.post-cards', compact('posts'))->render(),
+                'html'      => view('frontend.post-listing-cards', compact('posts'))->render(),
                 'next_page' => $posts->nextPageUrl(),
                 'total'     => $posts->total(),
             ])->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')

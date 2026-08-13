@@ -3,1292 +3,559 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="apple-touch-icon" sizes="76x76" href="/frontend/img/apple-icon.png">
     <link rel="icon" type="image/png" href="{{ site_favicon_url() }}">
-     @php
-    /* ── Site settings ──────────────────────────────── */
-    $siteName    = setting('site_name', 'DealsHood');
-    $siteTagline = setting('site_tagline', 'Discover the Best Deals Near You');
-    $siteDesc    = setting('site_description',
-        'Find the best local deals, offers and classifieds near you. Browse by category or locality.');
-    $siteUrl     = url('/');
-    $ogUrl       = url()->current();
+    <link rel="shortcut icon" href="{{ site_favicon_url() }}">
+    @php
+        $siteName    = setting('site_name', 'DealsHood');
+        $siteTagline = setting('site_tagline', 'Discover the Best Deals Near You');
+        $siteDesc    = setting('site_description',
+            'Find the best local deals, offers and classifieds near you. Browse by category or locality.');
+        $siteUrl  = url('/');
+        $ogImage  = site_og_image_url();
 
-    /* ── OG image ───────────────────────────────────── */
-    $ogImage = site_og_image_url();
+        $catNames = $categories->pluck('name')->take(10)->implode(', ');
+        $locNames = $localities->pluck('name')->take(8)->implode(', ');
+        $keywords = trim($catNames . ($locNames ? ', ' . $locNames : ''))
+            . ', deals, offers, classifieds, local deals';
 
-    /* ── Dynamic keywords from categories + localities ─ */
-    $catNames = $categories->pluck('name')->take(10)->implode(', ');
-    $locNames = $localities->pluck('name')->take(8)->implode(', ');
-    $keywords = trim($catNames . ($locNames ? ', ' . $locNames : ''))
-        . ', deals, offers, classifieds, local deals';
+        $topCats  = $categories->take(4)->pluck('name')->implode(', ');
+        $topLocs  = $localities->take(4)->pluck('name')->implode(', ');
+        $richDesc = $siteDesc;
+        if ($topCats) $richDesc .= ' Categories include ' . $topCats . '.';
+        if ($topLocs) $richDesc .= ' Available in ' . $topLocs . ' and more.';
 
-    /* ── Dynamic description enriched with top data ─── */
-    $topCats  = $categories->take(4)->pluck('name')->implode(', ');
-    $topLocs  = $localities->take(4)->pluck('name')->implode(', ');
-    $richDesc = $siteDesc;
-    if ($topCats) $richDesc .= ' Categories include ' . $topCats . '.';
-    if ($topLocs) $richDesc .= ' Available in ' . $topLocs . ' and more.';
-
-    /* ── Canonical & alternates ─────────────────────── */
-    $canonical = $siteUrl;
-    $activeCat = $categories->firstWhere('slug', request('category_id'));
-    $activeLoc = $localities->firstWhere('slug', request('locality_id'));
-    $heroBannerUrl = !empty(setting('banner_image'))
-        ? Storage::url(setting('banner_image'))
-        : '/frontend/img/illustrations/IMG_4871.png';
+        $canonical = $siteUrl;
+        $activeCat = $categories->firstWhere('slug', request('category_id'));
+        $activeLoc = $localities->firstWhere('slug', request('locality_id'));
+        $heroBannerUrl = !empty(setting('banner_image'))
+            ? Storage::url(setting('banner_image'))
+            : '/frontend/img/illustrations/IMG_4871.png';
     @endphp
 
-    <title>{{ $siteName }} — {{ $siteTagline }}</title>
+    <title>{{ $activeCat->name ?? 'Browse Deals' }}@if($activeLoc) in {{ $activeLoc->name }}@endif — {{ $siteName }}</title>
 
-    {{-- ── Core SEO ─────────────────────────────────────── --}}
     <meta name="description"        content="{{ Str::limit($richDesc, 160) }}">
     <meta name="keywords"           content="{{ $keywords }}">
     <meta name="robots"             content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
     <meta name="author"             content="{{ $siteName }}">
     <link rel="canonical"           href="{{ $canonical }}">
 
-    {{-- ── Open Graph ──────────────────────────────────── --}}
     <meta property="og:site_name"   content="{{ $siteName }}">
     <meta property="og:type"        content="website">
-    <meta property="og:locale"      content="en_US">
     <meta property="og:title"       content="{{ $siteName }} — {{ $siteTagline }}">
     <meta property="og:description" content="{{ Str::limit($richDesc, 200) }}">
     <meta property="og:url"         content="{{ $canonical }}">
-    <meta property="og:image"               content="{{ $ogImage }}">
-    <meta property="og:image:secure_url"    content="{{ $ogImage }}">
-    <meta property="og:image:type"          content="image/png">
-    <meta property="og:image:width"         content="1200">
-    <meta property="og:image:height"        content="630">
-    <meta property="og:image:alt"           content="{{ $siteName }} — {{ $siteTagline }}">
+    <meta property="og:image"       content="{{ $ogImage }}">
+    <meta property="og:image:width"  content="1200">
+    <meta property="og:image:height" content="630">
 
-    {{-- ── Twitter / X Card ────────────────────────────── --}}
     <meta name="twitter:card"        content="summary_large_image">
     <meta name="twitter:title"       content="{{ $siteName }} — {{ $siteTagline }}">
     <meta name="twitter:description" content="{{ Str::limit($richDesc, 160) }}">
     <meta name="twitter:image"       content="{{ $ogImage }}">
-    <meta name="twitter:image:alt"   content="{{ $siteName }} — {{ $siteTagline }}">
 
-    {{-- ── PWA / Mobile ────────────────────────────────── --}}
-    <link rel="manifest"                        href="/manifest.json">
-    <meta name="theme-color"                    content="#0f172a">
-    <meta name="mobile-web-app-capable"         content="yes">
-    <meta name="apple-mobile-web-app-capable"   content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title"     content="{{ $siteName }}">
-    <link rel="apple-touch-icon"                href="/frontend/img/icons/icon-192x192.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0a2a68">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon" href="/frontend/img/icons/icon-192x192.png">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link href="/frontend/css/soft-design-system.css?v=1.1.0" rel="stylesheet">
 
     <style>
-    :root {
-        --ink:#0d0d0d; --ink-mid:#3a3a3a; --ink-muted:#6b6b6b;
-        --surface:#faf9f7; --surface-2:#f2f1ef;
-        --white:#ffffff; --accent:#0f3f7e;
-        --r:14px; --rlg:20px;
-        --sh-sm:0 2px 12px rgba(0,0,0,.07);
-        --sh-md:0 6px 32px rgba(0,0,0,.10);
-        --sh-lg:0 20px 60px rgba(0,0,0,.15);
-        --nav-h:64px;
-    }
-    *,*::before,*::after{box-sizing:border-box;}
-    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
-         background:var(--surface);color:var(--ink);margin:0;}
-
-    /* ── Navbar ───────────────────────────────────────── */
-    .dh-nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);
-            background:#fff;border-bottom:1px solid rgba(0,0,0,.07);
-            z-index:1000;display:flex;align-items:center;}
-    .dh-nav-inner{display:flex;align-items:center;justify-content:space-between;
-                  width:100%;max-width:1180px;margin:0 auto;padding:0 24px;}
-    .dh-nav-logo img{height:45px;display:block;}
-    .dh-nav-actions{display:flex;align-items:center;gap:10px;}
-    /* Groups the location trigger with the action buttons so they read as
-       one cluster instead of leaving .loc-trigger stranded mid-bar under
-       justify-content:space-between. display:contents on mobile keeps the
-       existing flex flow (and spacing) exactly as it was. */
-    .dh-nav-right{display:contents;}
-    @media(min-width:769px){
-        .dh-nav-inner{justify-content:flex-start;}
-        .dh-nav-right{display:flex;align-items:center;gap:16px;margin-left:auto;}
-    }
-    .dh-btn-nav{display:inline-flex;align-items:center;gap:6px;font-size:.75rem;font-weight:500;
-                letter-spacing:.04em;border:none;cursor:pointer;border-radius:100px;
-                padding:9px 18px;text-decoration:none;transition:transform .15s;}
-    .dh-btn-nav:hover{transform:translateY(-1px);}
-    .dh-btn-ig{background:#e1306c;color:#fff;}
-    .dh-btn-wa{background:#25d366;color:#fff;}
-    .dh-nav-toggle{display:none;background:none;border:none;cursor:pointer;
-                   flex-direction:column;gap:5px;padding:6px;}
-    .dh-nav-toggle span{display:block;width:22px;height:2px;background:var(--ink);border-radius:2px;}
-    @media(max-width:640px){
-        .dh-nav-toggle{display:flex;}
-        .dh-nav-actions{display:none;position:absolute;top:var(--nav-h);left:0;right:0;
-                        background:#fff;border-bottom:1px solid rgba(0,0,0,.08);
-                        padding:16px 24px;flex-direction:column;align-items:flex-start;gap:10px;}
-        .dh-nav-actions.open{display:flex;}
-    }
-
-    /* ── Location trigger button ── */
-    .loc-trigger {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        background: var(--surface);
-        border: 1.5px solid rgba(0,0,0,.1);
-        color: var(--ink);
-        border-radius: 100px;
-        padding: 8px 14px 8px 10px;
-        font-size: .78rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all .18s;
-        -webkit-tap-highlight-color: transparent;
-        white-space: nowrap;
-        max-width: 200px;
-    }
-    .loc-trigger:hover {
-        background: var(--surface-2);
-        border-color: var(--accent);
-        color: var(--accent);
-        transform: translateY(-1px);
-    }
-    .loc-trigger:active { transform: scale(.97); }
-    .lt-pin {
-        width: 24px; height: 24px;
-        border-radius: 50%;
-        background: var(--accent);
-        display: flex; align-items: center; justify-content: center;
-        font-size: .62rem; flex-shrink: 0; color: #fff;
-        transition: background .15s;
-    }
-    .loc-trigger:hover .lt-pin { background: #0c3166; }
-    .lt-dot {
-        width: 7px; height: 7px;
-        border-radius: 50%; background: #22c55e;
-        flex-shrink: 0; display: none;
-        box-shadow: 0 0 0 2px rgba(34,197,94,.25);
-    }
-    .loc-trigger.has-loc .lt-dot { display: block; }
-    .lt-label {
-        flex: 1; text-align: left;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        max-width: 130px;
-    }
-    .lt-chevron { font-size: .55rem; opacity: .5; flex-shrink: 0; }
-    @media(max-width: 768px) {
-        .loc-trigger {
-            padding: 7px 10px 7px 8px;
-            font-size: .74rem;
-            max-width: 160px;
-        }
-        .lt-pin { width: 22px; height: 22px; font-size: .58rem; }
-        .lt-label { max-width: 90px; }
-    }
-
-    /* ── Compact Hero ─────────────────────────────────── */
-    .dh-hero{padding-top:var(--nav-h);position:relative;overflow:hidden;
-             background:var(--ink);min-height:190px;display:flex;align-items:center;}
-    .dh-hero-bg{position:absolute;inset:0;
-                opacity:.35;}
-    .dh-hero-overlay{position:absolute;inset:0;
-                     background:linear-gradient(160deg,rgba(13,13,13,.82) 0%,rgba(13,13,13,.4) 60%,rgba(15,63,126,.2) 100%);}
-    .dh-hero-body{position:relative;z-index:2;width:100%;max-width:1180px;
-                  margin:0 auto;padding:22px 24px 36px;animation:fadeUp .45s .05s both;}
-    .dh-hero-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:.64rem;
-                     font-weight:500;letter-spacing:.16em;text-transform:uppercase;
-                     color:rgba(255,255,255,.42);margin-bottom:7px;}
-    .dh-hero-eyebrow::before{content:'';display:inline-block;width:16px;height:1.5px;
-                              background:rgba(255,255,255,.3);border-radius:2px;}
-    .dh-hero-title{font-size:clamp(1.6rem,3.2vw,2.3rem);font-weight:800;color:#fff;
-                   line-height:1.14;letter-spacing:-.02em;margin:0 0 5px;}
-    .dh-hero-sub{font-size:.85rem;color:rgba(255,255,255,.48);font-weight:300;margin:0;}
-    .dh-hero-wave{position:absolute;bottom:-1px;left:0;right:0;z-index:3;line-height:0;}
-    .dh-hero-wave svg{display:block;width:100%;}
-
-    /* Desktop — the compact/mobile proportions look thin stretched across a
-       wide viewport, so give it more height, a bigger title ceiling and a
-       subtitle to fill the space with real content instead of empty band. */
-    @media(min-width:769px){
-        .dh-hero{min-height:280px;}
-        .dh-hero-body{padding:36px 24px 52px;}
-        .dh-hero-title{font-size:clamp(2.3rem,4vw,3.2rem);margin:0 0 10px;}
-        .dh-hero-sub{font-size:1rem;}
-    }
-
-    /* ── Shared wrapper ────────────────────────────────── */
-    .dh-wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
-
-    /* ═══════════════════════════════════════════════════
-       CHIP FILTER ROWS  — wrap to next line, no horizontal scroll
-    ═══════════════════════════════════════════════════ */
-    .dh-chips-sec{background:var(--surface);padding:20px 0 4px;}
-    .dh-chips-sec + .dh-chips-sec{padding-top:4px;}
-
-    .dh-chips-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
-    .dh-chips-label{font-size:.63rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;
-                     color:var(--ink-muted);display:flex;align-items:center;gap:5px;}
-    .dh-chips-label i{color:var(--accent);font-size:.6rem;}
-    .dh-chips-clear{font-size:.7rem;font-weight:500;color:var(--ink-muted);cursor:pointer;
-                     background:none;border:none;display:inline-flex;align-items:center;gap:4px;
-                     transition:color .15s;padding:0;}
-    .dh-chips-clear:hover{color:var(--accent);}
-
-    /* Category chips — wrap to next row, no horizontal scroll */
-    .dh-chips-row{
-        display:flex;
-        flex-wrap:wrap;
-        gap:8px;
-        padding-bottom:4px;
-    }
-
-    /* Locality + Subcategory chips — scroll right, single line */
-    .dh-chips-row.chips-scroll{
-        flex-wrap:nowrap;
-        overflow-x:auto;
-        -ms-overflow-style:none;
-        scrollbar-width:none;
-        cursor:grab;
-        padding-bottom:6px;
-        padding-top:5px;
-    }
-    .dh-chips-row.chips-scroll::-webkit-scrollbar{ display:none; }
-    .dh-chips-row.chips-scroll:active{ cursor:grabbing; }
-
-    /* Individual chip */
-    .dh-chip{
-        display:inline-flex;align-items:center;gap:6px;
-        padding:6px 14px;border-radius:100px;
-        font-size:.73rem;font-weight:600;white-space:nowrap;
-        color:var(--ink-muted);background:#fff;
-        border:1.5px solid rgba(0,0,0,.1);
-        cursor:pointer;transition:all .15s;user-select:none;
-        text-decoration:none;
-    }
-    .dh-chip:hover{border-color:var(--accent);color:var(--accent);
-                    background:rgba(15,63,126,.05);transform:translateY(-1px);}
-    .dh-chip.active{background:var(--ink);color:#fff;border-color:var(--ink);
-                     box-shadow:0 3px 12px rgba(0,0,0,.2);}
-    .dh-chip.active .chip-icon{background:rgba(255,255,255,.18)!important;color:#fff!important;}
-    .chip-icon{width:20px;height:20px;border-radius:5px;flex-shrink:0;
-               display:flex;align-items:center;justify-content:center;font-size:.6rem;}
-
-    /* ── Search bar ─────────────────────────────────────── */
-    .dh-search-sec{background:var(--surface);padding:14px 0 4px;}
-    .dh-search-row{display:flex;gap:10px;align-items:center;}
-    .dh-search-input{flex:1;font-size:.87rem;color:var(--ink);background:#fff;
-                      border:1.5px solid rgba(0,0,0,.1);border-radius:var(--r);
-                      padding:9px 15px;outline:none;transition:border-color .15s,box-shadow .15s;}
-    .dh-search-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(15,63,126,.08);}
-    .dh-search-btn{flex-shrink:0;font-size:.79rem;font-weight:600;
-                    background:var(--ink);color:#fff;border:none;border-radius:var(--r);
-                    padding:9px 20px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
-                    transition:background .15s,transform .15s;}
-    .dh-search-btn:hover{background:var(--accent);transform:translateY(-1px);}
-
-    /* ── Toolbar ────────────────────────────────────────── */
-    .dh-toolbar{display:flex;align-items:center;justify-content:space-between;
-                flex-wrap:wrap;gap:10px;margin-bottom:22px;}
-    .dh-result-info{font-size:.82rem;color:var(--ink-muted);font-weight:300;}
-    .dh-result-info strong{color:var(--ink);font-weight:700;}
-    .dh-sort-pills{display:flex;gap:6px;}
-    .dh-sort-pill{font-size:.72rem;font-weight:500;padding:6px 14px;border-radius:100px;
-                   cursor:pointer;border:1.5px solid rgba(0,0,0,.1);transition:all .15s;
-                   color:var(--ink-muted);background:#fff;user-select:none;}
-    .dh-sort-pill:hover{border-color:var(--accent);color:var(--accent);}
-    .dh-sort-pill.active{background:var(--ink);color:#fff;border-color:var(--ink);}
-
-    /* ── Posts grid ─────────────────────────────────────── */
-    .dh-posts-sec{padding:0 0 88px;background:var(--surface);}
-
-    /* ── Grid view (default) ────────────────────────────── */
-    .dh-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
-    @media(max-width:900px){.dh-grid{grid-template-columns:repeat(2,1fr);}}
-    @media(max-width:560px){.dh-grid{grid-template-columns:1fr;}}
-
-    /* ── List view ──────────────────────────────────────── */
-    .dh-grid.list-view{ display:flex; flex-direction:column; gap:14px; }
-
-    .dh-grid.list-view .dh-card{
-        flex-direction:row;
-        border-radius:var(--r);
-        min-height:0;
-        align-items:stretch;
-    }
-    /* Image — wider fixed width, fills full card height */
-    .dh-grid.list-view .dh-card-media{
-        flex:0 0 280px;
-        position:relative;
-        overflow:hidden;
-    }
-    .dh-grid.list-view .dh-card-media img:not(.dh-card-bg):not(.dh-card-fg),
-    .dh-grid.list-view .dh-card-media video{
-        position:absolute; inset:0;
-        width:100%; height:100%; object-fit:cover;
-    }
-    .dh-grid.list-view .dh-card-media .ratio{
-        position:absolute; inset:0; height:100%;
-    }
-    /* Body — compact padding, flex items tight */
-    .dh-grid.list-view .dh-card-body{
-        flex:1;
-        padding:14px 18px;
-        justify-content:space-between;
-        min-width:0;
-    }
-    /* Description — 2 lines max */
-    .dh-grid.list-view .dh-card-desc{
-        display:-webkit-box; -webkit-line-clamp:2;
-        -webkit-box-orient:vertical; overflow:hidden;
-        margin-bottom:10px;
-    }
-    /* Meta row — tighter */
-    .dh-grid.list-view .dh-card-meta{
-        margin-bottom:10px;
-    }
-    /* Buttons — small, side by side, don't stretch */
-    .dh-grid.list-view .dh-card-actions{ gap:6px; }
-    .dh-grid.list-view .dh-card-actions .dh-btn{
-        flex:0 0 auto;          /* don't grow to fill */
-        padding:6px 14px;
-        font-size:.72rem;
-    }
-    .dh-grid.list-view .dh-card-actions .dh-btn-primary{
-        flex:0 0 auto;
-    }
-    /* Mobile — keep horizontal layout but narrower image */
-    @media(max-width:640px){
-        .dh-grid.list-view .dh-card{
-            flex-direction:row;    /* stays horizontal on mobile */
-            min-height:120px;
-        }
-        .dh-grid.list-view .dh-card-media{
-            flex:0 0 140px;        /* compact image column */
-        }
-        .dh-grid.list-view .dh-card-body{
-            padding:10px 12px;
-        }
-        /* Hide description + meta row on very small screens to save space */
-        .dh-grid.list-view .dh-card-desc{
-            display:none;
-        }
-        .dh-grid.list-view .dh-card-meta{
-            display:none;
-        }
-        /* Smaller title */
-        .dh-grid.list-view .dh-card-title{
-            font-size:.82rem;
-            -webkit-line-clamp:3;
-            display:-webkit-box;
-            -webkit-box-orient:vertical;
-            overflow:hidden;
-        }
-        /* Compact action button */
-        .dh-grid.list-view .dh-card-actions .dh-btn-primary{
-            padding:5px 10px;
-            font-size:.68rem;
-        }
-        .dh-grid.list-view .dh-card-actions .dh-btn-ghost{
-            padding:5px 8px;
-        }
-    }
-
-    /* ── View toggle buttons ─────────────────────────────── */
-    .dh-view-toggle{display:flex;gap:4px;}
-    .dh-vbtn{
-        width:34px;height:34px;border-radius:8px;border:1.5px solid rgba(0,0,0,.1);
-        background:#fff;cursor:pointer;color:var(--ink-muted);
-        display:flex;align-items:center;justify-content:center;
-        font-size:.9rem;transition:all .15s;
-    }
-    .dh-vbtn:hover{border-color:var(--accent);color:var(--accent);}
-    .dh-vbtn.active{background:var(--ink);color:#fff;border-color:var(--ink);}
-    .dh-card{background:#fff;border-radius:var(--rlg);overflow:hidden;box-shadow:var(--sh-sm);
-              border:1px solid rgba(0,0,0,.05);display:flex;flex-direction:column;
-              transition:transform .22s,box-shadow .22s;animation:fadeUp .4s both;}
-    .dh-card:hover{transform:translateY(-5px);box-shadow:var(--sh-md);}
-    .dh-card-media{position:relative;overflow:hidden;flex-shrink:0;}
-    .dh-card-media a{display:block;}
-    .dh-card-media img:not(.dh-card-bg):not(.dh-card-fg),.dh-card-media video{width:100%;height:220px;object-fit:cover;
-                                             display:block;transition:transform .35s;}
-    .dh-card:hover .dh-card-media img:not(.dh-card-bg):not(.dh-card-fg){transform:scale(1.04);}
-    .dh-card-media .ratio{height:220px;}
-    .badge-feat{position:absolute;top:12px;right:12px;background:#f59e0b;color:#fff;
-                font-size:.6rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
-                padding:4px 10px;border-radius:100px;z-index:2;}
-    .dh-card-body{padding:18px 20px 20px;display:flex;flex-direction:column;flex:1;}
-    .dh-badges{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;}
-    .dh-b{font-size:.6rem;font-weight:500;letter-spacing:.07em;text-transform:uppercase;
-           padding:3px 9px;border-radius:100px;}
-    .dh-b-loc{background:var(--surface-2);color:var(--ink-muted);}
-    .dh-b-cat{background:rgba(15,63,126,.08);color:var(--accent);}
-    .dh-b-sub{background:rgba(59,130,246,.08);color:#1d4ed8;}
-    .dh-b-company{background:rgba(5,150,105,.08);color:#047857;}
-    .dh-card-title{font-size:1rem;font-weight:700;color:var(--ink);line-height:1.35;
-                    margin:0 0 8px;text-decoration:none;display:block;transition:color .15s;}
-    .dh-card-title:hover{color:var(--accent);}
-    .dh-card-desc{font-size:.81rem;line-height:1.65;color:var(--ink-muted);
-                   font-weight:300;flex:1;margin-bottom:14px;}
-    .dh-card-meta{display:flex;align-items:center;gap:4px;flex-wrap:wrap;
-                   padding-top:10px;border-top:1px solid rgba(0,0,0,.06);margin-bottom:14px;}
-    .dh-meta-btn,.dh-meta-box{display:flex;align-items:center;gap:7px;padding:4px 10px;
-                               border-radius:14px;background:#fff;border:1px solid #edf0f5;
-                               transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.04);}
-    .dh-meta-btn{cursor:pointer;outline:none;}
-    .dh-meta-btn:hover,.dh-meta-box:hover{transform:translateY(-2px);box-shadow:0 5px 16px rgba(0,0,0,.08);}
-    .dh-meta-icon{font-size:12px;color:#6b7280;}
-    .dh-meta-count{font-size:13px;font-weight:600;color:#1f2937;}
-    .dh-meta-time{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:12px;color:#6b7280;}
-    .likeBtn.liked{background:rgba(255,77,109,.08);border-color:rgba(255,77,109,.18);}
-    .likeBtn.liked .dh-meta-icon{color:#ff4d6d;}
-    .likeBtn.liked .dh-meta-count{color:#ff4d6d;}
-    .dh-card-actions{display:flex;gap:8px;}
-    .dh-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;
-             font-size:.75rem;font-weight:500;border-radius:100px;padding:9px 18px;
-             text-decoration:none;border:1.5px solid;cursor:pointer;transition:all .15s;flex:1;}
-    .dh-btn-primary{background:var(--ink);color:#fff;border-color:var(--ink);}
-    .dh-btn-primary:hover{background:var(--accent);border-color:var(--accent);color:#fff;}
-    .dh-btn-ghost{background:transparent;color:var(--ink-muted);
-                   border-color:rgba(0,0,0,.12);flex:0 0 auto;padding:9px 14px;}
-    .dh-btn-ghost:hover{background:var(--surface-2);color:var(--ink);}
-    .dh-empty{grid-column:1/-1;text-align:center;padding:72px 24px;color:var(--ink-muted);}
-    .dh-empty-icon{font-size:2.8rem;margin-bottom:14px;opacity:.32;}
-    .dh-empty-title{font-size:1.15rem;font-weight:700;color:var(--ink);margin-bottom:8px;}
-    .dh-empty-text{font-size:.85rem;font-weight:300;}
-
-    /* Loading */
-    .dh-loader{display:none;text-align:center;padding:40px 0;}
-    .dh-dots{display:inline-flex;gap:7px;align-items:center;}
-    .dh-dots span{width:8px;height:8px;border-radius:50%;background:var(--accent);
-                   animation:dotPulse 1.2s infinite both;}
-    .dh-dots span:nth-child(2){animation-delay:.2s;}
-    .dh-dots span:nth-child(3){animation-delay:.4s;}
-    .dh-end-msg{display:none;text-align:center;padding:28px 0;
-                font-size:.77rem;color:var(--ink-muted);letter-spacing:.06em;}
-    .dh-end-msg::before,.dh-end-msg::after{content:'';display:inline-block;width:32px;height:1px;
-                                            background:rgba(0,0,0,.14);vertical-align:middle;margin:0 10px;}
-
-    /* ── Footer ─────────────────────────────────────────── */
-    .dh-footer{background:var(--ink);color:rgba(255,255,255,.7);padding:60px 0 0;font-size:.84rem;}
-    .dh-footer-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:48px;padding-bottom:48px;}
-    @media(max-width:720px){.dh-footer-grid{grid-template-columns:1fr 1fr;}}
-    @media(max-width:440px){.dh-footer-grid{grid-template-columns:1fr;}}
-    .dh-footer-brand{font-size:1.1rem;color:#fff;margin:12px 0 5px;}
-    .dh-footer-tag{font-size:.77rem;color:rgba(255,255,255,.38);margin:0;}
-    .dh-footer-social{display:flex;gap:8px;margin-top:18px;}
-    .dh-footer-social a{width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.15);
-                         display:flex;align-items:center;justify-content:center;
-                         color:rgba(255,255,255,.6);font-size:.88rem;text-decoration:none;transition:.15s;}
-    .dh-footer-social a:hover{border-color:rgba(255,255,255,.5);color:#fff;}
-    .dh-footer-col-title{font-size:.64rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
-                          color:var(--accent);margin-bottom:14px;}
-    .dh-footer-links{list-style:none;padding:0;margin:0;}
-    .dh-footer-links li{margin-bottom:10px;}
-    .dh-footer-links a{color:rgba(255,255,255,.52);text-decoration:none;transition:color .15s;}
-    .dh-footer-links a:hover{color:#fff;}
-    .dh-footer-bottom{border-top:1px solid rgba(255,255,255,.08);text-align:center;
-                       padding:20px 0;font-size:.74rem;color:rgba(255,255,255,.3);}
-    .dh-footer-bottom a{color:rgba(255,255,255,.48);text-decoration:none;}
-
-    @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
-    @keyframes dotPulse{0%,80%,100%{opacity:.2;transform:scale(.75);}40%{opacity:1;transform:scale(1);}}
-/* ── PWA / app feel ── */
-@media (max-width: 768px) {
-
-    .dh-hero{
-        padding-top:0px !important;
-        min-height:100px;
-    }
-    .dh-hero-body{
-        padding: 10px 15px 10px;
-    }
-    /* Scroll snap on hero category tiles */
-    .dh-hero-panel .dh-glass-grid {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        justify-content: flex-start;
-        padding: 0 16px 12px;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        scroll-snap-type: x proximity;
-    }
-    .dh-hero-panel .dh-glass-grid::-webkit-scrollbar { display: none; }
-    .dh-gtile { scroll-snap-align: start; flex-shrink: 0; }
-
-    /* Hero height tighter on mobile */
-    .dh-hero-panel { padding: 20px 0 52px; }
-    .dh-hero-text  { padding: 28px 24px 0; }
-
-    /* Carousels scroll snap */
-    .dh-track {
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-        padding-left: 16px;
-    }
-    .dh-track .dh-card { scroll-snap-align: start; }
-    .dh-track .dh-card:last-child { margin-right: 16px; }
-
-    /* Latest deals — 2-col grid on small phones, 1-col on very small */
-    .dh-grid {
-        grid-template-columns: repeat(2,1fr);
-        gap: 12px;
-    }
-    @media (max-width: 380px) {
-        .dh-grid { grid-template-columns: 1fr; }
-    }
-
-    /* Card body tighter */
-    .dh-card-body { padding: 12px 14px 14px; }
-    .dh-card-title { font-size: .88rem; }
-    .dh-card-desc  { display: none; } /* hide on mobile to save space */
-
-    /* Section heading tighter */
-    .dh-sec-head   { margin-bottom: 14px; }
-    .dh-sec-title  { font-size: 1.15rem; }
-
-    /* Listing chips label hidden */
-    .dh-chips-label .label-text { display: none; }
-
-    /* Listing toolbar — stack on tiny screens */
-    .dh-toolbar {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-
-    /* Sort pills — scroll, don't wrap */
-    .dh-sort-pills {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        padding-bottom: 2px;
-    }
-    .dh-sort-pills::-webkit-scrollbar { display: none; }
-
-    /* Post detail hero taller */
-    .dh-hero.detail-hero { min-height: 60vw; }
-
-    /* Post detail description font */
-    .dh-content-body { font-size: .94rem; line-height: 1.78; }
-
-    /* Reading progress bar */
-    #reading-progress { height: 2px; }
-
-    /* Load more button full width */
-    .dh-more-btn { width: 100%; justify-content: center; }
-
-    /* Footer — single column */
-    .dh-footer-grid { grid-template-columns: 1fr !important; gap: 28px; }
-    .dh-footer { padding: 36px 0 0; }
-}
-
-/* ── Smooth momentum scroll globally ── */
-* { -webkit-overflow-scrolling: touch; }
-
-/* ── Remove ugly mobile tap highlight everywhere ── */
-* { -webkit-tap-highlight-color: transparent; }
-
-/* ── Prevent zoom on input focus (iOS) ── */
-@media (max-width: 768px) {
-    input, select, textarea { font-size: 16px !important; }
-}
-.pwa-banner {
-    position: fixed;
-    bottom: calc(var(--bot-nav-h, 60px) + env(safe-area-inset-bottom, 0px) + 8px);
-    left: 12px; right: 12px;
-    background: #0f172a;
-    border-radius: 16px;
-    padding: 14px 16px;
-    display: flex; align-items: center; gap: 12px;
-    z-index: 8000;
-    box-shadow: 0 8px 32px rgba(0,0,0,.35);
-    animation: slideUp .35s cubic-bezier(.4,0,.2,1) both;
-    max-width: 480px;
-    margin: 0 auto;
-}
-@keyframes slideUp {
-    from { opacity:0; transform:translateY(20px); }
-    to   { opacity:1; transform:translateY(0); }
-}
-.pwa-banner-icon {
-    width: 44px; height: 44px; border-radius: 10px;
-    flex-shrink: 0; overflow: hidden;
-}
-.pwa-banner-icon img { width:100%; height:100%; object-fit:cover; }
-.pwa-banner-body { flex:1; min-width:0; }
-.pwa-banner-title {
-    font-size: .85rem; font-weight: 700; color: #fff;
-    margin-bottom: 2px;
-}
-.pwa-banner-sub {
-    font-size: .72rem; color: rgba(255,255,255,.55);
-}
-.pwa-banner-actions { display:flex; gap:7px; flex-shrink:0; }
-.pwa-install-btn {
-    background: #fff; color: #0f172a;
-    border: none; border-radius: 100px;
-    padding: 8px 16px; font-size: .78rem; font-weight: 700;
-    cursor: pointer; white-space: nowrap;
-    transition: background .15s;
-}
-.pwa-install-btn:hover { background: #f1f5f9; }
-.pwa-dismiss-btn {
-    background: rgba(255,255,255,.12); color: rgba(255,255,255,.7);
-    border: none; border-radius: 100px;
-    padding: 8px 12px; font-size: .78rem; font-weight: 600;
-    cursor: pointer; white-space: nowrap;
-    transition: background .15s;
-}
-.pwa-dismiss-btn:hover { background: rgba(255,255,255,.2); }
-
-/* iOS instruction sheet */
-.pwa-ios-sheet {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    background: #fff;
-    border-radius: 20px 20px 0 0;
-    padding: 24px 24px calc(24px + env(safe-area-inset-bottom, 0px));
-    z-index: 8000;
-    box-shadow: 0 -8px 40px rgba(0,0,0,.18);
-    transform: translateY(100%);
-    transition: transform .3s cubic-bezier(.4,0,.2,1);
-    max-width: 480px;
-    margin: 0 auto;
-}
-.pwa-ios-sheet.open { transform: translateY(0); }
-.pwa-ios-handle {
-    width: 36px; height: 4px; background: #e2e8f0;
-    border-radius: 2px; margin: 0 auto 20px;
-}
-.pwa-ios-steps { list-style: none; padding: 0; margin: 16px 0 0; }
-.pwa-ios-step {
-    display: flex; align-items: flex-start; gap: 12px;
-    padding: 10px 0; border-bottom: 1px solid #f1f5f9;
-    font-size: .88rem; color: #374151;
-}
-.pwa-ios-step:last-child { border-bottom: none; }
-.pwa-ios-step-num {
-    width: 24px; height: 24px; border-radius: 50%;
-    background: #0f172a; color: #fff;
-    font-size: .7rem; font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; margin-top: 1px;
-}
-.pwa-ios-icon {
-    display: inline-flex; align-items: center; justify-content: center;
-    background: #f1f5f9; border-radius: 6px;
-    padding: 2px 7px; font-size: .8rem;
-    margin: 0 3px; vertical-align: middle;
-}
-.pwa-backdrop {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,.5);
-    z-index: 7999; display: none;
-}
-.pwa-backdrop.open { display: block; }
-.badge-offer {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: linear-gradient(135deg, #dc2626, #f97316);
-    color: #fff;
-    font-size: .72rem;
-    font-weight: 800;
-    letter-spacing: .02em;
-    padding: 5px 11px;
-    border-radius: 8px 8px 8px 2px;
-    box-shadow: 0 3px 10px rgba(220,38,38,.3);
-    z-index: 5;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-}
-.badge-offer i { font-size: .65rem; }
-@media (max-width: 768px) {
-    .dh-nav-toggle,
-    .dh-nav-actions {
-        display: none !important;
-    }
-}
-.dh-card-title-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-}
-.dh-card-title-row .dh-card-title {
-    flex: 1;
-    min-width: 0;           /* lets Str::limit'd text truncate/wrap without pushing the rating off */
-}
-
-.dh-rating-view {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    flex-shrink: 0;          /* rating never gets squeezed by a long title */
-    margin: 0;                /* no longer needs its own-line spacing */
-}
-.dh-rating-view .dh-star-big-wrap {
-    position: relative;
-    display: inline-block;
-    font-size: 1rem;          /* slightly smaller to sit comfortably inline with the title */
-    line-height: 1;
-    color: rgba(0,0,0,.15);
-}
-.dh-rating-view .dh-star-big-fg {
-    position: absolute;
-    top: 0; left: 0;
-    overflow: hidden;
-    white-space: nowrap;
-    color: #f59e0b;
-}
-.dh-rating-view .dh-rating-avg-sm { font-size: .76rem; font-weight: 700; color: var(--ink); }
-.dh-rating-view .dh-rating-count-sm { font-size: .68rem; color: var(--ink-muted); }
-.dh-card-media {
-    position: relative;
-    aspect-ratio: 5 / 3;      /* uniform card height regardless of source image shape */
-    overflow: hidden;
-    background: var(--surface-2, #f1f1f1);
-}
-
-.dh-card-img-wrap { position: absolute; inset: 0; }
-
-/* Blurred, scaled copy fills the frame edge-to-edge */
-.dh-card-bg {
-    display: block;
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter: blur(18px) brightness(.85) saturate(1.15);
-    transform: scale(1.15); /* hides blur edge fringing */
-}
-
-/* Real image sits on top, always shown in full — no cropping */
-.dh-card-fg {
-    display: block;
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-</style>
-
-    {{-- ══════════ NEW NAVY THEME OVERRIDE ══════════ --}}
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
     :root{
         --navy:#0a2a68; --navy-deep:#071e4d; --blue:#123f8f; --blue-2:#1b4dc4;
-        --accent:#123f8f; --line:#e4e9f2; --muted:#5b6b8c;
+        --green:#16a34a; --orange:#f97316;
+        --ink:#0f172a; --muted:#5b6b8c; --muted-2:#8090ad;
+        --bg:#ffffff; --bg-soft:#f4f6fa; --line:#e4e9f2;
+        --r:16px; --r-lg:22px; --r-sm:10px;
+        --sh-sm:0 2px 10px rgba(10,42,104,.06);
+        --sh-md:0 10px 30px rgba(10,42,104,.10);
+        --sh-lg:0 24px 60px rgba(10,42,104,.16);
+        --nav-h:74px;
+        --font:'Poppins',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
     }
-    body{ font-family:'Poppins',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif; }
+    *,*::before,*::after{ box-sizing:border-box; }
+    body{ font-family:var(--font); background:var(--bg-soft); color:var(--ink); margin:0; -webkit-font-smoothing:antialiased; }
+    a{ text-decoration:none; }
+    img{ max-width:100%; }
+    .wrap{ max-width:1240px; margin:0 auto; padding:0 24px; }
 
-    /* Nav / hero accents */
-    .dh-nav{ box-shadow:0 2px 12px rgba(10,42,104,.05); }
-    .dh-hero-overlay{ background:linear-gradient(180deg,rgba(7,30,77,.72),rgba(7,30,77,.45)); }
-    .dh-hero-title{ font-weight:700; }
-    .dh-hero-eyebrow{ color:#fff; }
+    /* ══════════ NAVBAR ══════════ */
+    .dh-nav{ position:absolute; top:0; left:0; right:0; height:var(--nav-h); z-index:50; display:flex; align-items:center; }
+    .dh-nav-inner{ display:flex; align-items:center; gap:18px; width:100%; max-width:1240px; margin:0 auto; padding:0 24px; position:relative; }
+    .dh-nav-logo img{ height:42px; display:block; filter:brightness(0) invert(1); }
+    .dh-nav-links{ display:flex; align-items:center; gap:6px; margin-left:8px;
+                   background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22);
+                   padding:6px; border-radius:100px; backdrop-filter:blur(8px); }
+    .dh-nav-links a{ color:#fff; font-size:.82rem; font-weight:500; padding:7px 14px; border-radius:100px; transition:background .15s; opacity:.92; }
+    .dh-nav-links a:hover,.dh-nav-links a.active{ background:rgba(255,255,255,.18); opacity:1; }
+    .dh-nav-spacer{ flex:1; }
+    .dh-nav-actions{ display:flex; align-items:center; gap:10px; }
+    .dh-btn-signin{ color:#fff; border:1.5px solid rgba(255,255,255,.5); border-radius:100px; padding:9px 22px; font-size:.82rem; font-weight:600; transition:all .15s; }
+    .dh-btn-signin:hover{ background:#fff; color:var(--navy); }
+    .dh-btn-download{ color:#fff; background:var(--blue-2); border-radius:100px; padding:10px 22px; font-size:.82rem; font-weight:600; transition:transform .15s; }
+    .dh-btn-download:hover{ transform:translateY(-1px); color:#fff; }
+    .dh-nav-toggle{ display:none; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3); width:44px; height:44px; border-radius:50%; cursor:pointer; align-items:center; justify-content:center; color:#fff; font-size:1rem; }
+    .dh-nav-icon-btn{ display:none; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3); width:44px; height:44px; border-radius:50%; cursor:pointer; align-items:center; justify-content:center; color:#fff; font-size:1rem; }
+    .loc-trigger{ display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22);
+                  color:#fff; border-radius:100px; padding:8px 16px 8px 12px; font-size:.82rem; font-weight:500; cursor:pointer; transition:all .18s; white-space:nowrap; max-width:210px; backdrop-filter:blur(8px); }
+    .loc-trigger:hover{ background:rgba(255,255,255,.2); }
+    .lt-pin{ font-size:.72rem; flex-shrink:0; }
+    .lt-dot{ width:7px; height:7px; border-radius:50%; background:#22c55e; flex-shrink:0; display:none; }
+    .loc-trigger.has-loc .lt-dot{ display:block; }
+    .lt-label{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:130px; }
+    .lt-chevron{ font-size:.55rem; opacity:.6; flex-shrink:0; }
 
-    /* Chips / sort pills / search — navy active state */
-    .dh-chip.active{ background:var(--navy); border-color:var(--navy); }
+    /* ══════════ HERO ══════════ */
+    .dh-hero{ position:relative; overflow:hidden; min-height:440px; display:flex; align-items:center;
+              padding:calc(var(--nav-h) + 30px) 0 60px; background:var(--navy-deep); }
+    .dh-hero-bg{ position:absolute; inset:0; background-size:cover; background-position:center; }
+    .dh-hero-overlay{ position:absolute; inset:0; z-index:1; background:linear-gradient(180deg,rgba(7,30,77,.72) 0%,rgba(7,30,77,.5) 45%,rgba(7,30,77,.82) 100%); }
+    .dh-hero-inner{ position:relative; z-index:3; width:100%; max-width:1240px; margin:0 auto; padding:0 24px; animation:fadeUp .5s .05s both; }
+    .dh-crumb{ display:flex; align-items:center; gap:8px; color:rgba(255,255,255,.7); font-size:.82rem; font-weight:500; margin-bottom:16px; }
+    .dh-crumb a{ color:rgba(255,255,255,.7); } .dh-crumb a:hover{ color:#fff; }
+    .dh-crumb i{ font-size:.6rem; opacity:.6; }
+    .dh-crumb .cur{ color:#fff; }
+    .dh-hero-title{ font-size:clamp(2.2rem,5vw,3.6rem); font-weight:700; color:#fff; line-height:1.08; letter-spacing:-.02em; margin:0 0 12px; }
+    .dh-hero-lead{ font-size:clamp(.95rem,1.5vw,1.12rem); color:rgba(255,255,255,.82); font-weight:300; max-width:620px; margin:0 0 28px; line-height:1.55; }
+    .dh-hero-search{ display:flex; gap:12px; max-width:760px; }
+    .dh-hs-box{ flex:1; display:flex; align-items:center; gap:12px; background:#fff; border-radius:var(--r); padding:4px 6px 4px 20px; box-shadow:var(--sh-md); }
+    .dh-hs-box i{ color:var(--muted); font-size:.95rem; }
+    .dh-hs-box input{ flex:1; border:none; outline:none; font-family:var(--font); font-size:.95rem; color:var(--ink); background:transparent; padding:14px 0; }
+    .dh-hs-search{ background:var(--navy); color:#fff; border:none; border-radius:12px; padding:0 26px; font-family:var(--font); font-weight:600; font-size:.9rem; cursor:pointer; transition:background .15s; }
+    .dh-hs-search:hover{ background:var(--navy-deep); }
+    .dh-hs-filter{ display:inline-flex; align-items:center; gap:9px; background:#fff; color:var(--navy); border:none; border-radius:var(--r); padding:0 24px; font-family:var(--font); font-weight:600; font-size:.9rem; cursor:pointer; box-shadow:var(--sh-md); transition:transform .15s; }
+    .dh-hs-filter:hover{ transform:translateY(-1px); }
+    .dh-hs-filter i{ color:var(--navy); }
+    .dh-hero-note{ display:flex; align-items:center; gap:20px; margin-top:18px; color:rgba(255,255,255,.72); font-size:.8rem; flex-wrap:wrap; }
+    .dh-hero-note span{ display:inline-flex; align-items:center; gap:7px; }
+    .dh-hero-note i{ color:#ffd34d; }
+
+    /* ══════════ CHIP ROWS ══════════ */
+    .dh-chips-sec{ background:var(--bg); border-bottom:1px solid var(--line); }
+    .dh-chips-inner{ max-width:1240px; margin:0 auto; padding:16px 24px; }
+    .dh-chips-row{ display:flex; gap:10px; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch; padding-bottom:2px; }
+    .dh-chips-row::-webkit-scrollbar{ display:none; }
+    .dh-chip{ display:inline-flex; align-items:center; gap:7px; white-space:nowrap; flex-shrink:0; cursor:pointer;
+              padding:9px 18px; border-radius:100px; font-size:.82rem; font-weight:500; color:var(--ink);
+              background:#fff; border:1.5px solid var(--line); transition:all .15s; user-select:none; }
     .dh-chip:hover{ border-color:var(--navy); color:var(--navy); }
-    .dh-sort-pill.active{ background:var(--navy); border-color:var(--navy); }
-    .dh-sort-pill:hover{ border-color:var(--navy); color:var(--navy); }
-    .dh-search-btn{ background:var(--navy); }
-    .dh-search-btn:hover{ background:var(--navy-deep); }
-    .dh-search-input:focus{ border-color:var(--navy); box-shadow:0 0 0 3px rgba(10,42,104,.08); }
-    .dh-result-info strong{ color:var(--navy); }
+    .dh-chip.active{ background:var(--navy); color:#fff; border-color:var(--navy); }
+    .dh-subchips-sec{ background:var(--bg-soft); }
+    .dh-subchips-inner{ max-width:1240px; margin:0 auto; padding:14px 24px 2px; }
+    .dh-subchips-inner .dh-chip{ font-size:.78rem; padding:7px 15px; }
 
-    /* ══════════ POST CARD (matches redesigned partial) ══════════ */
-    .dh-card{ background:#fff; border:1px solid var(--line); border-radius:16px; overflow:hidden;
-              display:flex; flex-direction:column; transition:transform .18s, box-shadow .18s; box-shadow:none; }
-    .dh-card:hover{ transform:translateY(-3px); box-shadow:0 10px 30px rgba(10,42,104,.10); }
-    .dh-card-media{ position:relative; aspect-ratio:16/11; background:#0b1e42; overflow:hidden; }
-    .dh-card-media a{ display:block; width:100%; height:100%; }
-    .dh-card-media img,.dh-card-media video{ width:100%; height:100%; object-fit:cover; display:block; }
-    .dh-card-loc{ position:absolute; left:10px; bottom:10px; display:inline-flex; align-items:center; gap:5px;
-                  background:rgba(10,20,40,.6); color:#fff; font-size:.72rem; font-weight:500;
-                  padding:5px 11px; border-radius:100px; backdrop-filter:blur(4px); }
-    .dh-card-fav{ position:absolute; right:10px; top:10px; width:34px; height:34px; border-radius:50%;
-                  background:rgba(255,255,255,.9); border:none; color:var(--navy); cursor:pointer;
-                  display:flex; align-items:center; justify-content:center; font-size:.82rem; transition:all .15s; }
-    .dh-card-fav.liked{ background:#e11d48; color:#fff; }
-    .dh-card-badge{ position:absolute; left:10px; top:10px; font-size:.6rem; font-weight:700;
-                    letter-spacing:.06em; text-transform:uppercase; padding:5px 10px; border-radius:6px; color:#fff; z-index:2; }
-    .dh-card-badge.hot{ background:#f97316; } .dh-card-badge.trend{ background:#eab308; color:#3a2c00; }
-    .dh-card-badge.free{ background:#16a34a; }
-    .dh-card-body{ padding:16px 16px 18px; display:flex; flex-direction:column; flex:1; }
-    .dh-badges{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
-    .dh-b{ font-size:.64rem; font-weight:600; letter-spacing:.04em; text-transform:uppercase;
-           color:var(--muted); background:#f4f6fa; border-radius:6px; padding:5px 9px; }
-    .dh-card-title-row{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:12px; }
-    .dh-card-title{ font-size:1rem; font-weight:600; color:var(--navy); line-height:1.32; text-decoration:none; }
-    .dh-rating-view{ display:flex; align-items:center; gap:4px; flex-shrink:0; }
-    .dh-star-big-wrap{ position:relative; font-size:.85rem; color:#e2e8f0; line-height:1; }
-    .dh-star-big-fg{ position:absolute; top:0; left:0; overflow:hidden; white-space:nowrap; color:#f59e0b; }
-    .dh-rating-avg-sm{ font-size:.8rem; font-weight:700; color:var(--navy); }
-    .dh-rating-count-sm{ font-size:.72rem; color:var(--muted); }
-    .dh-card-biz{ display:flex; align-items:center; gap:7px; font-size:.78rem; font-weight:600;
-                  color:#0f172a; text-transform:uppercase; letter-spacing:.02em; margin-bottom:12px; }
-    .dh-card-biz i{ color:var(--muted); }
-    .dh-card-desc{ display:none; }
-    .dh-card-meta{ display:flex; align-items:center; gap:14px; padding-top:12px; margin-top:auto;
-                   border-top:1px solid var(--line); font-size:.74rem; color:var(--muted); }
-    .dh-meta-btn{ background:none; border:none; padding:0; cursor:pointer; display:flex; align-items:center;
-                  gap:5px; color:var(--muted); font-family:inherit; font-size:.74rem; }
-    .dh-meta-btn.liked{ color:#e11d48; }
-    .dh-meta-box{ display:flex; align-items:center; gap:5px; }
-    .dh-meta-time{ margin-left:auto; display:flex; align-items:center; gap:5px; font-size:.72rem; white-space:nowrap; }
-    .dh-card-actions{ display:flex; gap:8px; margin-top:14px; }
-    .dh-btn{ display:inline-flex; align-items:center; justify-content:center; gap:6px;
-             font-size:.82rem; font-weight:600; border-radius:10px; padding:11px 16px; cursor:pointer;
-             border:none; transition:all .15s; text-decoration:none; }
-    .dh-btn-primary{ flex:1; background:var(--navy); color:#fff; }
-    .dh-btn-primary:hover{ background:var(--navy-deep); color:#fff; }
-    .dh-btn-ghost{ width:46px; background:#fff; border:1.5px solid var(--line); color:var(--navy); }
-    .dh-btn-ghost:hover{ border-color:var(--navy); }
+    /* ══════════ TOOLBAR ══════════ */
+    .dh-listwrap{ max-width:1240px; margin:0 auto; padding:30px 24px 80px; }
+    .dh-toolbar{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; margin-bottom:26px; }
+    .dh-result-title{ font-size:1.5rem; font-weight:700; color:var(--navy); margin:0; }
+    .dh-result-title span{ color:var(--blue-2); }
+    .dh-toolbar-right{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .dh-sort-pills{ display:flex; gap:6px; background:#fff; border:1px solid var(--line); border-radius:100px; padding:4px; }
+    .dh-sort-pill{ display:inline-flex; align-items:center; gap:6px; font-size:.8rem; font-weight:500; padding:7px 16px; border-radius:100px; cursor:pointer; color:var(--muted); transition:all .15s; user-select:none; }
+    .dh-sort-pill:hover{ color:var(--navy); }
+    .dh-sort-pill.active{ background:var(--navy); color:#fff; }
+    .dh-view-toggle{ display:flex; gap:4px; background:#fff; border:1px solid var(--line); border-radius:12px; padding:4px; }
+    .dh-vbtn{ width:36px; height:34px; border-radius:8px; border:none; background:transparent; cursor:pointer; color:var(--muted); display:flex; align-items:center; justify-content:center; font-size:.95rem; transition:all .15s; }
+    .dh-vbtn.active{ background:var(--navy); color:#fff; }
+
+    /* ══════════ NAVY CARD GRID ══════════ */
+    .dh-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+    .dh-grid.list-view{ grid-template-columns:1fr; }
+
+    .dh-lc{ background:var(--bg); border-radius:var(--r-lg); overflow:hidden; box-shadow:var(--sh-sm);
+            border:1px solid var(--line); display:flex; flex-direction:column; transition:transform .2s, box-shadow .2s; animation:fadeUp .4s both; }
+    .dh-lc:hover{ transform:translateY(-4px); box-shadow:var(--sh-lg); }
+    .dh-lc-media{ position:relative; aspect-ratio:16/11; background:#0b1e42; overflow:hidden; }
+    .dh-lc-media a{ display:block; width:100%; height:100%; }
+    .dh-lc-media img,.dh-lc-media video{ width:100%; height:100%; object-fit:cover; display:block; transition:transform .35s; }
+    .dh-lc:hover .dh-lc-media img{ transform:scale(1.05); }
+    .dh-lc-feat{ position:absolute; left:12px; top:12px; z-index:2; background:#f59e0b; color:#3a2c00; font-size:.62rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:5px 12px; border-radius:100px; }
+    .dh-lc-verified{ position:absolute; right:12px; top:12px; z-index:2; display:inline-flex; align-items:center; gap:5px; background:#fff; color:var(--green); font-size:.66rem; font-weight:600; padding:5px 11px; border-radius:100px; box-shadow:0 2px 8px rgba(0,0,0,.12); }
+    .dh-lc-verified i{ color:var(--green); }
+    .dh-lc-fav{ position:absolute; right:12px; bottom:12px; z-index:2; width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,.92); border:none; color:var(--navy); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:.85rem; transition:all .15s; }
+    .dh-lc-fav:hover{ background:#fff; }
+    .dh-lc-fav.liked{ background:#e11d48; color:#fff; }
+
+    .dh-lc-body{ background:var(--navy); color:#fff; padding:20px 22px 22px; display:flex; flex-direction:column; flex:1; }
+    .dh-lc-top{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:16px; }
+    .dh-lc-cat{ display:inline-flex; align-items:center; background:rgba(255,255,255,.12); color:#fff; font-size:.74rem; font-weight:500; padding:6px 14px; border-radius:100px; }
+    .dh-lc-rate{ display:inline-flex; align-items:center; gap:5px; color:#fff; font-size:.9rem; }
+    .dh-lc-rate i{ color:#fbbf24; font-size:.85rem; }
+    .dh-lc-rate strong{ font-weight:700; }
+    .dh-lc-rate em{ font-style:normal; color:rgba(255,255,255,.6); font-size:.82rem; }
+    .dh-lc-title{ font-size:1.25rem; font-weight:700; color:#fff; line-height:1.24; margin:0 0 14px; display:block; }
+    .dh-lc-title:hover{ color:#fff; opacity:.9; }
+    .dh-lc-loc{ display:flex; align-items:center; gap:8px; color:rgba(255,255,255,.62); font-size:.9rem; }
+    .dh-lc-loc i{ font-size:.85rem; }
+    .dh-lc-desc{ display:none; }
+    .dh-lc-divider{ height:1px; background:rgba(255,255,255,.14); margin:18px 0; }
+    .dh-lc-foot{ display:flex; flex-direction:column; gap:2px; margin-bottom:16px; }
+    .dh-lc-plabel{ font-size:.8rem; color:rgba(255,255,255,.6); }
+    .dh-lc-price{ font-size:1.5rem; font-weight:700; color:#fff; line-height:1.1; }
+    .dh-lc-price.sm{ font-size:1.05rem; font-weight:600; }
+    .dh-lc-btn{ display:flex; align-items:center; justify-content:center; gap:9px; margin-top:auto; background:#fff; color:var(--navy);
+                font-weight:600; font-size:.92rem; border-radius:100px; padding:14px; transition:all .15s; }
+    .dh-lc-btn:hover{ background:#eaf0ff; color:var(--navy); }
+
+    /* ── list view (horizontal list item) ── */
+    .dh-grid.list-view .dh-lc{ flex-direction:row; position:relative; min-height:230px; }
+    .dh-grid.list-view .dh-lc-media{ flex:0 0 300px; aspect-ratio:auto; align-self:stretch; }
+    .dh-grid.list-view .dh-lc-media img,
+    .dh-grid.list-view .dh-lc-media video{ position:absolute; inset:0; }
+    .dh-grid.list-view .dh-lc-body{ flex:1; padding:22px 26px; }
+    .dh-grid.list-view .dh-lc-title{ font-size:1.35rem; margin-bottom:10px; }
+    /* description fills the wider row */
+    .dh-grid.list-view .dh-lc-desc{ display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+        overflow:hidden; color:rgba(255,255,255,.6); font-size:.9rem; line-height:1.6; margin:12px 0 0; max-width:70%; }
+    .dh-grid.list-view .dh-lc-divider{ display:none; }
+    /* offer sits bottom-left, button bottom-right on one row */
+    .dh-grid.list-view .dh-lc-foot{ flex-direction:row; align-items:baseline; gap:10px; margin:22px 0 0; }
+    .dh-grid.list-view .dh-lc-btn{ position:absolute; right:26px; bottom:24px; margin-top:0; width:auto; padding:13px 44px; }
+
+    .dh-empty{ grid-column:1/-1; text-align:center; color:var(--muted); padding:64px 20px; }
+    .dh-empty-icon{ font-size:2.6rem; margin-bottom:14px; }
+    .dh-empty-title{ font-size:1.2rem; font-weight:700; color:var(--navy); margin:0 0 6px; }
+    .dh-empty-text{ font-size:.9rem; }
+
+    .dh-loader{ display:none; justify-content:center; gap:8px; padding:40px 0; }
+    .dh-loader span{ width:11px; height:11px; border-radius:50%; background:var(--blue); opacity:.5; animation:bounce .8s infinite; }
+    .dh-loader span:nth-child(2){ animation-delay:.15s; } .dh-loader span:nth-child(3){ animation-delay:.3s; }
+    @keyframes bounce{ 0%,80%,100%{ transform:scale(.6); opacity:.4; } 40%{ transform:scale(1); opacity:1; } }
+    .dh-end-msg{ display:none; text-align:center; padding:28px 0; font-size:.8rem; color:var(--muted); letter-spacing:.04em; }
+
+    /* ══════════ FILTERS PANEL (offcanvas) ══════════ */
+    .dh-filter-backdrop{ position:fixed; inset:0; background:rgba(7,30,77,.45); z-index:1200; opacity:0; pointer-events:none; transition:opacity .25s; }
+    .dh-filter-backdrop.open{ opacity:1; pointer-events:auto; }
+    .dh-filter-panel{ position:fixed; top:0; right:0; bottom:0; width:380px; max-width:88vw; background:#fff; z-index:1201;
+                      transform:translateX(100%); transition:transform .28s cubic-bezier(.4,0,.2,1); box-shadow:var(--sh-lg); display:flex; flex-direction:column; }
+    .dh-filter-panel.open{ transform:none; }
+    .dh-filter-head{ display:flex; align-items:center; justify-content:space-between; padding:22px 24px; border-bottom:1px solid var(--line); }
+    .dh-filter-head h3{ display:flex; align-items:center; gap:10px; font-size:1.1rem; font-weight:700; color:var(--navy); margin:0; }
+    .dh-filter-reset{ display:inline-flex; align-items:center; gap:6px; background:none; border:none; color:var(--muted); font-family:var(--font); font-size:.84rem; font-weight:500; cursor:pointer; }
+    .dh-filter-reset:hover{ color:var(--navy); }
+    .dh-filter-close{ background:var(--bg-soft); border:none; width:36px; height:36px; border-radius:50%; cursor:pointer; color:var(--navy); font-size:1rem; }
+    .dh-filter-body{ padding:22px 24px 30px; overflow-y:auto; flex:1; }
+    .dh-filter-group{ margin-bottom:26px; }
+    .dh-filter-label{ font-size:.9rem; font-weight:700; color:var(--navy); margin:0 0 12px; }
+    .dh-filter-search{ display:flex; align-items:center; gap:10px; border:1.5px solid var(--line); border-radius:12px; padding:11px 14px; }
+    .dh-filter-search i{ color:var(--muted); }
+    .dh-filter-search input{ flex:1; border:none; outline:none; font-family:var(--font); font-size:.9rem; color:var(--ink); }
+    .dh-filter-select{ width:100%; border:1.5px solid var(--line); border-radius:12px; padding:12px 14px; font-family:var(--font); font-size:.9rem; color:var(--ink); background:#fff; cursor:pointer; }
+    .dh-filter-chips{ display:flex; flex-wrap:wrap; gap:8px; }
+    .dh-filter-apply{ display:block; width:100%; background:var(--navy); color:#fff; border:none; border-radius:12px; padding:14px; font-family:var(--font); font-weight:600; font-size:.92rem; cursor:pointer; }
+    .dh-filter-apply:hover{ background:var(--navy-deep); }
+
+    /* ══════════ FOOTER ══════════ */
+    .dh-footer{ background:var(--navy-deep); color:rgba(255,255,255,.72); padding:60px 0 0; }
+    .dh-footer-grid{ display:grid; grid-template-columns:1.6fr repeat(3,1fr); gap:40px; padding-bottom:44px; }
+    .dh-footer-logo img{ height:34px; filter:brightness(0) invert(1); }
+    .dh-footer-tag{ font-size:.85rem; color:rgba(255,255,255,.55); max-width:280px; margin:16px 0 20px; line-height:1.6; }
+    .dh-footer-social{ display:flex; gap:10px; }
+    .dh-footer-social a{ width:38px; height:38px; border-radius:50%; border:1px solid rgba(255,255,255,.2); display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.7); transition:all .15s; }
+    .dh-footer-social a:hover{ border-color:#fff; color:#fff; }
+    .dh-footer-col-title{ font-size:.9rem; font-weight:700; color:#fff; margin-bottom:16px; }
+    .dh-footer-links{ list-style:none; padding:0; margin:0; }
+    .dh-footer-links li{ margin-bottom:11px; }
+    .dh-footer-links a{ color:rgba(255,255,255,.6); font-size:.88rem; }
+    .dh-footer-links a:hover{ color:#fff; }
+    .dh-footer-bottom{ border-top:1px solid rgba(255,255,255,.1); padding:22px 0; display:flex; align-items:center; justify-content:space-between; font-size:.78rem; color:rgba(255,255,255,.4); flex-wrap:wrap; gap:10px; }
+
+    @keyframes fadeUp{ from{ opacity:0; transform:translateY(20px); } to{ opacity:1; transform:none; } }
+
+    /* ══════════ RESPONSIVE ══════════ */
+    @media(max-width:1024px){ .dh-grid{ grid-template-columns:repeat(2,1fr); } }
+    @media(max-width:900px){
+        .dh-nav-links,.dh-btn-signin{ display:none; }
+        .dh-nav-icon-btn{ display:flex; }
+        .loc-trigger{ display:none; }
+    }
+    @media(max-width:768px){
+        .dh-hero{ min-height:auto; padding:calc(var(--nav-h) + 20px) 0 40px; }
+        .dh-hero-search{ flex-wrap:wrap; }
+        .dh-hs-box{ order:1; flex-basis:100%; }
+        .dh-hs-search{ order:2; flex:1; padding:14px 0; }
+        .dh-hs-filter{ order:3; padding:14px 20px; }
+        .dh-grid{ grid-template-columns:1fr 1fr; gap:14px; }
+        .dh-lc-body{ padding:16px 16px 18px; }
+        .dh-lc-title{ font-size:1.05rem; }
+        .dh-lc-price{ font-size:1.25rem; }
+        .dh-footer-grid{ grid-template-columns:1fr 1fr; gap:28px; }
+        /* ── list view: compact horizontal rows on mobile ── */
+        .dh-grid.list-view{ grid-template-columns:1fr; gap:12px; }
+        .dh-grid.list-view .dh-lc{ flex-direction:row; position:relative; min-height:120px; }
+        .dh-grid.list-view .dh-lc-media{ flex:0 0 120px; aspect-ratio:auto; align-self:stretch; }
+        .dh-grid.list-view .dh-lc-media img,
+        .dh-grid.list-view .dh-lc-media video{ position:absolute; inset:0; }
+        .dh-grid.list-view .dh-lc-feat{ left:8px; top:8px; padding:3px 8px; font-size:.55rem; }
+        .dh-grid.list-view .dh-lc-verified,
+        .dh-grid.list-view .dh-lc-fav{ display:none; }
+        .dh-grid.list-view .dh-lc-body{ padding:11px 13px; }
+        .dh-grid.list-view .dh-lc-top{ flex-wrap:wrap; gap:5px 8px; margin-bottom:7px; }
+        .dh-grid.list-view .dh-lc-cat{ font-size:.64rem; padding:4px 10px; }
+        .dh-grid.list-view .dh-lc-rate{ font-size:.78rem; }
+        .dh-grid.list-view .dh-lc-title{ font-size:.9rem; margin-bottom:5px;
+            display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+        .dh-grid.list-view .dh-lc-loc{ font-size:.76rem; }
+        .dh-grid.list-view .dh-lc-desc{ display:none; }
+        .dh-grid.list-view .dh-lc-divider{ display:none; }
+        .dh-grid.list-view .dh-lc-foot{ flex-direction:row; align-items:baseline; gap:8px; margin:7px 0 0; }
+        .dh-grid.list-view .dh-lc-plabel{ display:none; }
+        .dh-grid.list-view .dh-lc-price{ font-size:.95rem; }
+        .dh-grid.list-view .dh-lc-price.sm{ font-size:.82rem; }
+        /* compact circular arrow button — hide the label, keep the SVG */
+        .dh-grid.list-view .dh-lc-btn{ position:absolute; right:12px; bottom:11px; margin:0; width:38px; height:38px; padding:0; border-radius:50%; }
+        .dh-grid.list-view .dh-lc-btn-txt{ display:none; }
+        .dh-result-title{ font-size:1.2rem; }
+    }
+    @media(max-width:480px){
+        .dh-grid{ grid-template-columns:1fr; }
+        .dh-footer-grid{ grid-template-columns:1fr; }
+        .dh-nav-download-txt{ display:none; }
+    }
     </style>
 </head>
 <body>
-{{-- <nav class="dh-nav">
+
+{{-- ═══════════ NAVBAR ═══════════ --}}
+<nav class="dh-nav">
     <div class="dh-nav-inner">
-        <a href="{{ route('home') }}">
-            <img src="/frontend/img/dealshood.png" alt="DealsHood" style="height:45px;">
-        </a>
-        <button class="dh-nav-toggle" id="navToggle" aria-label="Menu">
-            <span></span><span></span><span></span>
+        <a href="{{ route('home') }}" class="dh-nav-logo"><img src="{{ site_logo_url() }}" alt="{{ $siteName }}"></a>
+        <div class="dh-nav-links">
+            <a href="{{ route('posts.listing') }}" class="active">All Deals</a>
+            @foreach($categories->take(3) as $navCat)
+                <a href="{{ route('posts.listing', ['category_id' => $navCat->slug]) }}">{{ Str::limit($navCat->name, 16) }}</a>
+            @endforeach
+            <a href="{{ route('contact') }}">Contact</a>
+        </div>
+        <div class="dh-nav-spacer"></div>
+        <button class="loc-trigger {{ $activeLoc ? 'has-loc' : '' }}" id="locTrigger" type="button"
+                onclick="window.openLocationPopup && window.openLocationPopup()">
+            <span class="lt-pin"><i class="fas fa-map-marker-alt"></i></span>
+            <span class="lt-dot"></span>
+            <span class="lt-label" id="locLabel">{{ $activeLoc->name ?? 'Location' }}</span>
+            <i class="fas fa-chevron-down lt-chevron"></i>
         </button>
-        <div class="dh-nav-actions" id="navActions">
-            <a href="{{ route('home') }}" class="dh-btn-nav" style="background:#f1f5f9;color:var(--ink);">
-                <i class="bi bi-house"></i> Home
-            </a>
-            <a href="https://www.instagram.com/dealshood?igsh=NHJpdDhkYmJ2dTlj"
-               target="_blank" class="dh-btn-nav dh-btn-ig">
-                <i class="bi bi-instagram"></i> Follow
-            </a>
-            <a href="https://wa.me/918086087050?text=Hello%20I%20am%20interested%20in%20your%20listing"
-               target="_blank" class="dh-btn-nav dh-btn-wa">
-                <i class="bi bi-whatsapp"></i> Contact
+        <button class="dh-nav-icon-btn" type="button" onclick="openFilters()" aria-label="Filters"><i class="fas fa-sliders"></i></button>
+        <div class="dh-nav-actions">
+            <a href="{{ Route::has('login') ? route('login') : '#' }}" class="dh-btn-signin">Sign In</a>
+            <a href="#" class="dh-btn-download" onclick="return dhInstallApp(event)">
+                <i class="fas fa-download" style="font-size:.72rem;"></i> <span class="dh-nav-download-txt">Download App</span>
             </a>
         </div>
     </div>
-</nav> --}}
-<nav class="dh-nav" style="position:sticky;top:0;">
-    <div class="dh-nav-inner" style="position:relative;">
-        <a href="{{ route('home') }}" class="dh-nav-back">
-            <i class="fas fa-chevron-left"></i>
-            <span class="d-none d-sm-inline">Home</span>
-        </a>
-
-        <span class="dh-nav-page-title">
-            @if(request('category_id'))
-                {{ optional($activeCat)->name ?? 'Deals' }}
-            @else
-                Browse Deals
-            @endif
-        </span>
-
-        {{-- REPLACE WITH --}}
-        <a href="{{ route('home') }}" class="d-none d-md-block">
-            <img src="{{ site_logo_url() }}" alt="{{ $siteName }}" style="height:45px;">
-        </a>
-        <div class="dh-nav-right">
-            <button class="loc-trigger {{ $activeLoc ? 'has-loc' : '' }}" id="locTrigger" type="button"
-                    onclick="window.openLocationPopup && window.openLocationPopup()">
-                <span class="lt-pin"><i class="fas fa-map-marker-alt"></i></span>
-                <span class="lt-dot"></span>
-                <span class="lt-label" id="locLabel">{{ $activeLoc->name ?? 'Choose your area' }}</span>
-                <i class="fas fa-chevron-down lt-chevron"></i>
-            </button>
-            <div class="dh-nav-actions" style="display:flex;align-items:center;gap:10px;">
-                <a href="{{ route('home') }}" class="dh-btn-nav" style="background:#f1f5f9;color:var(--ink);">
-                    <i class="bi bi-house"></i> Home
-                </a>
-                <a href="https://www.instagram.com/dealshood?igsh=NHJpdDhkYmJ2dTlj"
-                   target="_blank" class="dh-btn-nav dh-btn-ig">
-                    <i class="bi bi-instagram"></i> Follow
-                </a>
-                <a href="https://wa.me/918086087050?text=Hello%20I%20am%20interested%20in%20your%20listing"
-                   target="_blank" class="dh-btn-nav dh-btn-wa">
-                    <i class="bi bi-whatsapp"></i> Contact
-                </a>
-            </div>
-        </div>
-    </div>
-    <button id="pwaInstallBtn"
-        onclick="installPWA()"
-        style="display:none;align-items:center;gap:6px;
-               font-size:.75rem;font-weight:600;
-               border:1.5px solid rgba(0,0,0,.1);
-               background:#fff;color:var(--ink);
-               border-radius:100px;padding:8px 16px;
-               cursor:pointer;transition:all .15s;">
-    <i class="fas fa-download"></i> Install App
-</button>
-{{-- Android/Chrome banner --}}
-{{-- <div class="pwa-banner" id="pwaBanner" style="display:none;">
-    <div class="pwa-banner-icon">
-        <img src="/frontend/img/icons/icon-192x192.png" alt="DealsHood">
-    </div>
-    <div class="pwa-banner-body">
-        <div class="pwa-banner-title">Install DealsHood</div>
-        <div class="pwa-banner-sub">Add to home screen for quick access</div>
-    </div>
-    <div class="pwa-banner-actions">
-        <button class="pwa-install-btn" id="pwaInstallBtn">Install</button>
-        <button class="pwa-dismiss-btn" id="pwaDismissBtn">✕</button>
-    </div>
-</div> --}}
-
-{{-- iOS Safari instruction sheet --}}
-<div class="pwa-backdrop" id="pwaBackdrop"></div>
-<div class="pwa-ios-sheet" id="pwaIosSheet">
-    <div class="pwa-ios-handle"></div>
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
-        <img src="/frontend/img/icons/icon-72x72.png"
-             style="width:44px;height:44px;border-radius:10px;" alt="">
-        <div>
-            <div style="font-size:1rem;font-weight:800;color:#0f172a;">Install DealsHood</div>
-            <div style="font-size:.78rem;color:#64748b;">Add to your home screen</div>
-        </div>
-    </div>
-    <ul class="pwa-ios-steps">
-        <li class="pwa-ios-step">
-            <span class="pwa-ios-step-num">1</span>
-            <span>
-                Tap the <span class="pwa-ios-icon">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
-                        <polyline points="16 6 12 2 8 6"/>
-                        <line x1="12" y1="2" x2="12" y2="15"/>
-                    </svg>
-                    Share
-                </span>
-                button at the bottom of Safari
-            </span>
-        </li>
-        <li class="pwa-ios-step">
-            <span class="pwa-ios-step-num">2</span>
-            <span>
-                Scroll down and tap
-                <span class="pwa-ios-icon">＋ Add to Home Screen</span>
-            </span>
-        </li>
-        <li class="pwa-ios-step">
-            <span class="pwa-ios-step-num">3</span>
-            <span>Tap <strong>Add</strong> in the top right corner</span>
-        </li>
-    </ul>
-    <button onclick="closePwaIos()"
-            style="width:100%;margin-top:16px;padding:13px;
-                   background:#0f172a;color:#fff;border:none;
-                   border-radius:12px;font-size:.88rem;font-weight:700;cursor:pointer;">
-        Got it
-    </button>
 </nav>
 
-{{-- ─── Compact Hero ─── --}}
+{{-- ═══════════ HERO ═══════════ --}}
 <header class="dh-hero">
-    <div class="dh-hero-bg" style="background-image:url('{{ $heroBannerUrl }}');background-size:cover;background-position:center;"></div>
+    <div class="dh-hero-bg" style="background-image:url('{{ $heroBannerUrl }}');"></div>
     <div class="dh-hero-overlay"></div>
-    <div class="dh-hero-body">
-        <div class="dh-hero-eyebrow">DealsHood</div>
+    <div class="dh-hero-inner">
+        <nav class="dh-crumb" aria-label="Breadcrumb">
+            <a href="{{ route('home') }}">Home</a>
+            <i class="fas fa-chevron-right"></i>
+            <span class="cur">@if($activeCat){{ $activeCat->name }}@else All Deals @endif</span>
+        </nav>
+
         <h1 class="dh-hero-title" id="heroTitle">
-            @if ($activeCat && $activeLoc)
-                {{ $activeCat->name }}  in {{ $activeLoc->name }}
-            @elseif ($activeCat)
-                {{ $activeCat->name }}
-            @elseif ($activeLoc)
-                  {{ $activeLoc->name }}
-            @elseif (request('keyword'))
-                Results for "{{ request('keyword') }}"
-            @else
-                Browse All
-            @endif
+            @if($activeCat && $activeLoc){{ $activeCat->name }} in {{ $activeLoc->name }}
+            @elseif($activeCat){{ $activeCat->name }}
+            @elseif($activeLoc){{ $activeLoc->name }}
+            @elseif(request('keyword'))Results for "{{ request('keyword') }}"
+            @else Discover Deals Near You @endif
         </h1>
-        <p class="dh-hero-sub">
-            @if ($activeCat && $activeLoc)
-                {{ number_format($posts->total()) }} deals in {{ $activeCat->name }} near {{ $activeLoc->name }}
-            @elseif ($activeCat)
-                {{ number_format($posts->total()) }} deals available in {{ $activeCat->name }}
-            @elseif ($activeLoc)
-                {{ number_format($posts->total()) }} deals available near {{ $activeLoc->name }}
-            @elseif (request('keyword'))
-                {{ number_format($posts->total()) }} results found
-            @else
-                Explore the best deals and offers near you
-            @endif
-        </p>
-    </div>
-    <div class="dh-hero-wave">
-        <svg viewBox="0 0 1440 56" fill="none">
-            <path d="M0 56H1440V28C1200 56 960 8 720 8C480 8 240 56 0 28V56Z" fill="#faf9f7"/>
-        </svg>
+        <p class="dh-hero-lead">Find verified deals, offers and services near you — compare, save and grab the best in your area.</p>
+
+        <form class="dh-hero-search" onsubmit="event.preventDefault(); doSearch();">
+            <div class="dh-hs-box">
+                <i class="fas fa-magnifying-glass"></i>
+                <input type="text" id="keywordInput" placeholder="Search deals by keyword…" value="{{ request('keyword') }}" autocomplete="off">
+            </div>
+            <button type="submit" class="dh-hs-search"><i class="fas fa-magnifying-glass"></i> Search</button>
+            <button type="button" class="dh-hs-filter" onclick="openFilters()"><i class="fas fa-sliders"></i> Filters</button>
+        </form>
+
+        <div class="dh-hero-note">
+            <span><i class="fas fa-location-dot"></i> Serving {{ max(10, $localities->count()) }}+ neighbourhoods</span>
+            <span><i class="fas fa-bolt"></i> Filters update results instantly</span>
+        </div>
     </div>
 </header>
 
-@php
-$palette = [
-    ['bg'=>'#dbeafe','ic'=>'#1d4ed8','icon'=>'fa-tags'],
-    ['bg'=>'#d1fae5','ic'=>'#059669','icon'=>'fa-leaf'],
-    ['bg'=>'#fef3c7','ic'=>'#d97706','icon'=>'fa-fire'],
-    ['bg'=>'#fce7f3','ic'=>'#db2777','icon'=>'fa-heart'],
-    ['bg'=>'#ede9fe','ic'=>'#7c3aed','icon'=>'fa-gem'],
-    ['bg'=>'#cffafe','ic'=>'#0891b2','icon'=>'fa-bolt'],
-    ['bg'=>'#fef2f2','ic'=>'#dc2626','icon'=>'fa-percent'],
-    ['bg'=>'#ecfdf5','ic'=>'#16a34a','icon'=>'fa-star'],
-    ['bg'=>'#fff7ed','ic'=>'#ea580c','icon'=>'fa-house'],
-    ['bg'=>'#f0f9ff','ic'=>'#0284c7','icon'=>'fa-car'],
-    ['bg'=>'#fdf4ff','ic'=>'#a21caf','icon'=>'fa-shirt'],
-    ['bg'=>'#f8fafc','ic'=>'#475569','icon'=>'fa-laptop'],
-];
-$paletteJson = json_encode($palette);
-@endphp
-
-{{-- ─── Keyword search ─── --}}
-<section class="dh-search-sec">
-    <div class="dh-wrap">
-        <div class="dh-search-row">
-            <input class="dh-search-input" type="text" id="keywordInput"
-                   placeholder="Search deals by keyword…"
-                   value="{{ request('keyword') }}" autocomplete="off">
-            <button class="dh-search-btn" id="searchBtn">
-                <i class="bi bi-search"></i> Search
-            </button>
+{{-- ═══════════ CATEGORY CHIPS ═══════════ --}}
+<section class="dh-chips-sec">
+    <div class="dh-chips-inner">
+        <div class="dh-chips-row" id="catChips">
+            <span class="dh-chip {{ !request('category_id') ? 'active' : '' }}" data-filter="category_id" data-val="">All</span>
+            @foreach($categories as $cat)
+                <span class="dh-chip {{ request('category_id') == $cat->slug ? 'active' : '' }}" data-filter="category_id" data-val="{{ $cat->slug }}">{{ $cat->name }}</span>
+            @endforeach
         </div>
     </div>
 </section>
-{{-- ─── Subcategory chips (shown when category selected) ─── --}}
-<section class="dh-chips-sec" id="subcatSec"
-         style="{{ request('category_id') && $subcategories->isNotEmpty() ? '' : 'display:none;' }}">
-    <div class="dh-wrap">
-        <div class="dh-chips-head">
-            <span class="dh-chips-label">
-                <i class="fas fa-sitemap"></i>
-                <span id="subcatLabel">{{ $activeCat?->name }} — Subcategories</span>
-            </span>
-            @if (request('subcategory_id'))
-                <button class="dh-chips-clear" data-clear="subcategory_id">
-                    <i class="bi bi-x-circle"></i> Clear
-                </button>
-            @endif
-        </div>
-        <div class="dh-chips-row chips-scroll" id="subcatChips">
-            @if (request('category_id') && $subcategories->isNotEmpty())
-                <span class="dh-chip {{ !request('subcategory_id') ? 'active':'' }}"
-                      data-filter="subcategory_id" data-val="">
-                    <span class="chip-icon" style="background:rgba(0,0,0,.05);color:var(--accent);">
-                        <i class="fas fa-th"></i>
-                    </span>
-                    All
-                </span>
-                @foreach ($subcategories as $i => $sub)
-                    @php $p = $palette[$i % count($palette)]; @endphp
-                    <span class="dh-chip {{ request('subcategory_id') == $sub->slug ? 'active':'' }}"
-                          data-filter="subcategory_id" data-val="{{ $sub->slug }}">
-                        <span class="chip-icon" style="background:{{ $p['bg'] }};color:{{ $p['ic'] }};">
-                            <i class="fas {{ $p['icon'] }}"></i>
-                        </span>
-                        {{ $sub->name }}
-                    </span>
+
+{{-- ═══════════ SUBCATEGORY CHIPS ═══════════ --}}
+<section class="dh-subchips-sec" id="subcatSec" style="{{ request('category_id') && $subcategories->isNotEmpty() ? '' : 'display:none;' }}">
+    <div class="dh-subchips-inner">
+        <div class="dh-chips-row" id="subcatChips">
+            @if(request('category_id') && $subcategories->isNotEmpty())
+                <span class="dh-chip {{ !request('subcategory_id') ? 'active' : '' }}" data-filter="subcategory_id" data-val="">All {{ $activeCat?->name }}</span>
+                @foreach($subcategories as $sub)
+                    <span class="dh-chip {{ request('subcategory_id') == $sub->slug ? 'active' : '' }}" data-filter="subcategory_id" data-val="{{ $sub->slug }}">{{ $sub->name }}</span>
                 @endforeach
             @endif
         </div>
     </div>
 </section>
 
+{{-- ═══════════ RESULTS ═══════════ --}}
+<div class="dh-listwrap">
+    <div class="dh-toolbar">
+        <h2 class="dh-result-title"><span id="resultCount">{{ number_format($posts->total()) }}</span> deals available</h2>
+        <div class="dh-toolbar-right">
+            <div class="dh-sort-pills">
+                <span class="dh-sort-pill {{ request('sort','latest') === 'latest' ? 'active' : '' }}" data-sort="latest"><i class="bi bi-clock"></i> Newest</span>
+                <span class="dh-sort-pill {{ request('sort') === 'trending' ? 'active' : '' }}" data-sort="trending"><i class="bi bi-fire"></i> Trending</span>
+            </div>
+            <div class="dh-view-toggle">
+                <button class="dh-vbtn active" id="btnGrid" title="Grid view"><i class="bi bi-grid-3x3-gap-fill"></i></button>
+                <button class="dh-vbtn" id="btnList" title="List view"><i class="bi bi-list-ul"></i></button>
+            </div>
+        </div>
+    </div>
 
-{{-- ─── Posts section ─── --}}
-<section class="dh-posts-sec">
-    <div class="dh-wrap" style="padding-top:22px;">
+    <div class="dh-grid" id="post-wrapper">
+        @forelse($posts as $post)
+            @include('frontend.post-listing-card', ['post' => $post])
+        @empty
+            <div class="dh-empty">
+                <div class="dh-empty-icon">🔍</div>
+                <p class="dh-empty-title">No Deals Found</p>
+                <p class="dh-empty-text">Try a different locality, category, or keyword.</p>
+            </div>
+        @endforelse
+    </div>
 
-        <div class="dh-toolbar">
-            <p class="dh-result-info mb-0">
-                Showing <strong id="resultCount">{{ number_format($posts->total()) }}</strong>
-                @if ($activeCat) in <strong>{{ $activeCat->name }}</strong>@endif
-                @if ($activeLoc) · <strong>{{ $activeLoc->name }}</strong>@endif
-            </p>
-            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-                <div class="dh-sort-pills">
-                    <span class="dh-sort-pill {{ request('sort','latest') === 'latest' ? 'active':'' }}"
-                          data-sort="latest">
-                        <i class="bi bi-clock"></i> Newest
-                    </span>
-                    {{-- <span class="dh-sort-pill {{ request('sort') === 'popular' ? 'active':'' }}"
-                          data-sort="popular">
-                        <i class="bi bi-eye"></i> Popular
-                    </span> --}}
-                    <span class="dh-sort-pill {{ request('sort') === 'trending' ? 'active':'' }}"
-                          data-sort="trending">
-                        <i class="bi bi-fire"></i> Trending
-                    </span>
-                </div>
-                {{-- Grid / List toggle --}}
-                <div class="dh-view-toggle">
-                    <button class="dh-vbtn active" id="btnList" title="List view">
-                        <i class="bi bi-list-ul"></i>
-                    </button>
-                    <button class="dh-vbtn" id="btnGrid" title="Grid view">
-                        <i class="bi bi-grid-3x3-gap-fill"></i>
-                    </button>
-                </div>
+    <div class="dh-loader" id="loading"><span></span><span></span><span></span></div>
+    <div class="dh-end-msg" id="endMsg">You've seen all the deals</div>
+    <input type="hidden" id="next-page-url" value="{{ $posts->nextPageUrl() }}">
+</div>
+
+{{-- ═══════════ FILTERS PANEL ═══════════ --}}
+<div class="dh-filter-backdrop" id="filterBackdrop" onclick="closeFilters()"></div>
+<aside class="dh-filter-panel" id="filterPanel" aria-hidden="true">
+    <div class="dh-filter-head">
+        <h3><i class="fas fa-sliders"></i> Filters</h3>
+        <div style="display:flex;align-items:center;gap:10px;">
+            <button class="dh-filter-reset" onclick="resetFilters()"><i class="fas fa-rotate-left"></i> Reset</button>
+            <button class="dh-filter-close" onclick="closeFilters()"><i class="fas fa-xmark"></i></button>
+        </div>
+    </div>
+    <div class="dh-filter-body">
+        <div class="dh-filter-group">
+            <p class="dh-filter-label">Search</p>
+            <div class="dh-filter-search">
+                <i class="fas fa-magnifying-glass"></i>
+                <input type="text" id="fKeyword" placeholder="Search services…" value="{{ request('keyword') }}">
             </div>
         </div>
 
-        <div class="dh-grid list-view" id="post-wrapper">
-            @forelse($posts as $post)
-                @include('frontend.post-single-card', ['post' => $post])
-            @empty
-                <div class="dh-empty" style="grid-column:1/-1;">
-                    <div class="dh-empty-icon">🔍</div>
-                    <p class="dh-empty-title">No Deals Found</p>
-                    <p class="dh-empty-text">Try a different locality, category, or keyword.</p>
-                </div>
-            @endforelse
+        <div class="dh-filter-group">
+            <p class="dh-filter-label">Categories</p>
+            <div class="dh-filter-chips" id="fCatChips">
+                <span class="dh-chip {{ !request('category_id') ? 'active' : '' }}" data-filter="category_id" data-val="">All</span>
+                @foreach($categories as $cat)
+                    <span class="dh-chip {{ request('category_id') == $cat->slug ? 'active' : '' }}" data-filter="category_id" data-val="{{ $cat->slug }}">{{ $cat->name }}</span>
+                @endforeach
+            </div>
         </div>
 
-        <div class="dh-loader" id="loading">
-            <div class="dh-dots"><span></span><span></span><span></span></div>
+        <div class="dh-filter-group">
+            <p class="dh-filter-label">Location</p>
+            <select class="dh-filter-select" id="fLocality">
+                <option value="">All locations</option>
+                @foreach($localities as $loc)
+                    <option value="{{ $loc->slug }}" {{ request('locality_id') == $loc->slug ? 'selected' : '' }}>
+                        {{ str_repeat('— ', $loc->type === 'city' ? 1 : ($loc->type === 'area' ? 2 : 0)) }}{{ $loc->name }}
+                    </option>
+                @endforeach
+            </select>
         </div>
-        <div class="dh-end-msg" id="endMsg">You've seen all the deals</div>
-        <input type="hidden" id="next-page-url" value="{{ $posts->nextPageUrl() }}">
 
+        <div class="dh-filter-group">
+            <p class="dh-filter-label">Sort by</p>
+            <select class="dh-filter-select" id="fSort">
+                <option value="latest"   {{ request('sort','latest') === 'latest' ? 'selected' : '' }}>Newest first</option>
+                <option value="trending" {{ request('sort') === 'trending' ? 'selected' : '' }}>Trending</option>
+                <option value="popular"  {{ request('sort') === 'popular' ? 'selected' : '' }}>Most viewed</option>
+            </select>
+        </div>
+
+        <button class="dh-filter-apply" onclick="applyFilters()">Apply Filters</button>
     </div>
-</section>
+</aside>
 
+{{-- ═══════════ FOOTER ═══════════ --}}
 <footer class="dh-footer">
-    <div class="dh-wrap">
+    <div class="wrap">
         <div class="dh-footer-grid">
             <div>
-                <img src="{{ site_logo_url() }}" alt="{{ $siteName }}"
-                     style="height:32px;filter:brightness(0) invert(1);opacity:.8;">
-                <p class="dh-footer-brand">DealsHood</p>
-                <p class="dh-footer-tag">Discover the best deals around you.</p>
+                <div class="dh-footer-logo"><img src="{{ site_logo_url() }}" alt="{{ $siteName }}"></div>
+                <p class="dh-footer-tag">Find the best local deals, offers and classifieds near you. Save smarter, shop happier.</p>
                 <div class="dh-footer-social">
-                    <a href="https://www.facebook.com/share/1DA56kRCJp"><i class="fab fa-facebook"></i></a>
                     <a href="https://www.instagram.com/dealshood" target="_blank"><i class="fab fa-instagram"></i></a>
-                    {{-- <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a> --}}
+                    <a href="https://www.facebook.com/share/1DA56kRCJp" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://wa.me/918086087050" target="_blank"><i class="fab fa-whatsapp"></i></a>
                 </div>
             </div>
-            {{-- <div>
-                <p class="dh-footer-col-title">Company</p>
+            <div>
+                <p class="dh-footer-col-title">Explore</p>
                 <ul class="dh-footer-links">
-                    <li><a href="#">About Us</a></li>
-                    <li><a href="#">Advertise</a></li>
+                    <li><a href="{{ route('home') }}">Home</a></li>
+                    <li><a href="{{ route('posts.listing') }}">All Deals</a></li>
+                    <li><a href="{{ route('contact') }}">Contact</a></li>
                 </ul>
             </div>
             <div>
-                <p class="dh-footer-col-title">Support</p>
+                <p class="dh-footer-col-title">Categories</p>
                 <ul class="dh-footer-links">
-                    <li><a href="#">Contact Us</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
+                    @foreach($categories->take(4) as $cat)
+                        <li><a href="{{ route('posts.listing', ['category_id' => $cat->slug]) }}">{{ $cat->name }}</a></li>
+                    @endforeach
                 </ul>
-            </div> --}}
+            </div>
+            <div>
+                <p class="dh-footer-col-title">Areas</p>
+                <ul class="dh-footer-links">
+                    @foreach($localities->where('type','district')->take(4) as $loc)
+                        <li><a href="{{ route('posts.listing', ['locality_id' => $loc->slug]) }}">{{ $loc->name }}</a></li>
+                    @endforeach
+                </ul>
+            </div>
         </div>
         <div class="dh-footer-bottom">
-            <p>&copy; <span id="footerYear"></span> <a href="#">DealsHood</a>. All rights reserved.</p>
+            <span>© {{ date('Y') }} {{ $siteName }}. All rights reserved.</span>
+            <span>Made with <i class="fas fa-heart" style="color:#e11d48;"></i> in India</span>
         </div>
     </div>
 </footer>
 
 @include('frontend.frontend-mobile')
-
 @include('frontend.post-ad-modal')
-<style>
-@media(max-width: 768px) {
-    #post-wrapper {
-        grid-template-columns: 1fr !important;
-        gap: 14px;
-    }
-}
-@media(max-width: 768px) {
-    #post-wrapper {
-        grid-template-columns: 1fr !important;
-        gap: 14px;
-    }
-    /* Re-show description in single-column list */
-    #post-wrapper .dh-card-desc {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-    #post-wrapper .dh-card-media img:not(.dh-card-bg):not(.dh-card-fg),
-    #post-wrapper.dh-card-media video { height: 270px; }
-}
-</style>
+
 <script src="/frontend/js/core/popper.min.js"></script>
 <script src="/frontend/js/core/bootstrap.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
-    $(document).on('mouseenter', '.dh-star', function () {
-            const val = $(this).data('value');
-            $(this).parent().children('.dh-star').each(function () {
-                $(this).toggleClass('hover', $(this).data('value') <= val);
-            });
-        });
-        $(document).on('mouseleave', '.dh-rating-stars', function () {
-            $(this).children('.dh-star').removeClass('hover');
-        });
-        
-    $(document).on('click', '.dh-star', function () {
-    const val    = $(this).data('value');
-    const wrap   = $(this).closest('.dh-rating');
-    const postId = wrap.data('post-id');
-    const current = parseInt(wrap.data('current') || 0);
-
-    if (val === current) {
-        // Same star clicked again — remove rating
-        $.ajax({
-            url: '/posts/' + postId + '/rate',
-            type: 'DELETE',
-            data: { _token: '{{ csrf_token() }}' },
-            success: function (res) {
-                wrap.data('current', 0);
-                wrap.find('.dh-star').removeClass('active');
-                wrap.find('.dh-rating-avg').text(res.avg_rating.toFixed(1));
-                wrap.find('.dh-rating-count').text('(' + res.total + ' ratings)');
-            }
-        });
-        return;
-    }
-
-    $.ajax({
-        url: '/posts/' + postId + '/rate',
-        type: 'POST',
-        data: { _token: '{{ csrf_token() }}', rating: val },
-        success: function (res) {
-            wrap.data('current', val);
-            wrap.find('.dh-star').each(function () {
-                $(this).toggleClass('active', $(this).data('value') <= val);
-            });
-            wrap.find('.dh-rating-avg').text(res.avg_rating.toFixed(1));
-            wrap.find('.dh-rating-count').text('(' + res.total + ' ratings)');
-        }
-    });
-});
-const PALETTE     = {!! $paletteJson !!};
 const LISTING_URL = '{{ route("posts.listing") }}';
 const CSRF        = '{{ csrf_token() }}';
 
-document.getElementById('footerYear').textContent = new Date().getFullYear();
-// document.getElementById('navToggle').addEventListener('click',function(){
-//     document.getElementById('navActions').classList.toggle('open');
-// });
-
-/* ═══════════════════════════════════════════════════
-   FILTER STATE — tracks current active filters
-═══════════════════════════════════════════════════ */
 const filters = {
     locality_id    : '{{ request("locality_id") }}',
     category_id    : '{{ request("category_id") }}',
@@ -1297,411 +564,244 @@ const filters = {
     sort           : '{{ request("sort", "latest") }}',
     page           : 1,
 };
-
 let isLoading = false;
 
-/* ─── Location trigger integration ─────────────── */
+/* ── Location trigger integration (used by location-popup) ── */
 function setLocUI(slug, name, skipReload){
     const label = document.getElementById('locLabel');
     const trigger = document.getElementById('locTrigger');
-    if(label) label.textContent = slug ? name : 'Choose your area';
+    if(label) label.textContent = slug ? name : 'Location';
     if(trigger) slug ? trigger.classList.add('has-loc') : trigger.classList.remove('has-loc');
-
     filters.locality_id = slug || '';
     filters.page = 1;
-
-    if (!skipReload) loadPosts(true);
+    const fLoc = document.getElementById('fLocality');
+    if(fLoc) fLoc.value = slug || '';
+    if(!skipReload) loadPosts(true);
 }
-function reloadContent() {
-    filters.page = 1;
-    loadPosts(true);
-}
-window.reloadContent = reloadContent;
-function reloadContent() {
-    filters.page = 1;
-    loadPosts(true);
-}
-window.reloadContent = reloadContent;
-
 function clearLoc(){
     setLocUI('', '');
-    try { localStorage.setItem('dh_locality_v1', JSON.stringify({slug:'',name:'All Areas',ts:Date.now()})); } catch(e){}
+    try{ localStorage.setItem('dh_locality_v1', JSON.stringify({slug:'',name:'All Areas',ts:Date.now()})); }catch(e){}
 }
-window.setLocUI = setLocUI;
-window.clearLoc = clearLoc;
+function reloadContent(){ filters.page = 1; loadPosts(true); }
+window.setLocUI = setLocUI; window.clearLoc = clearLoc; window.reloadContent = reloadContent;
 
-
-/* Build URL from filters */
+/* ── Build URL from filters ── */
 function buildUrl(page){
-    const p = Object.assign({}, filters, {page: page||1});
+    const p = Object.assign({}, filters, {page: page || 1});
     const params = new URLSearchParams();
-    Object.entries(p).forEach(([k,v])=>{ if(v) params.set(k,v); });
-    return LISTING_URL + (params.toString() ? '?'+params.toString() : '');
+    Object.entries(p).forEach(([k,v]) => { if(v) params.set(k, v); });
+    return LISTING_URL + (params.toString() ? '?' + params.toString() : '');
 }
 
-/* ─── Main AJAX load ────────────────────────────── */
+/* ── Main AJAX load ── */
 function loadPosts(reset, nextUrl){
     if(isLoading) return;
     isLoading = true;
-
     const loader = document.getElementById('loading');
     const endMsg = document.getElementById('endMsg');
-    loader.style.display = 'block';
-    endMsg.style.display  = 'none';
+    loader.style.display = 'flex';
+    endMsg.style.display = 'none';
 
     const url = nextUrl || buildUrl(1);
-
     if(reset) window.history.pushState({}, '', url);
 
     fetch(url, {headers:{'X-Requested-With':'XMLHttpRequest'}})
-        .then(r=>r.json())
-        .then(data=>{
+        .then(r => r.json())
+        .then(data => {
             loader.style.display = 'none';
             const wrapper = document.getElementById('post-wrapper');
-            reset ? wrapper.innerHTML = data.html
-                  : wrapper.insertAdjacentHTML('beforeend', data.html);
-
-            wrapper.querySelectorAll('.dh-card').forEach((c,i)=>
-                c.style.animationDelay=(i*.03)+'s'
-            );
-
+            reset ? wrapper.innerHTML = data.html : wrapper.insertAdjacentHTML('beforeend', data.html);
+            wrapper.querySelectorAll('.dh-lc').forEach((c,i) => c.style.animationDelay = (i*.03) + 's');
             const next = data.next_page || '';
             document.getElementById('next-page-url').value = next;
             if(!next) endMsg.style.display = 'block';
-
-            if(data.total !== undefined){
-                document.getElementById('resultCount').textContent =
-                    Number(data.total).toLocaleString();
-            }
+            if(data.total !== undefined) document.getElementById('resultCount').textContent = Number(data.total).toLocaleString();
             isLoading = false;
         })
-        .catch(()=>{ isLoading=false; loader.style.display='none'; });
+        .catch(() => { isLoading = false; loader.style.display = 'none'; });
 }
 
-/* ─── Chip click — AJAX filter ─────────────────── */
-$(document).on('click','.dh-chip',function(){
-    const key = $(this).data('filter');
-    const val = $(this).data('val');
-
-    // Update active state
-    $('[data-filter="'+key+'"]').removeClass('active');
+/* ── Category / subcategory chips ── */
+$(document).on('click', '#catChips .dh-chip, #fCatChips .dh-chip', function(){
+    const val = $(this).data('val') || '';
+    $('#catChips .dh-chip, #fCatChips .dh-chip').removeClass('active');
+    $('.dh-chip[data-filter="category_id"][data-val="'+ val +'"]').addClass('active');
+    filters.category_id = val;
+    filters.subcategory_id = '';
+    filters.page = 1;
+    refreshSubcats(val);
+    loadPosts(true);
+});
+$(document).on('click', '#subcatChips .dh-chip', function(){
+    const val = $(this).data('val') || '';
+    $('#subcatChips .dh-chip').removeClass('active');
     $(this).addClass('active');
-    filters[key] = val;
+    filters.subcategory_id = val;
     filters.page = 1;
-
     loadPosts(true);
 });
 
-/* ─── Clear filter buttons ──────────────────────── */
-$(document).on('click','.dh-chips-clear',function(){
-    const key = $(this).data('clear');
-    filters[key] = '';
-    filters.page = 1;
-    $('[data-filter="'+key+'"]').removeClass('active');
-    $('[data-filter="'+key+'"][data-val=""]').addClass('active');
+/* Pull subcategories for a category and render the sub-chip row */
+function refreshSubcats(catSlug){
+    const sec = document.getElementById('subcatSec');
+    const row = document.getElementById('subcatChips');
+    if(!catSlug){ sec.style.display = 'none'; row.innerHTML = ''; return; }
+    fetch('/get-subcategories/' + catSlug, {headers:{'X-Requested-With':'XMLHttpRequest'}})
+        .then(r => r.json())
+        .then(subs => {
+            if(!subs.length){ sec.style.display = 'none'; row.innerHTML = ''; return; }
+            let html = '<span class="dh-chip active" data-filter="subcategory_id" data-val="">All</span>';
+            subs.forEach(s => { html += '<span class="dh-chip" data-filter="subcategory_id" data-val="'+ s.slug +'">'+ s.name +'</span>'; });
+            row.innerHTML = html;
+            sec.style.display = '';
+        })
+        .catch(() => { sec.style.display = 'none'; });
+}
 
-    loadPosts(true);
-});
-
-/* ─── Sort pills ────────────────────────────────── */
-$(document).on('click','.dh-sort-pill',function(){
+/* ── Sort pills ── */
+$(document).on('click', '.dh-sort-pill', function(){
     $('.dh-sort-pill').removeClass('active');
     $(this).addClass('active');
     filters.sort = $(this).data('sort');
     filters.page = 1;
+    const fSort = document.getElementById('fSort');
+    if(fSort) fSort.value = filters.sort;
     loadPosts(true);
 });
 
-/* ─── Keyword search ────────────────────────────── */
-$('#searchBtn').on('click',function(){
-    filters.keyword = $('#keywordInput').val().trim();
-    filters.page    = 1;
+/* ── Hero search ── */
+function doSearch(){
+    filters.keyword = document.getElementById('keywordInput').value.trim();
+    filters.page = 1;
     loadPosts(true);
-});
-$('#keywordInput').on('keydown',function(e){
-    if(e.key==='Enter') $('#searchBtn').trigger('click');
-});
+}
+window.doSearch = doSearch;
+$('#keywordInput').on('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); doSearch(); } });
 
-/* ─── Infinite scroll ───────────────────────────── */
-window.addEventListener('scroll',function(){
+/* ── Filters panel ── */
+function openFilters(){ document.getElementById('filterBackdrop').classList.add('open'); document.getElementById('filterPanel').classList.add('open'); document.body.style.overflow = 'hidden'; }
+function closeFilters(){ document.getElementById('filterBackdrop').classList.remove('open'); document.getElementById('filterPanel').classList.remove('open'); document.body.style.overflow = ''; }
+window.openFilters = openFilters; window.closeFilters = closeFilters;
+function applyFilters(){
+    filters.keyword     = document.getElementById('fKeyword').value.trim();
+    filters.locality_id = document.getElementById('fLocality').value;
+    filters.sort        = document.getElementById('fSort').value;
+    filters.subcategory_id = '';
+    filters.page = 1;
+    document.getElementById('keywordInput').value = filters.keyword;
+    $('.dh-sort-pill').removeClass('active');
+    $('.dh-sort-pill[data-sort="'+ filters.sort +'"]').addClass('active');
+    setLocUI(filters.locality_id, document.querySelector('#fLocality option:checked')?.textContent.trim() || '', true);
+    refreshSubcats(filters.category_id);
+    closeFilters();
+    loadPosts(true);
+}
+function resetFilters(){
+    filters.keyword = ''; filters.category_id = ''; filters.subcategory_id = '';
+    filters.locality_id = ''; filters.sort = 'latest'; filters.page = 1;
+    document.getElementById('fKeyword').value = '';
+    document.getElementById('keywordInput').value = '';
+    document.getElementById('fLocality').value = '';
+    document.getElementById('fSort').value = 'latest';
+    $('.dh-chip[data-filter="category_id"]').removeClass('active');
+    $('.dh-chip[data-filter="category_id"][data-val=""]').addClass('active');
+    $('.dh-sort-pill').removeClass('active');
+    $('.dh-sort-pill[data-sort="latest"]').addClass('active');
+    setLocUI('', '', true);
+    refreshSubcats('');
+    closeFilters();
+    loadPosts(true);
+}
+window.applyFilters = applyFilters; window.resetFilters = resetFilters;
+
+/* ── Infinite scroll ── */
+window.addEventListener('scroll', function(){
     if(isLoading) return;
-    if(document.body.offsetHeight - window.scrollY - window.innerHeight > 320) return;
+    if(document.body.offsetHeight - window.scrollY - window.innerHeight > 360) return;
     const next = document.getElementById('next-page-url').value;
     if(!next) return;
     loadPosts(false, next);
-},{passive:true});
+}, {passive:true});
 
-/* ── Like ─────────────────────────────────────────── */
-$(document).on('click','.likeBtn',function(){
-    const btn=$(this),id=btn.data('id');
-    $.post('/posts/'+id+'/toggle-like',{_token:CSRF},function(res){
-        $('#lc-'+id).text(res.likes);
-        res.liked?btn.addClass('liked'):btn.removeClass('liked');
+/* ── Grid / List toggle ── */
+(function(){
+    const KEY = 'dh_view_mode';
+    const $grid = $('#post-wrapper'), $g = $('#btnGrid'), $l = $('#btnList');
+    function setView(mode){
+        if(mode === 'list'){ $grid.addClass('list-view'); $l.addClass('active'); $g.removeClass('active'); }
+        else { $grid.removeClass('list-view'); $g.addClass('active'); $l.removeClass('active'); }
+        try{ localStorage.setItem(KEY, mode); }catch(e){}
+    }
+    try{ setView(localStorage.getItem(KEY) || 'grid'); }catch(e){ setView('grid'); }
+    $g.on('click', () => setView('grid'));
+    $l.on('click', () => setView('list'));
+})();
+
+/* ── Like ── */
+$(document).on('click', '.likeBtn', function(e){
+    e.preventDefault(); e.stopPropagation();
+    const btn = $(this), id = btn.data('id');
+    $.post('/posts/' + id + '/toggle-like', {_token:CSRF}, function(res){
+        $('.likeBtn[data-id="'+ id +'"]').toggleClass('liked', res.liked);
     });
 });
 
-/* ── Share ────────────────────────────────────────── */
-$(document).on('click','.shareBtn', async function(){
+/* ── Share ── */
+$(document).on('click', '.shareBtn', async function(e){
+    e.preventDefault(); e.stopPropagation();
     const id = $(this).data('id');
     let url = $(this).data('url');
-
-    try {
-        const res  = await fetch('{{ route("shorten") }}', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
-            body: JSON.stringify({ url }),
+    try{
+        const res = await fetch('{{ route("shorten") }}', {
+            method:'POST',
+            headers:{'Content-Type':'application/json','X-CSRF-TOKEN':CSRF,'Accept':'application/json'},
+            body: JSON.stringify({url}),
         });
         const data = await res.json();
-        if (res.ok && data.short_url) url = data.short_url;
-    } catch (e) { /* keep the full URL */ }
-
-    navigator.share?navigator.share({url}):(navigator.clipboard.writeText(url),alert('Link copied!'));
-    $.post('/posts/'+id+'/share',{_token:CSRF,platform:'web'});
+        if(res.ok && data.short_url) url = data.short_url;
+    }catch(e){}
+    navigator.share ? navigator.share({url}) : (navigator.clipboard.writeText(url), alert('Link copied!'));
+    $.post('/posts/' + id + '/share', {_token:CSRF, platform:'web'});
 });
 
-/* ── Grid / List view toggle ──────────────────────── */
-(function(){
-    const STORAGE_KEY = 'dh_view_mode';
-    const $grid   = $('#post-wrapper');
-    const $btnG   = $('#btnGrid');
-    const $btnL   = $('#btnList');
+/* ── PWA install helper ── */
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredPrompt = e; });
+function dhInstallApp(ev){
+    ev.preventDefault();
+    if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt.userChoice.finally(() => deferredPrompt = null); }
+    else { alert('Open your browser menu → "Add to Home Screen" to install DealsHood.'); }
+    return false;
+}
+window.dhInstallApp = dhInstallApp;
 
-    function setView(mode){
-        if(mode === 'list'){
-            $grid.addClass('list-view');
-            $btnL.addClass('active');
-            $btnG.removeClass('active');
-        } else {
-            $grid.removeClass('list-view');
-            $btnG.addClass('active');
-            $btnL.removeClass('active');
-        }
-        try{ localStorage.setItem(STORAGE_KEY, mode); }catch(e){}
-    }
-
-    // Restore saved preference (default to list view)
-    try{
-        const saved = localStorage.getItem(STORAGE_KEY);
-        setView(saved || 'list');
-    }catch(e){ setView('list'); }
-
-    $btnG.on('click', () => setView('grid'));
-    $btnL.on('click', () => setView('list'));
-})();
-
-    // Register service worker
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js')
-                .then(reg => console.log('SW registered:', reg.scope))
-                .catch(err => console.log('SW failed:', err));
-        });
-    }
-
-
-
-
-(function () {
-    var STORAGE_KEY  = 'dh_pwa_dismissed';
-    var isIOS        = /iphone|ipad|ipod/i.test(navigator.userAgent);
-    var isSafari     = /safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent);
-    var isStandalone = window.navigator.standalone === true
-                    || window.matchMedia('(display-mode: standalone)').matches;
-
-    // Already installed or dismissed — stop here
-    if (isStandalone) return;
-    if (localStorage.getItem(STORAGE_KEY)) return;
-
-    var deferredPrompt = null;
-    var bannerShown    = false;
-
-    function showBanner() {
-        if (bannerShown) return;
-        bannerShown = true;
-        document.getElementById('pwaBanner').style.display = 'flex';
-    }
-
-    function hideBanner() {
-        document.getElementById('pwaBanner').style.display = 'none';
-    }
-
-    // ── Capture the install prompt ────────────────────
-    window.addEventListener('beforeinstallprompt', function (e) {
-    // Don't call e.preventDefault() — let Chrome show its native prompt
-    deferredPrompt = e;
-    console.log('PWA: beforeinstallprompt captured ✓');
-
-    // Still show our custom banner after 3s as extra nudge
-    setTimeout(showBanner, 3000);
-});
-
-    // ── Install button click ──────────────────────────
-   document.getElementById('pwaInstallBtn').addEventListener('click', async function () {
-    console.log('PWA: install clicked, prompt =', deferredPrompt);
-
-    hideBanner();
-
-    if (!deferredPrompt) {
-        if (isIOS) {
-            openIosSheet();
-        } else {
-            showManualInstruct();
-        }
-        return;
-    }
-
-    try {
-        // Show the native install dialog
-        await deferredPrompt.prompt();
-
-        // Wait for user response
-        const { outcome } = await deferredPrompt.userChoice;
-        console.log('PWA: user choice =', outcome);
-
-        if (outcome === 'accepted') {
-            localStorage.setItem(STORAGE_KEY, '1');
-        }
-    } catch (err) {
-        console.error('PWA prompt error:', err);
-        showManualInstruct();
-    } finally {
-        deferredPrompt = null;
-    }
-});
-
-    // ── Dismiss button ────────────────────────────────
-    document.getElementById('pwaDismissBtn').addEventListener('click', function () {
-        hideBanner();
-        localStorage.setItem(STORAGE_KEY, '1');
-    });
-
-    // ── Successfully installed ────────────────────────
-    window.addEventListener('appinstalled', function () {
-        console.log('PWA: installed successfully ✓');
-        hideBanner();
-        deferredPrompt = null;
-        localStorage.setItem(STORAGE_KEY, '1');
-    });
-
-    // ── iOS Safari ────────────────────────────────────
-    if (isIOS && isSafari) {
-        setTimeout(function () {
-            openIosSheet();
-        }, 3000);
-    }
-
-    function openIosSheet() {
-        document.getElementById('pwaIosSheet').classList.add('open');
-        document.getElementById('pwaBackdrop').classList.add('open');
-    }
-
-    window.closePwaIos = function () {
-        document.getElementById('pwaIosSheet').classList.remove('open');
-        document.getElementById('pwaBackdrop').classList.remove('open');
-        localStorage.setItem(STORAGE_KEY, '1');
-    };
-
-    document.getElementById('pwaBackdrop').addEventListener('click', function () {
-        window.closePwaIos();
-    });
-
-    // ── Manual install instructions (non-iOS, no prompt) ──
-    function showManualInstruct() {
-        var ua = navigator.userAgent.toLowerCase();
-        var msg = '';
-
-        if (ua.includes('samsung'))
-            msg = 'Tap the ☰ menu → "Add page to" → "Home screen"';
-        else if (ua.includes('firefox'))
-            msg = 'Tap the ⋮ menu → "Install" or "Add to Home Screen"';
-        else if (ua.includes('opera'))
-            msg = 'Tap the ⋮ menu → "Add to Home Screen"';
-        else
-            msg = 'Open your browser menu → "Add to Home Screen"';
-
-        // Show a small toast instead of alert
-        var toast = document.createElement('div');
-        toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);'
-            + 'background:#0f172a;color:#fff;padding:12px 20px;border-radius:100px;'
-            + 'font-size:.82rem;font-weight:500;z-index:9999;white-space:nowrap;'
-            + 'box-shadow:0 4px 20px rgba(0,0,0,.3);';
-        toast.textContent = msg;
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 5000);
-    }
-})();
+/* ── Service worker ── */
+if('serviceWorker' in navigator){ window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(()=>{})); }
 </script>
-{{-- ── Structured Data: WebSite (enables Google Sitelinks Search) ── --}}
+
+{{-- ── Structured data ── --}}
 <script type="application/ld+json">
 {!! json_encode([
-    '@context'        => 'https://schema.org',
-    '@type'           => 'WebSite',
-    'name'            => $siteName,
-    'description'     => $richDesc,
-    'url'             => $siteUrl,
-    'logo'            => $ogImage,
+    '@context' => 'https://schema.org', '@type' => 'WebSite',
+    'name' => $siteName, 'description' => $richDesc, 'url' => $siteUrl, 'logo' => $ogImage,
     'potentialAction' => [
-        '@type'       => 'SearchAction',
-        'target'      => [
-            '@type'       => 'EntryPoint',
-            'urlTemplate' => url('/listing') . '?keyword={search_term_string}',
-        ],
+        '@type' => 'SearchAction',
+        'target' => ['@type' => 'EntryPoint', 'urlTemplate' => route('posts.listing') . '?keyword={search_term_string}'],
         'query-input' => 'required name=search_term_string',
     ],
 ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
 </script>
-
-{{-- ── Structured Data: LocalBusiness / Organization ─────────────── --}}
 <script type="application/ld+json">
 {!! json_encode([
-    '@context'  => 'https://schema.org',
-    '@type'     => ['Organization', 'LocalBusiness'],
-    'name'      => $siteName,
-    'url'       => $siteUrl,
-    'logo'      => $ogImage,
-    'image'     => $ogImage,
-    'description' => $siteDesc,
-    'sameAs'    => array_filter([
-        'https://www.instagram.com/dealshood',
-        'https://www.facebook.com/share/1DA56kRCJp',
-    ]),
-], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
-</script>
-
-{{-- ── Structured Data: ItemList of categories ───────────────────── --}}
-<script type="application/ld+json">
-{!! json_encode([
-    '@context'        => 'https://schema.org',
-    '@type'           => 'ItemList',
-    'name'            => 'Deal Categories on ' . $siteName,
-    'description'     => 'Browse deals by category on ' . $siteName,
-    'numberOfItems'   => $categories->count(),
+    '@context' => 'https://schema.org', '@type' => 'ItemList',
+    'name' => 'Deal Categories on ' . $siteName, 'numberOfItems' => $categories->count(),
     'itemListElement' => $categories->map(fn($cat, $i) => [
-        '@type'    => 'ListItem',
-        'position' => $i + 1,
-        'name'     => $cat->name,
-        'url'      => route('posts.listing', ['category_id' => $cat->slug]),
+        '@type' => 'ListItem', 'position' => $i + 1, 'name' => $cat->name,
+        'url' => route('posts.listing', ['category_id' => $cat->slug]),
     ])->values()->all(),
 ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
 </script>
 
-{{-- ── Structured Data: ItemList of localities ───────────────────── --}}
-@if ($localities->count())
-<script type="application/ld+json">
-{!! json_encode([
-    '@context'        => 'https://schema.org',
-    '@type'           => 'ItemList',
-    'name'            => 'Areas Served by ' . $siteName,
-    'numberOfItems'   => $localities->count(),
-    'itemListElement' => $localities->map(fn($loc, $i) => [
-        '@type'    => 'ListItem',
-        'position' => $i + 1,
-        'name'     => $loc->name,
-        'url'      => route('posts.listing', ['locality_id' => $loc->slug]),
-    ])->values()->all(),
-], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
-</script>
-@endif
 @include('frontend.location-popup', ['localities' => $localities])
 </body>
 </html>
