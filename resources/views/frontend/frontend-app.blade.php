@@ -701,7 +701,9 @@ $palette = [
 </section>
 
 {{-- ═══════════════════════ TODAY'S TRENDING DEALS ═══════════════════════ --}}
-@if($trending->isNotEmpty())
+{{-- HIDDEN: "Hot right now" (Trending Deals) + "Special offer" (Flash Sale).
+     To restore, change @if(false) back to @if($trending->isNotEmpty()) --}}
+@if(false)
 <section class="dh-trend" id="trending">
     <div class="wrap">
         <p class="nd-eyebrow">Hot right now</p>
@@ -769,6 +771,8 @@ $palette = [
 @endif
 
 {{-- ═══════════════════════ WHY CHOOSE ═══════════════════════ --}}
+{{-- HIDDEN: "Our Promise" (Why Choose) section. To restore, remove this @if(false)/@endif wrapper --}}
+@if(false)
 <section class="nd-sec">
     <div class="wrap">
         <p class="nd-eyebrow">Our Promise</p>
@@ -798,6 +802,7 @@ $palette = [
         </div>
     </div>
 </section>
+@endif
 
 {{-- ═══════════════════════ PROMO STRIP ═══════════════════════ --}}
 @if($trending->count() >= 3)
