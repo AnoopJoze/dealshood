@@ -12,13 +12,14 @@
 
 <article class="dh-lc">
 
-    {{-- Media --}}
+    {{-- Media — blurred fill behind, full image (contain) on top --}}
     <div class="dh-lc-media">
         <a href="{{ $post->url }}" tabindex="-1" aria-label="{{ $post->title }}">
             @if($video)
                 <video preload="metadata" muted playsinline><source src="{{ $video }}"></video>
             @else
-                <img src="{{ $image }}" alt="{{ $post->title }}" loading="lazy">
+                <img class="dh-lc-bg" src="{{ $image }}" alt="" aria-hidden="true" loading="lazy">
+                <img class="dh-lc-fg" src="{{ $image }}" alt="{{ $post->title }}" loading="lazy">
             @endif
         </a>
 
