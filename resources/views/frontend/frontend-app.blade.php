@@ -650,10 +650,6 @@ $palette = [
                         <div class="dh-cat-name">{{ $cat->name }}</div>
                         <div class="dh-cat-count">{{ number_format($cat->posts_count) }}+ deals</div>
                     </div>
-                    <span class="dh-cat-more">
-                        <span class="cm-ico"><i class="fas fa-arrow-up-right-from-square" style="font-size:.55rem;"></i></span>
-                        Learn More
-                    </span>
                 </a>
             @endforeach
         </div>
