@@ -20,7 +20,8 @@
                 <iframe src="{{ str_replace('watch?v=','embed/',$post->video_url) }}"
                         style="width:100%;height:100%;border:0;" allowfullscreen loading="lazy"></iframe>
             @else
-                <img src="{{ $image }}" alt="{{ $post->title }}" loading="lazy">
+                <img class="dh-card-bg" src="{{ $image }}" alt="" aria-hidden="true" loading="lazy">
+                <img class="dh-card-fg" src="{{ $image }}" alt="{{ $post->title }}" loading="lazy">
             @endif
         </a>
 
