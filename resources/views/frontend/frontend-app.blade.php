@@ -225,8 +225,20 @@
                 display:flex; align-items:flex-end; justify-content:center;
                 pointer-events:none; transition:transform .25s; }
     .cat-illus img{ max-width:100%; max-height:100%; object-fit:contain;
-                     filter:drop-shadow(0 10px 18px rgba(0,0,0,.28)); }
+                     filter:drop-shadow(0 10px 18px rgba(0,0,0,.28));
+                     animation:catFloat 3.6s ease-in-out infinite; transform-origin:50% 85%; }
     .dh-cat-chip:hover .cat-illus{ transform:scale(1.06) rotate(-4deg); }
+    /* stagger so the 4 illustrations don't bob in sync */
+    .dh-cat-chip:nth-child(4n+2) .cat-illus img{ animation-delay:.5s; }
+    .dh-cat-chip:nth-child(4n+3) .cat-illus img{ animation-delay:1s; }
+    .dh-cat-chip:nth-child(4n) .cat-illus img{ animation-delay:1.5s; }
+    @keyframes catFloat{
+        0%,100%{ transform:translateY(0) rotate(-1.5deg); }
+        50%    { transform:translateY(-10px) rotate(2deg); }
+    }
+    @media(prefers-reduced-motion:reduce){
+        .cat-illus img{ animation:none; }
+    }
     .dh-cat-name{ font-size:1.6rem; font-weight:700; line-height:1.1; position:relative; z-index:1; max-width:60%; }
     .dh-cat-count{ font-size:.9rem; opacity:.82; margin-top:6px; position:relative; z-index:1; }
     .dh-cat-more{ display:inline-flex; align-items:center; gap:10px; font-size:.72rem; font-weight:600;
