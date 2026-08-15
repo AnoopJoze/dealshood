@@ -220,12 +220,13 @@
                          border-radius:50%; background:radial-gradient(circle at 40% 40%,rgba(255,255,255,.18),transparent 70%);
                          pointer-events:none; }
     .cat-head{ position:relative; z-index:1; }
-    .cat-illus{ position:absolute; right:20px; bottom:20px; width:104px; height:104px; border-radius:26px;
-                background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.22);
-                display:flex; align-items:center; justify-content:center; z-index:1;
-                box-shadow:inset 0 2px 20px rgba(255,255,255,.12); transition:transform .25s; }
+    /* 3D category illustration — no badge circle, the artwork carries its own shadow */
+    .cat-illus{ position:absolute; right:14px; bottom:0; width:160px; height:160px; z-index:1;
+                display:flex; align-items:flex-end; justify-content:center;
+                pointer-events:none; transition:transform .25s; }
+    .cat-illus img{ max-width:100%; max-height:100%; object-fit:contain;
+                     filter:drop-shadow(0 10px 18px rgba(0,0,0,.28)); }
     .dh-cat-chip:hover .cat-illus{ transform:scale(1.06) rotate(-4deg); }
-    .cat-illus i{ font-size:2.9rem; color:#fff; opacity:.92; }
     .dh-cat-name{ font-size:1.6rem; font-weight:700; line-height:1.1; position:relative; z-index:1; max-width:60%; }
     .dh-cat-count{ font-size:.9rem; opacity:.82; margin-top:6px; position:relative; z-index:1; }
     .dh-cat-more{ display:inline-flex; align-items:center; gap:10px; font-size:.72rem; font-weight:600;
@@ -475,8 +476,7 @@
         .dh-cat-grid{ gap:14px; }
         .dh-cat-chip{ min-height:150px; padding:20px; }
         .dh-cat-name{ font-size:1.15rem; max-width:70%; }
-        .cat-illus{ width:60px; height:60px; border-radius:16px; right:14px; bottom:14px; }
-        .cat-illus i{ font-size:1.6rem; }
+        .cat-illus{ width:100px; height:100px; right:10px; bottom:0; }
         .dh-grid{ grid-template-columns:1fr 1fr; gap:14px; }
         .dh-trend-grid{ grid-template-columns:1fr 1fr; gap:14px; }
         .dh-why-grid{ grid-template-columns:1fr 1fr; gap:14px; }
@@ -591,6 +591,15 @@ $palette = [
     ['bg'=>'rgba(253,244,255,.9)','ic'=>'#a21caf','icon'=>'fa-shirt'],
     ['bg'=>'rgba(248,250,252,.9)','ic'=>'#475569','icon'=>'fa-laptop'],
 ];
+
+/* 3D illustrations for the "Shop by Categories" tiles — cycles by
+   category position, same as $palette. */
+$catImages = [
+    asset('frontend/img/categories/cat-1.png'),
+    asset('frontend/img/categories/cat-2.png'),
+    asset('frontend/img/categories/cat-3.png'),
+    asset('frontend/img/categories/cat-4.png'),
+];
 @endphp
 
 {{-- ═══════════════════════ HERO ═══════════════════════ --}}
@@ -646,11 +655,11 @@ $palette = [
 
         <div class="dh-cat-grid" id="catGrid">
             @foreach ($categories as $i => $cat)
-                @php $p = $palette[$i % count($palette)]; @endphp
+                @php $catImg = $catImages[$i % count($catImages)]; @endphp
                 <a href="{{ route('posts.listing', ['category_id' => $cat->slug]) }}"
                    class="dh-cat-chip" data-base="{{ route('posts.listing', ['category_id' => $cat->slug]) }}">
                     <div class="ripple-wrap"></div>
-                    <div class="cat-illus"><i class="fas {{ $p['icon'] }}"></i></div>
+                    <div class="cat-illus"><img src="{{ $catImg }}" alt="{{ $cat->name }}" loading="lazy"></div>
                     <div class="cat-head">
                         <div class="dh-cat-name">{{ $cat->name }}</div>
                         <div class="dh-cat-count">{{ number_format($cat->posts_count) }}+ listings</div>
