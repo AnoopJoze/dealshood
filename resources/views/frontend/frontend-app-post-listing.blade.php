@@ -165,64 +165,84 @@
     .dh-vbtn{ width:36px; height:34px; border-radius:8px; border:none; background:transparent; cursor:pointer; color:var(--muted); display:flex; align-items:center; justify-content:center; font-size:.95rem; transition:all .15s; }
     .dh-vbtn.active{ background:var(--navy); color:#fff; }
 
-    /* ══════════ NAVY CARD GRID ══════════ */
+    /* ══════════ CARD GRID (same card design as the home page) ══════════ */
     .dh-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
     .dh-grid.list-view{ grid-template-columns:1fr; }
 
-    .dh-lc{ background:var(--bg); border-radius:var(--r-lg); overflow:hidden; box-shadow:var(--sh-sm);
-            border:1px solid var(--line); display:flex; flex-direction:column; transition:transform .2s, box-shadow .2s; animation:fadeUp .4s both; }
-    .dh-lc:hover{ transform:translateY(-4px); box-shadow:var(--sh-lg); }
-    .dh-lc-media{ position:relative; aspect-ratio:16/11; background:#0b1e42; overflow:hidden; }
-    .dh-lc-media a{ display:block; width:100%; height:100%; }
-    .dh-lc-media img,.dh-lc-media video{ width:100%; height:100%; display:block; }
-    .dh-lc-media video{ object-fit:cover; }
+    .dh-card{ background:#fff; border:1px solid var(--line); border-radius:var(--r); overflow:hidden;
+              display:flex; flex-direction:column; transition:transform .18s, box-shadow .18s; animation:fadeUp .4s both; }
+    .dh-grid .dh-card{ flex:none; width:auto; }
+    .dh-card:hover{ transform:translateY(-3px); box-shadow:var(--sh-md); }
+    .dh-card-media{ position:relative; aspect-ratio:16/11; background:#0b1e42; overflow:hidden; }
+    .dh-card-media a{ display:block; width:100%; height:100%; }
+    .dh-card-media video,.dh-card-media iframe{ width:100%; height:100%; object-fit:cover; display:block; border:0; }
     /* blurred copy fills the frame edge-to-edge */
-    .dh-lc-media .dh-lc-bg{ position:absolute; inset:0; object-fit:cover; filter:blur(20px) brightness(.65) saturate(1.2); transform:scale(1.2); }
+    .dh-card-media .dh-card-bg{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:blur(20px) brightness(.65) saturate(1.2); transform:scale(1.2); display:block; }
     /* real image on top — shown in full, never cropped */
-    .dh-lc-media .dh-lc-fg{ position:relative; z-index:1; object-fit:contain; transition:transform .35s; }
-    .dh-lc:hover .dh-lc-media .dh-lc-fg{ transform:scale(1.03); }
-    .dh-lc-feat{ position:absolute; left:12px; top:12px; z-index:2; background:#f59e0b; color:#3a2c00; font-size:.62rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:5px 12px; border-radius:100px; }
-    .dh-lc-verified{ position:absolute; right:12px; top:12px; z-index:2; display:inline-flex; align-items:center; gap:5px; background:#fff; color:var(--green); font-size:.66rem; font-weight:600; padding:5px 11px; border-radius:100px; box-shadow:0 2px 8px rgba(0,0,0,.12); }
-    .dh-lc-verified i{ color:var(--green); }
-    .dh-lc-fav{ position:absolute; right:12px; bottom:12px; z-index:2; width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,.92); border:none; color:var(--navy); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:.85rem; transition:all .15s; }
-    .dh-lc-fav:hover{ background:#fff; }
-    .dh-lc-fav.liked{ background:#e11d48; color:#fff; }
+    .dh-card-media .dh-card-fg{ position:relative; z-index:1; width:100%; height:100%; object-fit:contain; display:block; }
+    .dh-card-loc{ position:absolute; left:10px; bottom:10px; display:inline-flex; align-items:center; gap:5px;
+                  background:rgba(10,20,40,.6); color:#fff; font-size:.72rem; font-weight:500;
+                  padding:5px 11px; border-radius:100px; backdrop-filter:blur(4px); }
+    .dh-card-fav{ position:absolute; right:10px; top:10px; width:34px; height:34px; border-radius:50%;
+                  background:rgba(255,255,255,.9); border:none; color:var(--navy); cursor:pointer;
+                  display:flex; align-items:center; justify-content:center; font-size:.82rem; transition:all .15s; }
+    .dh-card-fav.liked{ background:#e11d48; color:#fff; }
+    .dh-card-badge{ position:absolute; left:10px; top:10px; font-size:.6rem; font-weight:700;
+                    letter-spacing:.06em; text-transform:uppercase; padding:5px 10px; border-radius:6px; color:#fff; }
+    .dh-card-badge.hot{ background:var(--orange); } .dh-card-badge.trend{ background:#eab308; color:#3a2c00; }
+    .dh-card-body{ padding:16px 16px 18px; display:flex; flex-direction:column; flex:1; }
+    .dh-badges{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
+    .dh-b{ font-size:.64rem; font-weight:600; letter-spacing:.04em; text-transform:uppercase;
+           color:var(--muted); background:var(--bg-soft); border-radius:6px; padding:5px 9px; }
+    .dh-card-title-row{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:12px; }
+    .dh-card-title{ font-size:1rem; font-weight:600; color:var(--navy); line-height:1.32; }
+    .dh-rating-view{ display:flex; align-items:center; gap:4px; flex-shrink:0; }
+    .dh-star-big-wrap{ position:relative; font-size:.85rem; color:#e2e8f0; line-height:1; }
+    .dh-star-big-fg{ position:absolute; top:0; left:0; overflow:hidden; white-space:nowrap; color:#f59e0b; }
+    .dh-rating-avg-sm{ font-size:.8rem; font-weight:700; color:var(--navy); }
+    .dh-rating-count-sm{ font-size:.72rem; color:var(--muted); }
+    .dh-card-biz{ display:flex; align-items:center; gap:7px; font-size:.78rem; font-weight:600;
+                  color:var(--ink); text-transform:uppercase; letter-spacing:.02em; margin-bottom:12px; }
+    .dh-card-biz i{ color:var(--muted); }
+    .dh-card-desc{ display:none; }
+    .dh-card-meta{ display:flex; align-items:center; gap:14px; padding-top:12px; margin-top:auto;
+                   border-top:1px solid var(--line); font-size:.74rem; color:var(--muted); }
+    .dh-meta-btn{ background:none; border:none; padding:0; cursor:pointer; display:flex; align-items:center;
+                  gap:5px; color:var(--muted); font-family:var(--font); font-size:.74rem; }
+    .dh-meta-btn.liked{ color:#e11d48; }
+    .dh-meta-box{ display:flex; align-items:center; gap:5px; }
+    .dh-meta-time{ margin-left:auto; display:flex; align-items:center; gap:5px; font-size:.72rem; white-space:nowrap; }
+    .dh-card-actions{ display:flex; gap:8px; margin-top:14px; }
+    .dh-btn{ display:inline-flex; align-items:center; justify-content:center; gap:6px; font-family:var(--font);
+             font-size:.82rem; font-weight:600; border-radius:10px; padding:11px 16px; cursor:pointer;
+             border:none; transition:all .15s; }
+    .dh-btn-primary{ flex:1; background:var(--navy); color:#fff; }
+    .dh-btn-primary:hover{ background:var(--navy-deep); color:#fff; }
+    .dh-btn-ghost{ width:46px; background:#fff; border:1.5px solid var(--line); color:var(--navy); }
+    .dh-btn-ghost:hover{ border-color:var(--navy); }
 
-    .dh-lc-body{ background:var(--navy); color:#fff; padding:20px 22px 22px; display:flex; flex-direction:column; flex:1; }
-    .dh-lc-top{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:16px; }
-    .dh-lc-cat{ display:inline-flex; align-items:center; background:rgba(255,255,255,.12); color:#fff; font-size:.74rem; font-weight:500; padding:6px 14px; border-radius:100px; }
-    .dh-lc-rate{ display:inline-flex; align-items:center; gap:5px; color:#fff; font-size:.9rem; }
-    .dh-lc-rate i{ color:#fbbf24; font-size:.85rem; }
-    .dh-lc-rate strong{ font-weight:700; }
-    .dh-lc-rate em{ font-style:normal; color:rgba(255,255,255,.6); font-size:.82rem; }
-    .dh-lc-title{ font-size:1.25rem; font-weight:700; color:#fff; line-height:1.24; margin:0 0 14px; display:block; }
-    .dh-lc-title:hover{ color:#fff; opacity:.9; }
-    .dh-lc-loc{ display:flex; align-items:center; gap:8px; color:rgba(255,255,255,.62); font-size:.9rem; }
-    .dh-lc-loc i{ font-size:.85rem; }
-    .dh-lc-desc{ display:none; }
-    .dh-lc-divider{ height:1px; background:rgba(255,255,255,.14); margin:18px 0; }
-    .dh-lc-foot{ display:flex; flex-direction:column; gap:2px; margin-bottom:16px; }
-    .dh-lc-plabel{ font-size:.8rem; color:rgba(255,255,255,.6); }
-    .dh-lc-price{ font-size:1.5rem; font-weight:700; color:#fff; line-height:1.1; }
-    .dh-lc-price.sm{ font-size:1.05rem; font-weight:600; }
-    .dh-lc-btn{ display:flex; align-items:center; justify-content:center; gap:9px; margin-top:auto; background:#fff; color:var(--navy);
-                font-weight:600; font-size:.92rem; border-radius:100px; padding:14px; transition:all .15s; }
-    .dh-lc-btn:hover{ background:#eaf0ff; color:var(--navy); }
+    /* ── list view (horizontal list item), desktop ── */
+    .dh-grid.list-view .dh-card{ flex-direction:row; }
+    .dh-grid.list-view .dh-card-media{ flex:0 0 300px; aspect-ratio:auto; }
 
-    /* ── list view (horizontal list item) ── */
-    .dh-grid.list-view .dh-lc{ flex-direction:row; position:relative; min-height:230px; }
-    .dh-grid.list-view .dh-lc-media{ flex:0 0 300px; aspect-ratio:auto; align-self:stretch; }
-    .dh-grid.list-view .dh-lc-media img,
-    .dh-grid.list-view .dh-lc-media video{ position:absolute; inset:0; }
-    .dh-grid.list-view .dh-lc-body{ flex:1; padding:22px 26px; }
-    .dh-grid.list-view .dh-lc-title{ font-size:1.35rem; margin-bottom:10px; }
-    /* description fills the wider row */
-    .dh-grid.list-view .dh-lc-desc{ display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
-        overflow:hidden; color:rgba(255,255,255,.6); font-size:.9rem; line-height:1.6; margin:12px 0 0; max-width:70%; }
-    .dh-grid.list-view .dh-lc-divider{ display:none; }
-    /* offer sits bottom-left, button bottom-right on one row */
-    .dh-grid.list-view .dh-lc-foot{ flex-direction:row; align-items:baseline; gap:10px; margin:22px 0 0; }
-    .dh-grid.list-view .dh-lc-btn{ position:absolute; right:26px; bottom:24px; margin-top:0; width:auto; padding:13px 44px; }
+    /* ── list view, compact horizontal rows on mobile ── */
+    @media(max-width:768px){
+        .dh-grid.list-view .dh-card{ flex-direction:row; min-height:120px; }
+        .dh-grid.list-view .dh-card-media{ flex:0 0 120px; aspect-ratio:auto; }
+        .dh-grid.list-view .dh-card-fav,
+        .dh-grid.list-view .dh-card-loc{ display:none; }
+        .dh-grid.list-view .dh-card-body{ padding:10px 12px; }
+        .dh-grid.list-view .dh-badges{ margin-bottom:6px; }
+        .dh-grid.list-view .dh-b{ font-size:.6rem; padding:4px 8px; }
+        .dh-grid.list-view .dh-card-title-row{ margin-bottom:6px; }
+        .dh-grid.list-view .dh-card-title{ font-size:.86rem;
+            display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+        .dh-grid.list-view .dh-card-biz,
+        .dh-grid.list-view .dh-card-meta{ display:none; }
+        .dh-grid.list-view .dh-card-actions{ margin-top:8px; }
+        .dh-grid.list-view .dh-card-actions .dh-btn-primary{ padding:8px 12px; font-size:.72rem; }
+        .dh-grid.list-view .dh-card-actions .dh-btn-ghost{ width:30px; padding:8px; }
+    }
 
     .dh-empty{ grid-column:1/-1; text-align:center; color:var(--muted); padding:64px 20px; }
     .dh-empty-icon{ font-size:2.6rem; margin-bottom:14px; }
@@ -238,9 +258,13 @@
     /* ══════════ FILTERS PANEL (offcanvas) ══════════ */
     .dh-filter-backdrop{ position:fixed; inset:0; background:rgba(7,30,77,.45); z-index:1200; opacity:0; pointer-events:none; transition:opacity .25s; }
     .dh-filter-backdrop.open{ opacity:1; pointer-events:auto; }
-    .dh-filter-panel{ position:fixed; top:0; right:0; bottom:0; width:380px; max-width:88vw; background:#fff; z-index:1201;
+    /* NOTE: named .dh-filter-drawer (not .dh-filter-panel) — frontend-mobile.blade.php
+       defines its own, incompatible !important rules for ".dh-filter-panel" (a legacy
+       bottom-sheet component), which silently broke this panel's position/transform
+       when the class names collided. Keep this name unique from that file's selectors. */
+    .dh-filter-drawer{ position:fixed; top:0; right:0; bottom:0; width:380px; max-width:88vw; background:#fff; z-index:1201;
                       transform:translateX(100%); transition:transform .28s cubic-bezier(.4,0,.2,1); box-shadow:var(--sh-lg); display:flex; flex-direction:column; }
-    .dh-filter-panel.open{ transform:none; }
+    .dh-filter-drawer.open{ transform:none; }
     .dh-filter-head{ display:flex; align-items:center; justify-content:space-between; padding:22px 24px; border-bottom:1px solid var(--line); }
     .dh-filter-head h3{ display:flex; align-items:center; gap:10px; font-size:1.1rem; font-weight:700; color:var(--navy); margin:0; }
     .dh-filter-reset{ display:inline-flex; align-items:center; gap:6px; background:none; border:none; color:var(--muted); font-family:var(--font); font-size:.84rem; font-weight:500; cursor:pointer; }
@@ -288,35 +312,7 @@
         .dh-hs-search{ order:2; flex:1; padding:14px 0; }
         .dh-hs-filter{ order:3; padding:14px 20px; }
         .dh-grid{ grid-template-columns:1fr 1fr; gap:14px; }
-        .dh-lc-body{ padding:16px 16px 18px; }
-        .dh-lc-title{ font-size:1.05rem; }
-        .dh-lc-price{ font-size:1.25rem; }
         .dh-footer-grid{ grid-template-columns:1fr 1fr; gap:28px; }
-        /* ── list view: compact horizontal rows on mobile ── */
-        .dh-grid.list-view{ grid-template-columns:1fr; gap:12px; }
-        .dh-grid.list-view .dh-lc{ flex-direction:row; position:relative; min-height:120px; }
-        .dh-grid.list-view .dh-lc-media{ flex:0 0 120px; aspect-ratio:auto; align-self:stretch; }
-        .dh-grid.list-view .dh-lc-media img,
-        .dh-grid.list-view .dh-lc-media video{ position:absolute; inset:0; }
-        .dh-grid.list-view .dh-lc-feat{ left:8px; top:8px; padding:3px 8px; font-size:.55rem; }
-        .dh-grid.list-view .dh-lc-verified,
-        .dh-grid.list-view .dh-lc-fav{ display:none; }
-        .dh-grid.list-view .dh-lc-body{ padding:11px 13px; }
-        .dh-grid.list-view .dh-lc-top{ flex-wrap:wrap; gap:5px 8px; margin-bottom:7px; }
-        .dh-grid.list-view .dh-lc-cat{ font-size:.64rem; padding:4px 10px; }
-        .dh-grid.list-view .dh-lc-rate{ font-size:.78rem; }
-        .dh-grid.list-view .dh-lc-title{ font-size:.9rem; margin-bottom:5px;
-            display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-        .dh-grid.list-view .dh-lc-loc{ font-size:.76rem; }
-        .dh-grid.list-view .dh-lc-desc{ display:none; }
-        .dh-grid.list-view .dh-lc-divider{ display:none; }
-        .dh-grid.list-view .dh-lc-foot{ flex-direction:row; align-items:baseline; gap:8px; margin:7px 0 0; }
-        .dh-grid.list-view .dh-lc-plabel{ display:none; }
-        .dh-grid.list-view .dh-lc-price{ font-size:.95rem; }
-        .dh-grid.list-view .dh-lc-price.sm{ font-size:.82rem; }
-        /* compact circular arrow button — hide the label, keep the SVG */
-        .dh-grid.list-view .dh-lc-btn{ position:absolute; right:12px; bottom:11px; margin:0; width:38px; height:38px; padding:0; border-radius:50%; }
-        .dh-grid.list-view .dh-lc-btn-txt{ display:none; }
         .dh-result-title{ font-size:1.2rem; }
     }
     @media(max-width:480px){
@@ -437,7 +433,7 @@
 
     <div class="dh-grid" id="post-wrapper">
         @forelse($posts as $post)
-            @include('frontend.post-listing-card', ['post' => $post])
+            @include('frontend.post-single-card', ['post' => $post])
         @empty
             <div class="dh-empty">
                 <div class="dh-empty-icon">🔍</div>
@@ -453,8 +449,8 @@
 </div>
 
 {{-- ═══════════ FILTERS PANEL ═══════════ --}}
-<div class="dh-filter-backdrop" id="filterBackdrop" onclick="closeFilters()"></div>
-<aside class="dh-filter-panel" id="filterPanel" aria-hidden="true">
+<div class="dh-filter-backdrop" id="dhFilterBackdrop" onclick="closeFilters()"></div>
+<aside class="dh-filter-drawer" id="dhFilterPanel" aria-hidden="true">
     <div class="dh-filter-head">
         <h3><i class="fas fa-sliders"></i> Filters</h3>
         <div style="display:flex;align-items:center;gap:10px;">
@@ -616,7 +612,7 @@ function loadPosts(reset, nextUrl){
             loader.style.display = 'none';
             const wrapper = document.getElementById('post-wrapper');
             reset ? wrapper.innerHTML = data.html : wrapper.insertAdjacentHTML('beforeend', data.html);
-            wrapper.querySelectorAll('.dh-lc').forEach((c,i) => c.style.animationDelay = (i*.03) + 's');
+            wrapper.querySelectorAll('.dh-card').forEach((c,i) => c.style.animationDelay = (i*.03) + 's');
             const next = data.next_page || '';
             document.getElementById('next-page-url').value = next;
             if(!next) endMsg.style.display = 'block';
@@ -684,8 +680,13 @@ window.doSearch = doSearch;
 $('#keywordInput').on('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); doSearch(); } });
 
 /* ── Filters panel ── */
-function openFilters(){ document.getElementById('filterBackdrop').classList.add('open'); document.getElementById('filterPanel').classList.add('open'); document.body.style.overflow = 'hidden'; }
-function closeFilters(){ document.getElementById('filterBackdrop').classList.remove('open'); document.getElementById('filterPanel').classList.remove('open'); document.body.style.overflow = ''; }
+function openFilters(){
+    // The location popup (z-index 9800) can be auto-shown on first visit and would
+    // otherwise sit on top of this panel (z-index 1201), silently swallowing every
+    // tap. Always close it first so filter options are guaranteed clickable.
+    document.getElementById('lpOverlay')?.classList.remove('show');
+    document.getElementById('dhFilterBackdrop').classList.add('open'); document.getElementById('dhFilterPanel').classList.add('open'); document.body.style.overflow = 'hidden'; }
+function closeFilters(){ document.getElementById('dhFilterBackdrop').classList.remove('open'); document.getElementById('dhFilterPanel').classList.remove('open'); document.body.style.overflow = ''; }
 window.openFilters = openFilters; window.closeFilters = closeFilters;
 function applyFilters(){
     filters.keyword     = document.getElementById('fKeyword').value.trim();

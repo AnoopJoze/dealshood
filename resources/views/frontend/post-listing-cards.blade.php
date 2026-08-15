@@ -1,5 +1,5 @@
 @forelse($posts as $post)
-    @include('frontend.post-listing-card', ['post' => $post])
+    @include('frontend.post-single-card', ['post' => $post])
 @empty
     <div class="dh-empty">
         <div class="dh-empty-icon">🔍</div>

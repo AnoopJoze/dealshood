@@ -10,7 +10,7 @@
             <span><i class="fas {{ $p['icon'] }}"></i></span>
             <span>
                 {{ $cat->name }}
-                <small>Limited-time offers from businesses near you</small>
+                {{-- <small>Limited-time offers from businesses near you</small> --}}
             </span>
         </h3>
         <div class="dh-carousel-controls">
