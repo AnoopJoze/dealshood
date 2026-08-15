@@ -608,17 +608,19 @@ $catImages = [
     <div class="dh-hero-overlay"></div>
 
     <div class="dh-hero-inner">
-        <span class="dh-hero-badge"><i class="fas fa-bolt"></i> Over {{ max(20, $categories->sum('posts_count')) }}+ Live Offers Today</span>
+        {{-- HIDDEN: "Over N+ Live Offers Today" badge --}}
+        {{-- <span class="dh-hero-badge"><i class="fas fa-bolt"></i> Over {{ max(20, $categories->sum('posts_count')) }}+ Live Offers Today</span> --}}
         <h1 class="dh-hero-title">Discover the Best Deals Around You</h1>
         <p class="dh-hero-lead">Never miss a discount. Find verified promo codes for fashion, electronics, food, travel, and more.</p>
 
         <form class="dh-hero-search" action="{{ route('posts.listing') }}" method="GET">
             <i class="fas fa-magnifying-glass"></i>
             <input type="text" name="keyword" placeholder="Search deals, stores, brands">
-            <button class="hs-loc" type="button" title="Choose your area"
+            {{-- HIDDEN: location picker button in the search box --}}
+            {{-- <button class="hs-loc" type="button" title="Choose your area"
                     onclick="window.openLocationPopup && window.openLocationPopup()">
                 <i class="fas fa-location-dot"></i>
-            </button>
+            </button> --}}
         </form>
 
         <div class="dh-hero-cta">
@@ -687,7 +689,7 @@ $catImages = [
                                 <span><i class="fas {{ $p['icon'] }}"></i></span>
                                 <span>
                                     {{ $cat->name }}
-                                    <small>Limited-time offers from businesses near you</small>
+                                    {{-- <small>Limited-time offers from businesses near you</small> --}}
                                 </span>
                             </h3>
                             <div class="dh-carousel-controls">
