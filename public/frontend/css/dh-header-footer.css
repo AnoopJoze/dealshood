@@ -12,7 +12,11 @@
 
 /* ── Navbar — sticky, solid navy, identical on every page ── */
 .dh-nav{
-    position:sticky; top:0; z-index:500;
+    /* z-index must beat .bot-nav (990, in frontend-mobile.blade.php) — the
+       PWA install banner/sheet are nested inside .dh-nav and this being a
+       stacking context traps their own z-index under it, so a value lower
+       than .bot-nav's would put them behind the bottom nav bar. */
+    position:sticky; top:0; z-index:1000;
     height:74px; display:flex; align-items:center;
     background:#0a2a68;
     box-shadow:0 2px 20px rgba(7,30,77,.18);
@@ -147,7 +151,7 @@
 @media(max-width:768px){
     .pwa-banner{ bottom:calc(60px + env(safe-area-inset-bottom,0px) + 12px); }
 }
-.pwa-banner-icon img{ width:44px; height:44px; border-radius:10px; }
+.pwa-banner-icon img{ width:44px; height:44px; border-radius:10px; object-fit:contain; }
 .pwa-banner-body{ flex:1; }
 .pwa-banner-title{ font-weight:700; font-size:.9rem; color:#0f172a; }
 .pwa-banner-sub{ font-size:.74rem; color:#5b6b8c; }

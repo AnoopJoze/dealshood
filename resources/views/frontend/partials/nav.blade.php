@@ -49,7 +49,7 @@
 
 {{-- Android/Chrome PWA banner --}}
 <div class="pwa-banner" id="pwaBanner" style="display:none;">
-    <div class="pwa-banner-icon"><img src="/frontend/img/icons/icon-192x192.png" alt="{{ $navSiteName }}"></div>
+    <div class="pwa-banner-icon"><img src="{{ site_logo_url() }}" alt="{{ $navSiteName }}"></div>
     <div class="pwa-banner-body">
         <div class="pwa-banner-title">Install {{ $navSiteName }}</div>
         <div class="pwa-banner-sub">Add to home screen for quick access</div>
@@ -65,7 +65,7 @@
 <div class="pwa-ios-sheet" id="pwaIosSheet">
     <div class="pwa-ios-handle"></div>
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
-        <img src="/frontend/img/icons/icon-72x72.png" style="width:44px;height:44px;border-radius:10px;" alt="">
+        <img src="{{ site_logo_url() }}" style="width:44px;height:44px;border-radius:10px;object-fit:contain;" alt="">
         <div>
             <div style="font-size:1rem;font-weight:800;color:#0f172a;">Install {{ $navSiteName }}</div>
             <div style="font-size:.78rem;color:#64748b;">Add to your home screen</div>
