@@ -66,7 +66,7 @@
     /* Right panel */
     .auth-right {
         display: flex; align-items: flex-start; justify-content: center;
-        padding: 40px 24px 60px; background: var(--white); overflow-y: auto;
+        padding: 114px 24px 60px; background: var(--white); overflow-y: auto;
     }
     .auth-box { width:100%; max-width:420px; padding-top:8px; }
 
@@ -189,7 +189,7 @@
 </head>
 <body>
 
-@include('frontend.partials.nav', ['categories' => $categories ?? collect()])
+@include('frontend.partials.nav', ['categories' => $categories ?? collect(), 'transparent' => true])
 
 <div class="auth-page">
 

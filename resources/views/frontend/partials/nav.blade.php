@@ -5,7 +5,6 @@
     Optional variables:
       $categories      Collection of categories (falls back to empty — nav still works)
       $activeNav        'home' | 'listing' | 'contact' | null — highlights the matching link
-      $mobileNavAction  JS to run on the mobile icon button's onclick (default: open post-ad modal)
       $activeLocName    Pre-fills the location trigger (e.g. the locality currently filtered on)
       $transparent      true = nav starts see-through over a dark hero, turns solid navy on scroll.
                          Only use on pages with a dark/image section directly beneath the nav —
@@ -14,7 +13,6 @@
 @php
     $categories      = $categories ?? collect();
     $activeNav       = $activeNav ?? null;
-    $mobileNavAction = $mobileNavAction ?? 'openPostAdModal && openPostAdModal()';
     $activeLocName   = $activeLocName ?? null;
     $transparent     = $transparent ?? false;
     $navSiteName     = setting('site_name', 'DealsHood');
@@ -30,9 +28,6 @@
             @endforeach
             <a href="{{ route('contact') }}" class="{{ $activeNav === 'contact' ? 'active' : '' }}">Contact</a>
         </div>
-        <a href="{{ route('posts.listing') }}" class="dh-nav-search">
-            <i class="fas fa-magnifying-glass"></i> search
-        </a>
         <div class="dh-nav-spacer"></div>
         <button class="loc-trigger {{ $activeLocName ? 'has-loc' : '' }}" id="locTrigger" type="button"
                 onclick="window.openLocationPopup && window.openLocationPopup()">
@@ -41,14 +36,14 @@
             <span class="lt-label" id="locLabel">{{ $activeLocName ?: 'Location' }}</span>
             <i class="fas fa-chevron-down lt-chevron"></i>
         </button>
-        <button class="dh-nav-icon-btn" type="button" onclick="{{ $mobileNavAction }}" aria-label="Menu">
-            <i class="fas fa-bars"></i>
-        </button>
+        <a href="https://www.instagram.com/dealshood" target="_blank" class="dh-nav-icon-btn" aria-label="Instagram">
+            <i class="fab fa-instagram"></i>
+        </a>
+        <a href="https://wa.me/918086087050" target="_blank" class="dh-nav-icon-btn" aria-label="WhatsApp">
+            <i class="fab fa-whatsapp"></i>
+        </a>
         <div class="dh-nav-actions" id="navActions">
             <a href="{{ Route::has('login') ? route('login') : '#' }}" class="dh-btn-signin">Sign In</a>
-            <a href="#" class="dh-btn-download" onclick="return dhInstallApp(event)">
-                <i class="fas fa-download" style="font-size:.72rem;"></i> <span class="dh-nav-download-txt">Download App</span>
-            </a>
         </div>
     </div>
 

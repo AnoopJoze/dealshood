@@ -129,7 +129,7 @@
     /* NAVBAR / FOOTER — shared, see /frontend/css/dh-header-footer.css */
 
     /* ══════════ DETAIL LAYOUT ══════════ */
-    .dh-detail{ padding:36px 0 0; }
+    .dh-detail{ padding:110px 0 0; }
     .dh-detail-grid{ display:grid; grid-template-columns:1fr 1fr; gap:52px; align-items:start; }
 
     /* Media column */
@@ -278,7 +278,7 @@
         .dh-band-grid{ grid-template-columns:1fr; gap:34px; }
     }
     @media(max-width:768px){
-        .dh-detail{ padding:22px 0 0; }
+        .dh-detail{ padding:96px 0 0; }
         .dh-title{ font-size:1.7rem; }
         .dh-actions .dh-btn{ flex:1; }
         .dh-metarow{ gap:16px; }
@@ -305,7 +305,7 @@
 
 @include('frontend.partials.nav', [
     'categories'      => $categories,
-    'mobileNavAction' => 'openPostAdModal && openPostAdModal()',
+    'transparent'     => true,
 ])
 
 @php

@@ -22,7 +22,7 @@
     /* Navbar is shared — see /frontend/css/dh-header-footer.css */
 
     .page-hero{background:linear-gradient(135deg,#0f172a,#0f3f7e);
-               padding:48px 20px 56px;text-align:center;position:relative;overflow:hidden;}
+               padding:122px 20px 56px;text-align:center;position:relative;overflow:hidden;}
     .page-hero::before{content:'';position:absolute;inset:0;
                        background:url('/frontend/img/illustrations/IMG_4871.png') center/cover;opacity:.12;}
     .hero-content{position:relative;z-index:1;}
@@ -104,7 +104,7 @@
 </head>
 <body>
 
-@include('frontend.partials.nav', ['categories' => $categories ?? collect(), 'activeNav' => 'contact'])
+@include('frontend.partials.nav', ['categories' => $categories ?? collect(), 'activeNav' => 'contact', 'transparent' => true])
 
 <div class="page-hero">
     <div class="hero-content">

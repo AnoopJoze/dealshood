@@ -33,7 +33,7 @@
     /* ── Hero strip ── */
     .page-hero {
         background:linear-gradient(160deg,rgba(13,13,13,.78) 0%,rgba(13,13,13,.32) 55%,rgba(15,63,126,.2) 100%);
-        padding:40px 20px 48px; text-align:center;
+        padding:114px 20px 48px; text-align:center;
         position:relative; overflow:hidden;
     }
     .page-hero::before {
@@ -249,7 +249,7 @@
 </head>
 <body>
 
-@include('frontend.partials.nav', ['categories' => $categories ?? collect()])
+@include('frontend.partials.nav', ['categories' => $categories ?? collect(), 'transparent' => true])
 
 {{-- Hero --}}
 <div class="page-hero">

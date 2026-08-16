@@ -37,9 +37,10 @@
 .post-ad-fab:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(15,63,126,.5); }
 .post-ad-fab:active { transform: scale(.96); }
 @media (max-width: 768px) {
-    .post-ad-fab span { display: none; }
-    .post-ad-fab { padding: 14px; border-radius: 50%; width: 52px; height: 52px; justify-content: center; }
-    .post-ad-fab i { font-size: 1.1rem; }
+    /* Add Post moved into the bottom nav bar on mobile — this FAB
+       would be a duplicate trigger there, so hide it. Desktop (no
+       bottom nav) keeps it as the only Add Post entry point. */
+    .post-ad-fab { display: none; }
 }
 
 /* ── Backdrop ── */
