@@ -67,36 +67,10 @@
     .loc-chip:active,
     .lp-item:active              { opacity: .7; }
 
-    /* ── Navbar — minimal on mobile ────────────────── */
-    .dh-nav { height: 52px; }
-    :root   { --nav-h: 52px; }
-    .dh-nav-logo img { height: 36px; }
-    /* Hide desktop nav actions — bottom nav handles them */
-    .dh-nav-toggle,
-    .dh-nav-actions { display: none !important; }
-    /* Show page title in navbar on sub-pages */
-    @if(request()->routeIs('posts.listing'))
-    .dh-nav-page-title {
-        left: 35% !important;;
-    }
-    @endif
-
-    .dh-nav-page-title {
-        font-size: .88rem; font-weight: 700;
-        color: var(--ink, #0d0d0d);
-        position: absolute; left: 50%; transform: translateX(-50%);
-        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        max-width: 55vw;
-    }
-
-    /* Back button */
-    .dh-nav-back {
-        display: flex; align-items: center; gap: 6px;
-        font-size: .82rem; font-weight: 600; color: var(--ink, #0d0d0d);
-        text-decoration: none; padding: 8px 4px;
-        -webkit-tap-highlight-color: transparent;
-    }
-    .dh-nav-back i { font-size: .9rem; }
+    /* Navbar sizing/visibility on mobile is owned by the shared
+       frontend.partials.nav + /frontend/css/dh-header-footer.css —
+       this file no longer overrides .dh-nav (legacy back-button/
+       page-title nav pattern removed, superseded by the shared nav). */
 
     /* ── Hero ──────────────────────────────────────── */
     .dh-hero-title { font-size: 1.75rem; }

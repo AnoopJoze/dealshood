@@ -102,6 +102,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link href="/frontend/css/soft-design-system.css?v=1.1.0" rel="stylesheet">
+    <link href="/frontend/css/dh-header-footer.css?v=1.0.0" rel="stylesheet">
 
     <style>
     :root{
@@ -125,21 +126,7 @@
 
     #reading-progress{ position:fixed; top:0; left:0; height:3px; width:0; background:var(--blue-2); z-index:2000; transition:width .1s; }
 
-    /* ══════════ NAVBAR (solid navy) ══════════ */
-    .dh-nav{ position:sticky; top:0; height:var(--nav-h); z-index:60; display:flex; align-items:center; background:var(--navy); box-shadow:0 2px 20px rgba(7,30,77,.25); }
-    .dh-nav-inner{ display:flex; align-items:center; gap:18px; width:100%; max-width:1240px; margin:0 auto; padding:0 24px; }
-    .dh-nav-logo img{ height:40px; display:block; filter:brightness(0) invert(1); }
-    .dh-nav-search{ flex:1; max-width:520px; display:flex; align-items:center; gap:10px; color:rgba(255,255,255,.75);
-                    background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22); border-radius:100px; padding:10px 20px; font-size:.85rem; }
-    .dh-nav-spacer{ flex:1; }
-    .dh-nav-loc{ display:inline-flex; align-items:center; gap:8px; color:#fff; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22); border-radius:100px; padding:9px 16px; font-size:.82rem; font-weight:500; }
-    .dh-nav-loc i{ font-size:.72rem; }
-    .dh-nav-actions{ display:flex; align-items:center; gap:10px; }
-    .dh-btn-signin{ color:#fff; border:1.5px solid rgba(255,255,255,.5); border-radius:100px; padding:9px 20px; font-size:.82rem; font-weight:600; transition:all .15s; cursor:pointer; background:none; font-family:var(--font); }
-    .dh-btn-signin:hover{ background:#fff; color:var(--navy); }
-    .dh-btn-post{ color:var(--navy); background:#fff; border:none; border-radius:100px; padding:10px 22px; font-size:.82rem; font-weight:600; transition:transform .15s; cursor:pointer; font-family:var(--font); }
-    .dh-btn-post:hover{ transform:translateY(-1px); }
-    .dh-nav-icon-btn{ display:none; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3); width:44px; height:44px; border-radius:50%; cursor:pointer; align-items:center; justify-content:center; color:#fff; font-size:1rem; }
+    /* NAVBAR / FOOTER — shared, see /frontend/css/dh-header-footer.css */
 
     /* ══════════ DETAIL LAYOUT ══════════ */
     .dh-detail{ padding:36px 0 0; }
@@ -266,21 +253,6 @@
     .dh-lc-btn{ display:flex; align-items:center; justify-content:center; gap:9px; margin-top:auto; background:#fff; color:var(--navy); font-weight:600; font-size:.92rem; border-radius:100px; padding:14px; transition:all .15s; }
     .dh-lc-btn:hover{ background:#eaf0ff; color:var(--navy); }
 
-    /* ══════════ FOOTER ══════════ */
-    .dh-footer{ background:var(--navy-deep); color:rgba(255,255,255,.72); padding:60px 0 0; }
-    .dh-footer-grid{ display:grid; grid-template-columns:1.6fr repeat(3,1fr); gap:40px; padding-bottom:44px; }
-    .dh-footer-logo img{ height:34px; filter:brightness(0) invert(1); }
-    .dh-footer-tag{ font-size:.85rem; color:rgba(255,255,255,.55); max-width:280px; margin:16px 0 20px; line-height:1.6; }
-    .dh-footer-social{ display:flex; gap:10px; }
-    .dh-footer-social a{ width:38px; height:38px; border-radius:50%; border:1px solid rgba(255,255,255,.2); display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.7); transition:all .15s; }
-    .dh-footer-social a:hover{ border-color:#fff; color:#fff; }
-    .dh-footer-col-title{ font-size:.9rem; font-weight:700; color:#fff; margin-bottom:16px; }
-    .dh-footer-links{ list-style:none; padding:0; margin:0; }
-    .dh-footer-links li{ margin-bottom:11px; }
-    .dh-footer-links a{ color:rgba(255,255,255,.6); font-size:.88rem; }
-    .dh-footer-links a:hover{ color:#fff; }
-    .dh-footer-bottom{ border-top:1px solid rgba(255,255,255,.1); padding:22px 0; display:flex; align-items:center; justify-content:space-between; font-size:.78rem; color:rgba(255,255,255,.4); flex-wrap:wrap; gap:10px; }
-
     /* Mobile CTA bar */
     .mobile-cta-bar{ position:fixed; left:0; right:0; bottom:0; z-index:1500; display:none; gap:10px; padding:10px 14px calc(10px + env(safe-area-inset-bottom,0)); background:#fff; box-shadow:0 -6px 24px rgba(7,30,77,.14); }
     .mobile-cta-bar a{ flex:1; display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:13px; border-radius:12px; font-weight:600; font-size:.9rem; }
@@ -331,22 +303,10 @@
 
 <div id="reading-progress"></div>
 
-{{-- ═══════════ NAVBAR ═══════════ --}}
-<nav class="dh-nav">
-    <div class="dh-nav-inner">
-        <a href="{{ route('home') }}" class="dh-nav-logo"><img src="{{ site_logo_url() }}" alt="{{ $siteName }}"></a>
-        <a href="{{ route('posts.listing') }}" class="dh-nav-search"><i class="fas fa-magnifying-glass"></i> Search deals…</a>
-        <div class="dh-nav-spacer"></div>
-        @if($post->locality)
-            <span class="dh-nav-loc"><i class="fas fa-location-dot"></i> {{ $post->locality->name }}</span>
-        @endif
-        <button class="dh-nav-icon-btn" type="button" onclick="openPostAdModal && openPostAdModal()" aria-label="Post ad"><i class="fas fa-plus"></i></button>
-        <div class="dh-nav-actions">
-            <a href="{{ route('contact') }}" class="dh-btn-signin">Contact</a>
-            <button class="dh-btn-post" type="button" onclick="openPostAdModal && openPostAdModal()">Post Free Ads</button>
-        </div>
-    </div>
-</nav>
+@include('frontend.partials.nav', [
+    'categories'      => $categories,
+    'mobileNavAction' => 'openPostAdModal && openPostAdModal()',
+])
 
 @php
     $images = $post->getMedia('posts');
@@ -556,46 +516,7 @@
 </main>
 
 {{-- ═══════════ FOOTER ═══════════ --}}
-<footer class="dh-footer">
-    <div class="wrap">
-        <div class="dh-footer-grid">
-            <div>
-                <div class="dh-footer-logo"><img src="{{ site_logo_url() }}" alt="{{ $siteName }}"></div>
-                <p class="dh-footer-tag">Find the best local deals, offers and classifieds near you. Save smarter, shop happier.</p>
-                <div class="dh-footer-social">
-                    <a href="https://www.instagram.com/dealshood" target="_blank"><i class="fab fa-instagram"></i></a>
-                    <a href="https://www.facebook.com/share/1DA56kRCJp" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://wa.me/918086087050" target="_blank"><i class="fab fa-whatsapp"></i></a>
-                </div>
-            </div>
-            <div>
-                <p class="dh-footer-col-title">Explore</p>
-                <ul class="dh-footer-links">
-                    <li><a href="{{ route('home') }}">Home</a></li>
-                    <li><a href="{{ route('posts.listing') }}">All Deals</a></li>
-                    <li><a href="{{ route('contact') }}">Contact</a></li>
-                </ul>
-            </div>
-            <div>
-                <p class="dh-footer-col-title">Category</p>
-                <ul class="dh-footer-links">
-                    @if($post->category)<li><a href="{{ route('posts.listing', ['category_id' => $post->category->slug]) }}">{{ $post->category->name }}</a></li>@endif
-                    @if($post->subcategory)<li><a href="{{ route('posts.listing', ['category_id' => $post->category?->slug, 'subcategory_id' => $post->subcategory->slug]) }}">{{ $post->subcategory->name }}</a></li>@endif
-                </ul>
-            </div>
-            <div>
-                <p class="dh-footer-col-title">Area</p>
-                <ul class="dh-footer-links">
-                    @if($post->locality)<li><a href="{{ route('posts.listing', ['locality_id' => $post->locality->slug]) }}">{{ $post->locality->name }}</a></li>@endif
-                </ul>
-            </div>
-        </div>
-        <div class="dh-footer-bottom">
-            <span>© <span id="footerYear"></span> {{ $siteName }}. All rights reserved.</span>
-            <span>Made with <i class="fas fa-heart" style="color:#e11d48;"></i> in India</span>
-        </div>
-    </div>
-</footer>
+@include('frontend.partials.footer', ['categories' => $categories])
 
 {{-- ═══════════ LIGHTBOX ═══════════ --}}
 <div class="modal fade dh-lightbox" id="galleryLightbox" tabindex="-1">
@@ -660,7 +581,6 @@ $(document).on('click', '.dh-rating-input .dh-star', function(){
         }});
 });
 
-document.getElementById('footerYear').textContent = new Date().getFullYear();
 
 /* Reading progress */
 window.addEventListener('scroll', function(){
@@ -752,7 +672,7 @@ document.addEventListener('DOMContentLoaded', function(){
     });
 });
 
-if('serviceWorker' in navigator){ window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(()=>{})); }
+/* NAV / FOOTER / PWA install / service worker — shared, see frontend.partials.nav */
 </script>
 
 {{-- ── Structured Data ── --}}

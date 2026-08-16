@@ -66,6 +66,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link href="/frontend/css/soft-design-system.css?v=1.1.0" rel="stylesheet">
+    <link href="/frontend/css/dh-header-footer.css?v=1.0.0" rel="stylesheet">
 
     <style>
     :root{
@@ -86,35 +87,11 @@
     img{ max-width:100%; }
     .wrap{ max-width:1240px; margin:0 auto; padding:0 24px; }
 
-    /* ══════════ NAVBAR ══════════ */
-    .dh-nav{ position:absolute; top:0; left:0; right:0; height:var(--nav-h); z-index:50; display:flex; align-items:center; }
-    .dh-nav-inner{ display:flex; align-items:center; gap:18px; width:100%; max-width:1240px; margin:0 auto; padding:0 24px; position:relative; }
-    .dh-nav-logo img{ height:42px; display:block; filter:brightness(0) invert(1); }
-    .dh-nav-links{ display:flex; align-items:center; gap:6px; margin-left:8px;
-                   background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22);
-                   padding:6px; border-radius:100px; backdrop-filter:blur(8px); }
-    .dh-nav-links a{ color:#fff; font-size:.82rem; font-weight:500; padding:7px 14px; border-radius:100px; transition:background .15s; opacity:.92; }
-    .dh-nav-links a:hover,.dh-nav-links a.active{ background:rgba(255,255,255,.18); opacity:1; }
-    .dh-nav-spacer{ flex:1; }
-    .dh-nav-actions{ display:flex; align-items:center; gap:10px; }
-    .dh-btn-signin{ color:#fff; border:1.5px solid rgba(255,255,255,.5); border-radius:100px; padding:9px 22px; font-size:.82rem; font-weight:600; transition:all .15s; }
-    .dh-btn-signin:hover{ background:#fff; color:var(--navy); }
-    .dh-btn-download{ color:#fff; background:var(--blue-2); border-radius:100px; padding:10px 22px; font-size:.82rem; font-weight:600; transition:transform .15s; }
-    .dh-btn-download:hover{ transform:translateY(-1px); color:#fff; }
-    .dh-nav-toggle{ display:none; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3); width:44px; height:44px; border-radius:50%; cursor:pointer; align-items:center; justify-content:center; color:#fff; font-size:1rem; }
-    .dh-nav-icon-btn{ display:none; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3); width:44px; height:44px; border-radius:50%; cursor:pointer; align-items:center; justify-content:center; color:#fff; font-size:1rem; }
-    .loc-trigger{ display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22);
-                  color:#fff; border-radius:100px; padding:8px 16px 8px 12px; font-size:.82rem; font-weight:500; cursor:pointer; transition:all .18s; white-space:nowrap; max-width:210px; backdrop-filter:blur(8px); }
-    .loc-trigger:hover{ background:rgba(255,255,255,.2); }
-    .lt-pin{ font-size:.72rem; flex-shrink:0; }
-    .lt-dot{ width:7px; height:7px; border-radius:50%; background:#22c55e; flex-shrink:0; display:none; }
-    .loc-trigger.has-loc .lt-dot{ display:block; }
-    .lt-label{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:130px; }
-    .lt-chevron{ font-size:.55rem; opacity:.6; flex-shrink:0; }
+    /* NAVBAR / FOOTER — shared, see /frontend/css/dh-header-footer.css */
 
     /* ══════════ HERO ══════════ */
     .dh-hero{ position:relative; overflow:hidden; min-height:440px; display:flex; align-items:center;
-              padding:calc(var(--nav-h) + 30px) 0 60px; background:var(--navy-deep); }
+              padding:104px 0 60px; background:var(--navy-deep); }
     .dh-hero-bg{ position:absolute; inset:0; background-size:cover; background-position:center; }
     .dh-hero-overlay{ position:absolute; inset:0; z-index:1; background:linear-gradient(180deg,rgba(7,30,77,.72) 0%,rgba(7,30,77,.5) 45%,rgba(7,30,77,.82) 100%); }
     .dh-hero-inner{ position:relative; z-index:3; width:100%; max-width:1240px; margin:0 auto; padding:0 24px; animation:fadeUp .5s .05s both; }
@@ -180,14 +157,16 @@
     .dh-card-media .dh-card-bg{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:blur(20px) brightness(.65) saturate(1.2); transform:scale(1.2); display:block; }
     /* real image on top — shown in full, never cropped */
     .dh-card-media .dh-card-fg{ position:relative; z-index:1; width:100%; height:100%; object-fit:contain; display:block; }
-    .dh-card-loc{ position:absolute; left:10px; bottom:10px; display:inline-flex; align-items:center; gap:5px;
+    /* z-index:2 — must sit above .dh-card-fg (z-index:1), the full post image,
+       or it paints on top and hides these overlay elements */
+    .dh-card-loc{ position:absolute; left:10px; bottom:10px; z-index:2; display:inline-flex; align-items:center; gap:5px;
                   background:rgba(10,20,40,.6); color:#fff; font-size:.72rem; font-weight:500;
                   padding:5px 11px; border-radius:100px; backdrop-filter:blur(4px); }
-    .dh-card-fav{ position:absolute; right:10px; top:10px; width:34px; height:34px; border-radius:50%;
+    .dh-card-fav{ position:absolute; right:10px; top:10px; z-index:2; width:34px; height:34px; border-radius:50%;
                   background:rgba(255,255,255,.9); border:none; color:var(--navy); cursor:pointer;
                   display:flex; align-items:center; justify-content:center; font-size:.82rem; transition:all .15s; }
     .dh-card-fav.liked{ background:#e11d48; color:#fff; }
-    .dh-card-badge{ position:absolute; left:10px; top:10px; font-size:.6rem; font-weight:700;
+    .dh-card-badge{ position:absolute; left:10px; top:10px; z-index:2; font-size:.6rem; font-weight:700;
                     letter-spacing:.06em; text-transform:uppercase; padding:5px 10px; border-radius:6px; color:#fff; }
     .dh-card-badge.hot{ background:var(--orange); } .dh-card-badge.trend{ background:#eab308; color:#3a2c00; }
     .dh-card-body{ padding:16px 16px 18px; display:flex; flex-direction:column; flex:1; }
@@ -221,17 +200,20 @@
     .dh-btn-ghost{ width:46px; background:#fff; border:1.5px solid var(--line); color:var(--navy); }
     .dh-btn-ghost:hover{ border-color:var(--navy); }
 
-    /* ── list view (horizontal list item), desktop ── */
-    .dh-grid.list-view .dh-card{ flex-direction:row; }
-    .dh-grid.list-view .dh-card-media{ flex:0 0 300px; aspect-ratio:auto; }
+    /* ── list view (horizontal list item), desktop ──
+       capped to a proportionate thumbnail (aspect-ratio) instead of
+       stretching full-height with the row, which made it look oversized */
+    .dh-grid.list-view .dh-card{ flex-direction:row; align-items:center; padding:10px; gap:14px; }
+    .dh-grid.list-view .dh-card-media{ flex:0 0 200px; aspect-ratio:4/3; border-radius:12px; align-self:center; }
+    .dh-grid.list-view .dh-card-body{ padding:0; }
 
     /* ── list view, compact horizontal rows on mobile ── */
     @media(max-width:768px){
-        .dh-grid.list-view .dh-card{ flex-direction:row; min-height:120px; }
-        .dh-grid.list-view .dh-card-media{ flex:0 0 120px; aspect-ratio:auto; }
+        .dh-grid.list-view .dh-card{ flex-direction:row; align-items:center; min-height:0; padding:8px; gap:10px; }
+        .dh-grid.list-view .dh-card-media{ flex:0 0 96px; aspect-ratio:1/1; border-radius:10px; align-self:center; }
         .dh-grid.list-view .dh-card-fav,
         .dh-grid.list-view .dh-card-loc{ display:none; }
-        .dh-grid.list-view .dh-card-body{ padding:10px 12px; }
+        .dh-grid.list-view .dh-card-body{ padding:0; }
         .dh-grid.list-view .dh-badges{ margin-bottom:6px; }
         .dh-grid.list-view .dh-b{ font-size:.6rem; padding:4px 8px; }
         .dh-grid.list-view .dh-card-title-row{ margin-bottom:6px; }
@@ -281,21 +263,6 @@
     .dh-filter-apply{ display:block; width:100%; background:var(--navy); color:#fff; border:none; border-radius:12px; padding:14px; font-family:var(--font); font-weight:600; font-size:.92rem; cursor:pointer; }
     .dh-filter-apply:hover{ background:var(--navy-deep); }
 
-    /* ══════════ FOOTER ══════════ */
-    .dh-footer{ background:var(--navy-deep); color:rgba(255,255,255,.72); padding:60px 0 0; }
-    .dh-footer-grid{ display:grid; grid-template-columns:1.6fr repeat(3,1fr); gap:40px; padding-bottom:44px; }
-    .dh-footer-logo img{ height:34px; filter:brightness(0) invert(1); }
-    .dh-footer-tag{ font-size:.85rem; color:rgba(255,255,255,.55); max-width:280px; margin:16px 0 20px; line-height:1.6; }
-    .dh-footer-social{ display:flex; gap:10px; }
-    .dh-footer-social a{ width:38px; height:38px; border-radius:50%; border:1px solid rgba(255,255,255,.2); display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.7); transition:all .15s; }
-    .dh-footer-social a:hover{ border-color:#fff; color:#fff; }
-    .dh-footer-col-title{ font-size:.9rem; font-weight:700; color:#fff; margin-bottom:16px; }
-    .dh-footer-links{ list-style:none; padding:0; margin:0; }
-    .dh-footer-links li{ margin-bottom:11px; }
-    .dh-footer-links a{ color:rgba(255,255,255,.6); font-size:.88rem; }
-    .dh-footer-links a:hover{ color:#fff; }
-    .dh-footer-bottom{ border-top:1px solid rgba(255,255,255,.1); padding:22px 0; display:flex; align-items:center; justify-content:space-between; font-size:.78rem; color:rgba(255,255,255,.4); flex-wrap:wrap; gap:10px; }
-
     @keyframes fadeUp{ from{ opacity:0; transform:translateY(20px); } to{ opacity:1; transform:none; } }
 
     /* ══════════ RESPONSIVE ══════════ */
@@ -306,7 +273,7 @@
         .loc-trigger{ display:none; }
     }
     @media(max-width:768px){
-        .dh-hero{ min-height:auto; padding:calc(var(--nav-h) + 20px) 0 40px; }
+        .dh-hero{ min-height:auto; padding:94px 0 40px; }
         .dh-hero-search{ flex-wrap:wrap; }
         .dh-hs-box{ order:1; flex-basis:100%; }
         .dh-hs-search{ order:2; flex:1; padding:14px 0; }
@@ -324,34 +291,13 @@
 </head>
 <body>
 
-{{-- ═══════════ NAVBAR ═══════════ --}}
-<nav class="dh-nav">
-    <div class="dh-nav-inner">
-        <a href="{{ route('home') }}" class="dh-nav-logo"><img src="{{ site_logo_url() }}" alt="{{ $siteName }}"></a>
-        <div class="dh-nav-links">
-            <a href="{{ route('posts.listing') }}" class="active">All Deals</a>
-            @foreach($categories->take(3) as $navCat)
-                <a href="{{ route('posts.listing', ['category_id' => $navCat->slug]) }}">{{ Str::limit($navCat->name, 16) }}</a>
-            @endforeach
-            <a href="{{ route('contact') }}">Contact</a>
-        </div>
-        <div class="dh-nav-spacer"></div>
-        <button class="loc-trigger {{ $activeLoc ? 'has-loc' : '' }}" id="locTrigger" type="button"
-                onclick="window.openLocationPopup && window.openLocationPopup()">
-            <span class="lt-pin"><i class="fas fa-map-marker-alt"></i></span>
-            <span class="lt-dot"></span>
-            <span class="lt-label" id="locLabel">{{ $activeLoc->name ?? 'Location' }}</span>
-            <i class="fas fa-chevron-down lt-chevron"></i>
-        </button>
-        <button class="dh-nav-icon-btn" type="button" onclick="openFilters()" aria-label="Filters"><i class="fas fa-sliders"></i></button>
-        <div class="dh-nav-actions">
-            <a href="{{ Route::has('login') ? route('login') : '#' }}" class="dh-btn-signin">Sign In</a>
-            <a href="#" class="dh-btn-download" onclick="return dhInstallApp(event)">
-                <i class="fas fa-download" style="font-size:.72rem;"></i> <span class="dh-nav-download-txt">Download App</span>
-            </a>
-        </div>
-    </div>
-</nav>
+@include('frontend.partials.nav', [
+    'categories'      => $categories,
+    'activeNav'       => 'listing',
+    'activeLocName'   => $activeLoc->name ?? null,
+    'mobileNavAction' => 'openFilters()',
+    'transparent'     => true,
+])
 
 {{-- ═══════════ HERO ═══════════ --}}
 <header class="dh-hero">
@@ -503,49 +449,7 @@
 </aside>
 
 {{-- ═══════════ FOOTER ═══════════ --}}
-<footer class="dh-footer">
-    <div class="wrap">
-        <div class="dh-footer-grid">
-            <div>
-                <div class="dh-footer-logo"><img src="{{ site_logo_url() }}" alt="{{ $siteName }}"></div>
-                <p class="dh-footer-tag">Find the best local deals, offers and classifieds near you. Save smarter, shop happier.</p>
-                <div class="dh-footer-social">
-                    <a href="https://www.instagram.com/dealshood" target="_blank"><i class="fab fa-instagram"></i></a>
-                    <a href="https://www.facebook.com/share/1DA56kRCJp" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://wa.me/918086087050" target="_blank"><i class="fab fa-whatsapp"></i></a>
-                </div>
-            </div>
-            <div>
-                <p class="dh-footer-col-title">Explore</p>
-                <ul class="dh-footer-links">
-                    <li><a href="{{ route('home') }}">Home</a></li>
-                    <li><a href="{{ route('posts.listing') }}">All Deals</a></li>
-                    <li><a href="{{ route('contact') }}">Contact</a></li>
-                </ul>
-            </div>
-            <div>
-                <p class="dh-footer-col-title">Categories</p>
-                <ul class="dh-footer-links">
-                    @foreach($categories->take(4) as $cat)
-                        <li><a href="{{ route('posts.listing', ['category_id' => $cat->slug]) }}">{{ $cat->name }}</a></li>
-                    @endforeach
-                </ul>
-            </div>
-            <div>
-                <p class="dh-footer-col-title">Areas</p>
-                <ul class="dh-footer-links">
-                    @foreach($localities->where('type','district')->take(4) as $loc)
-                        <li><a href="{{ route('posts.listing', ['locality_id' => $loc->slug]) }}">{{ $loc->name }}</a></li>
-                    @endforeach
-                </ul>
-            </div>
-        </div>
-        <div class="dh-footer-bottom">
-            <span>© {{ date('Y') }} {{ $siteName }}. All rights reserved.</span>
-            <span>Made with <i class="fas fa-heart" style="color:#e11d48;"></i> in India</span>
-        </div>
-    </div>
-</footer>
+@include('frontend.partials.footer', ['categories' => $categories])
 
 @include('frontend.frontend-mobile')
 @include('frontend.post-ad-modal')
@@ -770,19 +674,7 @@ $(document).on('click', '.shareBtn', async function(e){
     $.post('/posts/' + id + '/share', {_token:CSRF, platform:'web'});
 });
 
-/* ── PWA install helper ── */
-let deferredPrompt = null;
-window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredPrompt = e; });
-function dhInstallApp(ev){
-    ev.preventDefault();
-    if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt.userChoice.finally(() => deferredPrompt = null); }
-    else { alert('Open your browser menu → "Add to Home Screen" to install DealsHood.'); }
-    return false;
-}
-window.dhInstallApp = dhInstallApp;
-
-/* ── Service worker ── */
-if('serviceWorker' in navigator){ window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(()=>{})); }
+/* NAV / FOOTER / PWA install / service worker — shared, see frontend.partials.nav */
 </script>
 
 {{-- ── Structured data ── --}}

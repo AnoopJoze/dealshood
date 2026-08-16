@@ -5,9 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="icon" type="image/png" href="{{ site_favicon_url() }}">
     <title>Create Account — DealsHood</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link href="/frontend/css/soft-design-system.css?v=1.1.0" rel="stylesheet">
+    <link href="/frontend/css/dh-header-footer.css?v=1.0.0" rel="stylesheet">
     <style>
     :root {
         --ink:#0f172a; --ink-2:#334155; --ink-3:#64748b;
@@ -184,6 +188,8 @@
     </style>
 </head>
 <body>
+
+@include('frontend.partials.nav', ['categories' => $categories ?? collect()])
 
 <div class="auth-page">
 
@@ -369,6 +375,8 @@
     </div>
 
 </div>
+
+@include('frontend.partials.footer', ['categories' => $categories ?? collect()])
 
 <script>
 /* Eye toggles */

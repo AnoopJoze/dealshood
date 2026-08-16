@@ -5,28 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Contact Us — DealsHood</title>
     <link rel="icon" type="image/png" href="{{ site_favicon_url() }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link href="/frontend/css/soft-design-system.css?v=1.1.0" rel="stylesheet">
+    <link href="/frontend/css/dh-header-footer.css?v=1.0.0" rel="stylesheet">
     <style>
     :root{--ink:#0f172a;--ink-2:#374151;--ink-3:#64748b;
           --surf:#f8fafc;--surf-2:#f1f5f9;--surf-3:#e2e8f0;
-          --white:#fff;--accent:#0f3f7e;--r:12px;--nav-h:60px;}
+          --white:#fff;--accent:#0f3f7e;--r:12px;}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
          background:var(--surf);color:var(--ink);}
-
-    .nav{position:sticky;top:0;height:var(--nav-h);
-         background:rgba(255,255,255,.95);backdrop-filter:blur(16px);
-         border-bottom:1px solid var(--surf-3);z-index:800;
-         display:flex;align-items:center;}
-    .nav-inner{display:flex;align-items:center;justify-content:space-between;
-               width:100%;max-width:1100px;margin:0 auto;padding:0 20px;}
-    .nav-logo img{height:38px;}
-    .nav-back{display:flex;align-items:center;gap:6px;font-size:.82rem;font-weight:600;
-              color:var(--ink);text-decoration:none;padding:7px 14px;border-radius:100px;
-              background:var(--surf-2);border:1px solid var(--surf-3);}
-    .nav-back:hover{background:var(--surf-3);}
+    /* Navbar is shared — see /frontend/css/dh-header-footer.css */
 
     .page-hero{background:linear-gradient(135deg,#0f172a,#0f3f7e);
                padding:48px 20px 56px;text-align:center;position:relative;overflow:hidden;}
@@ -111,17 +104,7 @@
 </head>
 <body>
 
-<nav class="nav">
-    <div class="nav-inner">
-        <a href="{{ route('home') }}" class="nav-back">
-            <i class="fas fa-chevron-left" style="font-size:.76rem;"></i> Home
-        </a>
-        <a href="{{ route('home') }}" class="nav-logo">
-            <img src="{{ site_logo_url() }}" alt="{{ setting('site_name', 'DealsHood') }}">
-        </a>
-        <div style="width:80px;"></div>
-    </div>
-</nav>
+@include('frontend.partials.nav', ['categories' => $categories ?? collect(), 'activeNav' => 'contact'])
 
 <div class="page-hero">
     <div class="hero-content">
@@ -316,6 +299,8 @@
 
 </div>
 </div>
+
+@include('frontend.partials.footer', ['categories' => $categories ?? collect()])
 
 @include('frontend.frontend-mobile')
 

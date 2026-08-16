@@ -88,6 +88,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link href="/frontend/css/soft-design-system.css?v=1.1.0" rel="stylesheet">
+    <link href="/frontend/css/dh-header-footer.css?v=1.0.0" rel="stylesheet">
 
     <style>
     :root{
@@ -117,56 +118,12 @@
              max-width:640px; margin:0 auto; opacity:.9; }
     .nd-sec{ padding:72px 0; }
 
-    /* ══════════ NAVBAR ══════════ */
-    .dh-nav{ position:absolute; top:0; left:0; right:0; height:var(--nav-h);
-             z-index:50; display:flex; align-items:center; }
-    .dh-nav-inner{ display:flex; align-items:center; gap:18px;
-                   width:100%; max-width:1240px; margin:0 auto; padding:0 24px; position:relative; }
-    .dh-nav-logo img{ height:42px; display:block;filter: brightness(0) invert(1); }
-    .dh-nav-links{ display:flex; align-items:center; gap:6px; margin-left:8px;
-                   background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22);
-                   padding:6px; border-radius:100px; backdrop-filter:blur(8px); }
-    .dh-nav-links a{ color:#fff; font-size:.82rem; font-weight:500; padding:7px 14px;
-                     border-radius:100px; transition:background .15s; opacity:.92; }
-    .dh-nav-links a:hover{ background:rgba(255,255,255,.16); opacity:1; }
-    .dh-nav-search{ display:flex; align-items:center; gap:8px; color:rgba(255,255,255,.8);
-                    background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22);
-                    border-radius:100px; padding:9px 18px; font-size:.82rem; min-width:150px;
-                    backdrop-filter:blur(8px); }
-    .dh-nav-spacer{ flex:1; }
-    .dh-nav-actions{ display:flex; align-items:center; gap:10px; }
-    .dh-btn-signin{ color:#fff; border:1.5px solid rgba(255,255,255,.5); border-radius:100px;
-                    padding:9px 22px; font-size:.82rem; font-weight:600; transition:all .15s; }
-    .dh-btn-signin:hover{ background:#fff; color:var(--navy); }
-    .dh-btn-download{ color:#fff; background:var(--blue-2); border-radius:100px;
-                      padding:10px 22px; font-size:.82rem; font-weight:600; transition:transform .15s; }
-    .dh-btn-download:hover{ transform:translateY(-1px); color:#fff; }
-    .dh-nav-toggle{ display:none; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3);
-                    width:44px; height:44px; border-radius:50%; cursor:pointer;
-                    align-items:center; justify-content:center; }
-    .dh-nav-toggle span{ display:block; width:18px; height:2px; background:#fff; border-radius:2px;
-                         position:relative; }
-    .dh-nav-toggle span::before,.dh-nav-toggle span::after{ content:''; position:absolute; left:0;
-                         width:18px; height:2px; background:#fff; border-radius:2px; }
-    .dh-nav-toggle span::before{ top:-6px; } .dh-nav-toggle span::after{ top:6px; }
-
-    /* Location trigger (kept for JS + location popup) */
-    .loc-trigger{ display:inline-flex; align-items:center; gap:8px;
-                  background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22);
-                  color:#fff; border-radius:100px; padding:8px 16px 8px 12px; font-size:.82rem;
-                  font-weight:500; cursor:pointer; transition:all .18s; white-space:nowrap;
-                  max-width:210px; backdrop-filter:blur(8px); }
-    .loc-trigger:hover{ background:rgba(255,255,255,.2); }
-    .lt-pin{ font-size:.72rem; flex-shrink:0; }
-    .lt-dot{ width:7px; height:7px; border-radius:50%; background:#22c55e; flex-shrink:0; display:none; }
-    .loc-trigger.has-loc .lt-dot{ display:block; }
-    .lt-label{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:130px; }
-    .lt-chevron{ font-size:.55rem; opacity:.6; flex-shrink:0; }
+    /* NAVBAR / FOOTER — shared, see /frontend/css/dh-header-footer.css */
 
     /* ══════════ HERO ══════════ */
     .dh-hero{ position:relative; overflow:hidden; min-height:760px;
               display:flex; flex-direction:column; align-items:center; justify-content:center;
-              padding:calc(var(--nav-h) + 40px) 0 70px; background:var(--navy-deep); }
+              padding:114px 0 70px; background:var(--navy-deep); }
     .dh-hero-bg{ position:absolute; inset:0; background-size:cover; background-position:center;
                  will-change:transform; }
     .dh-hero-overlay{ position:absolute; inset:0; z-index:1;
@@ -295,14 +252,16 @@
     .dh-card-media .dh-card-bg{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:blur(20px) brightness(.65) saturate(1.2); transform:scale(1.2); display:block; }
     /* real image on top — shown in full, never cropped */
     .dh-card-media .dh-card-fg{ position:relative; z-index:1; width:100%; height:100%; object-fit:contain; display:block; }
-    .dh-card-loc{ position:absolute; left:10px; bottom:10px; display:inline-flex; align-items:center; gap:5px;
+    /* z-index:2 — must sit above .dh-card-fg (z-index:1), the full post image,
+       or it paints on top and hides these overlay elements */
+    .dh-card-loc{ position:absolute; left:10px; bottom:10px; z-index:2; display:inline-flex; align-items:center; gap:5px;
                   background:rgba(10,20,40,.6); color:#fff; font-size:.72rem; font-weight:500;
                   padding:5px 11px; border-radius:100px; backdrop-filter:blur(4px); }
-    .dh-card-fav{ position:absolute; right:10px; top:10px; width:34px; height:34px; border-radius:50%;
+    .dh-card-fav{ position:absolute; right:10px; top:10px; z-index:2; width:34px; height:34px; border-radius:50%;
                   background:rgba(255,255,255,.9); border:none; color:var(--navy); cursor:pointer;
                   display:flex; align-items:center; justify-content:center; font-size:.82rem; transition:all .15s; }
     .dh-card-fav.liked{ background:#e11d48; color:#fff; }
-    .dh-card-badge{ position:absolute; left:10px; top:10px; font-size:.6rem; font-weight:700;
+    .dh-card-badge{ position:absolute; left:10px; top:10px; z-index:2; font-size:.6rem; font-weight:700;
                     letter-spacing:.06em; text-transform:uppercase; padding:5px 10px; border-radius:6px; color:#fff; }
     .dh-card-badge.hot{ background:var(--orange); } .dh-card-badge.trend{ background:#eab308; color:#3a2c00; }
     .dh-card-badge.free{ background:var(--green); }
@@ -424,22 +383,7 @@
     .dh-faq-a{ max-height:0; overflow:hidden; transition:max-height .28s ease; }
     .dh-faq-a p{ padding:0 26px 22px; margin:0; color:var(--muted); font-size:.92rem; line-height:1.65; }
 
-    /* ══════════ FOOTER ══════════ */
-    .dh-footer{ background:var(--navy-deep); color:rgba(255,255,255,.72); padding:64px 0 0; }
-    .dh-footer-grid{ display:grid; grid-template-columns:1.6fr repeat(3,1fr); gap:40px; padding-bottom:44px; }
-    .dh-footer-logo img{ height:34px; filter:brightness(0) invert(1); }
-    .dh-footer-tag{ font-size:.85rem; color:rgba(255,255,255,.55); max-width:280px; margin:16px 0 20px; line-height:1.6; }
-    .dh-footer-social{ display:flex; gap:10px; }
-    .dh-footer-social a{ width:38px; height:38px; border-radius:50%; border:1px solid rgba(255,255,255,.2);
-        display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.7); transition:all .15s; }
-    .dh-footer-social a:hover{ border-color:#fff; color:#fff; }
-    .dh-footer-col-title{ font-size:.9rem; font-weight:700; color:#fff; margin-bottom:16px; }
-    .dh-footer-links{ list-style:none; padding:0; margin:0; }
-    .dh-footer-links li{ margin-bottom:11px; }
-    .dh-footer-links a{ color:rgba(255,255,255,.6); font-size:.88rem; }
-    .dh-footer-links a:hover{ color:#fff; }
-    .dh-footer-bottom{ border-top:1px solid rgba(255,255,255,.1); padding:22px 0; display:flex;
-        align-items:center; justify-content:space-between; font-size:.78rem; color:rgba(255,255,255,.4); }
+    /* FOOTER / PWA banner — shared, see /frontend/css/dh-header-footer.css */
 
     /* ══════════ SPINNER (AJAX reload) ══════════ */
     .sec-spinner{ display:flex; gap:8px; justify-content:center; padding:44px 0; }
@@ -448,28 +392,6 @@
     .sec-spinner span:nth-child(2){ animation-delay:.15s; } .sec-spinner span:nth-child(3){ animation-delay:.3s; }
     @keyframes bounce{ 0%,80%,100%{ transform:scale(.6); opacity:.4; } 40%{ transform:scale(1); opacity:1; } }
     @keyframes fadeUp{ from{ opacity:0; transform:translateY(24px); } to{ opacity:1; transform:none; } }
-
-    /* ══════════ PWA banner / iOS sheet ══════════ */
-    .pwa-banner{ position:fixed; left:16px; right:16px; bottom:16px; z-index:2000; display:flex;
-        align-items:center; gap:12px; background:#fff; border-radius:16px; padding:12px 14px; box-shadow:var(--sh-lg); }
-    .pwa-banner-icon img{ width:44px; height:44px; border-radius:10px; }
-    .pwa-banner-body{ flex:1; } .pwa-banner-title{ font-weight:700; font-size:.9rem; color:var(--ink); }
-    .pwa-banner-sub{ font-size:.74rem; color:var(--muted); }
-    .pwa-banner-actions{ display:flex; align-items:center; gap:8px; }
-    .pwa-install-btn{ background:var(--navy); color:#fff; border:none; border-radius:100px; padding:9px 18px;
-        font-weight:600; font-size:.82rem; cursor:pointer; }
-    .pwa-dismiss-btn{ background:none; border:none; color:var(--muted); font-size:1rem; cursor:pointer; }
-    .pwa-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:2000; display:none; }
-    .pwa-backdrop.open{ display:block; }
-    .pwa-ios-sheet{ position:fixed; left:0; right:0; bottom:0; z-index:2001; background:#fff;
-        border-radius:20px 20px 0 0; padding:20px; transform:translateY(110%); transition:transform .3s; }
-    .pwa-ios-sheet.open{ transform:none; }
-    .pwa-ios-handle{ width:40px; height:4px; border-radius:2px; background:#cbd5e1; margin:0 auto 16px; }
-    .pwa-ios-steps{ list-style:none; padding:0; margin:16px 0 0; }
-    .pwa-ios-step{ display:flex; gap:12px; align-items:flex-start; margin-bottom:14px; font-size:.85rem; color:var(--ink); }
-    .pwa-ios-step-num{ width:24px; height:24px; border-radius:50%; background:var(--navy); color:#fff;
-        display:flex; align-items:center; justify-content:center; font-size:.75rem; font-weight:700; flex-shrink:0; }
-    .pwa-ios-icon{ display:inline-flex; align-items:center; gap:4px; font-weight:600; color:var(--navy); }
 
     /* ══════════ RESPONSIVE ══════════ */
     @media(max-width:1024px){
@@ -484,7 +406,7 @@
     }
     @media(max-width:768px){
         .nd-sec{ padding:52px 0; }
-        .dh-hero{ min-height:auto; padding:calc(var(--nav-h) + 24px) 0 48px; }
+        .dh-hero{ min-height:auto; padding:98px 0 48px; }
         .dh-cat-grid{ gap:14px; }
         .dh-cat-chip{ min-height:150px; padding:20px; }
         .dh-cat-name{ font-size:1.15rem; max-width:70%; }
@@ -510,83 +432,7 @@
 </head>
 <body>
 
-<nav class="dh-nav">
-    <div class="dh-nav-inner">
-        <a href="{{ route('home') }}" class="dh-nav-logo">
-            <img src="{{ site_logo_url() }}" alt="{{ $siteName }}">
-        </a>
-        <div class="dh-nav-links">
-            <a href="{{ route('posts.listing') }}">All Deals</a>
-            @foreach($categories->take(3) as $navCat)
-                <a href="{{ route('posts.listing', ['category_id' => $navCat->slug]) }}">{{ Str::limit($navCat->name, 16) }}</a>
-            @endforeach
-            <a href="{{ route('contact') }}">Contact</a>
-        </div>
-        <a href="{{ route('posts.listing') }}" class="dh-nav-search">
-            <i class="fas fa-magnifying-glass"></i> search
-        </a>
-        <div class="dh-nav-spacer"></div>
-        <button class="loc-trigger" id="locTrigger" type="button"
-                onclick="window.openLocationPopup && window.openLocationPopup()">
-            <span class="lt-pin"><i class="fas fa-map-marker-alt"></i></span>
-            <span class="lt-dot"></span>
-            <span class="lt-label" id="locLabel">Location</span>
-            <i class="fas fa-chevron-down lt-chevron"></i>
-        </button>
-        <button class="dh-nav-toggle" id="navToggle" aria-label="Menu"><span></span></button>
-        <div class="dh-nav-actions" id="navActions">
-            <a href="{{ Route::has('login') ? route('login') : '#' }}" class="dh-btn-signin">Sign In</a>
-            <a href="#" class="dh-btn-download" onclick="return dhInstallApp(event)">
-                <i class="fas fa-download" style="font-size:.72rem;"></i> Download App
-            </a>
-        </div>
-    </div>
-
-{{-- Android/Chrome PWA banner --}}
-<div class="pwa-banner" id="pwaBanner" style="display:none;">
-    <div class="pwa-banner-icon"><img src="/frontend/img/icons/icon-192x192.png" alt="DealsHood"></div>
-    <div class="pwa-banner-body">
-        <div class="pwa-banner-title">Install DealsHood</div>
-        <div class="pwa-banner-sub">Add to home screen for quick access</div>
-    </div>
-    <div class="pwa-banner-actions">
-        <button class="pwa-install-btn" id="pwaInstallBtn">Install</button>
-        <button class="pwa-dismiss-btn" id="pwaDismissBtn">✕</button>
-    </div>
-</div>
-
-{{-- iOS Safari instruction sheet --}}
-<div class="pwa-backdrop" id="pwaBackdrop"></div>
-<div class="pwa-ios-sheet" id="pwaIosSheet">
-    <div class="pwa-ios-handle"></div>
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
-        <img src="/frontend/img/icons/icon-72x72.png" style="width:44px;height:44px;border-radius:10px;" alt="">
-        <div>
-            <div style="font-size:1rem;font-weight:800;color:#0f172a;">Install DealsHood</div>
-            <div style="font-size:.78rem;color:#64748b;">Add to your home screen</div>
-        </div>
-    </div>
-    <ul class="pwa-ios-steps">
-        <li class="pwa-ios-step">
-            <span class="pwa-ios-step-num">1</span>
-            <span>Tap the <span class="pwa-ios-icon">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/>
-                    <line x1="12" y1="2" x2="12" y2="15"/></svg> Share</span> button at the bottom of Safari</span>
-        </li>
-        <li class="pwa-ios-step">
-            <span class="pwa-ios-step-num">2</span>
-            <span>Scroll down and tap <span class="pwa-ios-icon">＋ Add to Home Screen</span></span>
-        </li>
-        <li class="pwa-ios-step">
-            <span class="pwa-ios-step-num">3</span>
-            <span>Tap <strong>Add</strong> in the top right corner</span>
-        </li>
-    </ul>
-    <button onclick="closePwaIos()" style="width:100%;margin-top:16px;padding:13px;background:#0a2a68;color:#fff;
-            border:none;border-radius:12px;font-size:.88rem;font-weight:700;cursor:pointer;">Got it</button>
-</div>
-</nav>
+@include('frontend.partials.nav', ['categories' => $categories, 'activeNav' => 'home', 'transparent' => true])
 
 @php
 $palette = [
@@ -894,51 +740,7 @@ $catImages = [
 </section>
 
 {{-- ═══════════════════════ FOOTER ═══════════════════════ --}}
-<footer class="dh-footer">
-    <div class="wrap">
-        <div class="dh-footer-grid">
-            <div>
-                <div class="dh-footer-logo"><img src="{{ site_logo_url() }}" alt="{{ $siteName }}"></div>
-                <p class="dh-footer-tag">Your most trusted local deals, offers and services platform. Save smarter, shop happier.</p>
-                <div class="dh-footer-social">
-                    <a href="https://www.instagram.com/dealshood" target="_blank"><i class="fab fa-instagram"></i></a>
-                    <a href="https://www.facebook.com/share/1DA56kRCJp" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://wa.me/918086087050" target="_blank"><i class="fab fa-whatsapp"></i></a>
-                </div>
-            </div>
-            <div>
-                <p class="dh-footer-col-title">Company</p>
-                <ul class="dh-footer-links">
-                    <li><a href="{{ route('contact') }}">Contact Us</a></li>
-                    <li><a href="#categories">Categories</a></li>
-                    <li><a href="#trending">Trending</a></li>
-                    <li><a href="#faq">FAQ</a></li>
-                </ul>
-            </div>
-            <div>
-                <p class="dh-footer-col-title">Categories</p>
-                <ul class="dh-footer-links">
-                    @foreach($categories->take(5) as $cat)
-                        <li><a href="{{ route('posts.listing', ['category_id' => $cat->slug]) }}">{{ $cat->name }}</a></li>
-                    @endforeach
-                </ul>
-            </div>
-            <div>
-                <p class="dh-footer-col-title">Resources</p>
-                <ul class="dh-footer-links">
-                    <li><a href="{{ route('posts.listing') }}">All Deals</a></li>
-                    <li><a href="{{ route('contact') }}">Help Center</a></li>
-                    <li><a href="#faq">Privacy</a></li>
-                    <li><a href="#faq">Terms</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="dh-footer-bottom">
-            <span>&copy; <span id="footerYear"></span> {{ $siteName }}. All rights reserved.</span>
-            <span>Made with ♥ locally</span>
-        </div>
-    </div>
-</footer>
+@include('frontend.partials.footer', ['categories' => $categories])
 
 @include('frontend.frontend-mobile')
 @include('frontend.post-ad-modal')
@@ -949,11 +751,7 @@ $catImages = [
 
 <script>
 /* ══════════ Vanilla-JS features (independent of jQuery) ══════════ */
-document.getElementById('footerYear').textContent = new Date().getFullYear();
-
-document.getElementById('navToggle') && document.getElementById('navToggle').addEventListener('click', function () {
-    document.getElementById('navActions').classList.toggle('open');
-});
+/* NAV / FOOTER / PWA install — shared, see frontend.partials.nav / frontend.partials.footer */
 
 var heroBg = document.getElementById('heroBg');
 window.addEventListener('scroll', function () {
@@ -1003,61 +801,6 @@ document.addEventListener('click', function (e) {
     tick(); setInterval(tick, 1000);
 })();
 
-/* ── Service worker ── */
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-            .then(reg => console.log('SW registered:', reg.scope))
-            .catch(err => console.log('SW failed:', err));
-    });
-}
-
-/* ── PWA install ── */
-(function () {
-    var STORAGE_KEY  = 'dh_pwa_dismissed';
-    var isIOS        = /iphone|ipad|ipod/i.test(navigator.userAgent);
-    var isSafari     = /safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent);
-    var isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
-    var deferredPrompt = null, bannerShown = false;
-
-    // Exposed for the nav "Download App" button (works even if the passive banner was dismissed)
-    window.dhInstallApp = function (e) {
-        if (e) e.preventDefault();
-        if (isStandalone) { alert('DealsHood is already installed on this device.'); return false; }
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then(function (c) {
-                if (c.outcome === 'accepted') localStorage.setItem(STORAGE_KEY, '1');
-                deferredPrompt = null;
-            });
-        } else if (isIOS) { openIosSheet(); }
-        else { showManualInstruct(); }
-        return false;
-    };
-
-    function showBanner() { if (bannerShown || isStandalone || localStorage.getItem(STORAGE_KEY)) return; bannerShown = true; document.getElementById('pwaBanner').style.display = 'flex'; }
-    function hideBanner() { document.getElementById('pwaBanner').style.display = 'none'; }
-    window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); deferredPrompt = e; setTimeout(showBanner, 3000); });
-    var installBtn = document.getElementById('pwaInstallBtn');
-    if (installBtn) installBtn.addEventListener('click', function () { hideBanner(); window.dhInstallApp(); });
-    var dismissBtn = document.getElementById('pwaDismissBtn');
-    if (dismissBtn) dismissBtn.addEventListener('click', function () { hideBanner(); localStorage.setItem(STORAGE_KEY, '1'); });
-    window.addEventListener('appinstalled', function () { hideBanner(); deferredPrompt = null; localStorage.setItem(STORAGE_KEY, '1'); });
-    if (isIOS && isSafari && !isStandalone && !localStorage.getItem(STORAGE_KEY)) setTimeout(function () { openIosSheet(); }, 3000);
-    function openIosSheet() { document.getElementById('pwaIosSheet').classList.add('open'); document.getElementById('pwaBackdrop').classList.add('open'); }
-    window.closePwaIos = function () { document.getElementById('pwaIosSheet').classList.remove('open'); document.getElementById('pwaBackdrop').classList.remove('open'); localStorage.setItem(STORAGE_KEY, '1'); };
-    var backdrop = document.getElementById('pwaBackdrop');
-    if (backdrop) backdrop.addEventListener('click', function () { window.closePwaIos(); });
-    function showManualInstruct() {
-        var ua = navigator.userAgent.toLowerCase(), msg = 'Open your browser menu → "Add to Home Screen"';
-        if (ua.includes('samsung')) msg = 'Tap the ☰ menu → "Add page to" → "Home screen"';
-        else if (ua.includes('firefox')) msg = 'Tap the ⋮ menu → "Install" or "Add to Home Screen"';
-        else if (ua.includes('opera')) msg = 'Tap the ⋮ menu → "Add to Home Screen"';
-        var toast = document.createElement('div');
-        toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#0a2a68;color:#fff;padding:12px 20px;border-radius:100px;font-size:.82rem;font-weight:500;z-index:9999;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.3);';
-        toast.textContent = msg; document.body.appendChild(toast); setTimeout(() => toast.remove(), 5000);
-    }
-})();
 </script>
 
 <script>

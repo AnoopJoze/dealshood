@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,7 +15,11 @@ class RegisterController extends Controller
     public function show()
     {
         if (Auth::check()) return redirect()->route('home');
-        return view('frontend.register');
+
+        $categories = Category::withCount(['posts' => fn($q) => $q->where('status', 'published')])
+            ->orderBy('id', 'asc')->get();
+
+        return view('frontend.register', compact('categories'));
     }
 
     public function store(Request $request)
