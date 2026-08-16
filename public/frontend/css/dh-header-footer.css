@@ -141,6 +141,12 @@
     align-items:center; gap:12px; background:#fff; border-radius:16px; padding:12px 14px;
     box-shadow:0 24px 60px rgba(10,42,104,.16);
 }
+/* On mobile the bottom nav bar (frontend.frontend-mobile) occupies the
+   bottom ~60px of the screen — clear it so the banner doesn't sit
+   underneath/behind the nav. */
+@media(max-width:768px){
+    .pwa-banner{ bottom:calc(60px + env(safe-area-inset-bottom,0px) + 12px); }
+}
 .pwa-banner-icon img{ width:44px; height:44px; border-radius:10px; }
 .pwa-banner-body{ flex:1; }
 .pwa-banner-title{ font-weight:700; font-size:.9rem; color:#0f172a; }
