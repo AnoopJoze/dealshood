@@ -278,7 +278,10 @@ class FrontEndController extends Controller
             ->limit(6)
             ->get();
 
-        return view('frontend.post-details', compact('post', 'relatedPosts', 'userRating'));
+        $categories = Category::withCount(['posts' => fn($q) => $q->where('status', 'published')])
+            ->orderBy('id', 'asc')->get();
+
+        return view('frontend.post-details', compact('post', 'relatedPosts', 'userRating', 'categories'));
     }
 
     /* ════════════════════════════════════════════
@@ -447,6 +450,10 @@ public function unrate($id)
     }
 
     $posts = $query->latest()->paginate(12);
-    return view('frontend.favourites', compact('posts'));
+
+    $categories = Category::withCount(['posts' => fn($q) => $q->where('status', 'published')])
+        ->orderBy('id', 'asc')->get();
+
+    return view('frontend.favourites', compact('posts', 'categories'));
 }
 }

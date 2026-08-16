@@ -63,7 +63,11 @@ Route::group(['middleware' => 'guest'], function () {
 });
 
 // ── routes/web.php ────────────────────────────────────
-Route::get ('/contact', fn() => view('frontend.contact-us'))->name('contact');
+Route::get('/contact', function () {
+    $categories = \App\Models\Category::withCount(['posts' => fn($q) => $q->where('status', 'published')])
+        ->orderBy('id', 'asc')->get();
+    return view('frontend.contact-us', compact('categories'));
+})->name('contact');
 Route::post('/contact', [ContactController::class, 'send'])->name('contact.send')
            ->middleware('throttle:3,1');
 Route::get('/login', function () {

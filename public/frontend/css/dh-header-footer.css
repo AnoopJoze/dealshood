@@ -1,0 +1,160 @@
+/* ═══════════════════════════════════════════════════════════
+   DealsHood — Shared Header (Nav) & Footer
+   Single source of truth, included on every public-facing page
+   via frontend.partials.nav / frontend.partials.footer.
+   Self-contained: does not rely on the host page's own :root
+   tokens, so it renders identically regardless of the page.
+   ═══════════════════════════════════════════════════════════ */
+
+.dh-nav,.dh-footer,.pwa-banner,.pwa-ios-sheet{
+    font-family:'Poppins',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+}
+
+/* ── Navbar — sticky, solid navy, identical on every page ── */
+.dh-nav{
+    position:sticky; top:0; z-index:500;
+    height:74px; display:flex; align-items:center;
+    background:#0a2a68;
+    box-shadow:0 2px 20px rgba(7,30,77,.18);
+}
+/* Optional transparent-until-scrolled variant, opted into by pages with a
+   dark hero directly beneath the nav (see frontend.partials.nav $transparent).
+   Must be position:fixed (not sticky) so it overlays the hero instead of
+   reserving its own space — the host page compensates with padding-top. */
+.dh-nav.dh-nav-transparent{
+    position:fixed; left:0; right:0; top:0;
+    background:transparent; box-shadow:none;
+    transition:background .25s ease, box-shadow .25s ease;
+}
+.dh-nav.dh-nav-transparent.scrolled{
+    background:#0a2a68;
+    box-shadow:0 2px 20px rgba(7,30,77,.18);
+}
+.dh-nav-inner{
+    display:flex; align-items:center; gap:18px;
+    width:100%; max-width:1240px; margin:0 auto; padding:0 24px;
+    position:relative;
+}
+.dh-nav-logo{ display:block; }
+.dh-nav-logo img{ height:42px; display:block; filter:brightness(0) invert(1); }
+.dh-nav-links{
+    display:flex; align-items:center; gap:6px; margin-left:8px;
+    background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22);
+    padding:6px; border-radius:100px; backdrop-filter:blur(8px);
+}
+.dh-nav-links a{
+    color:#fff; font-size:.82rem; font-weight:500; padding:7px 14px;
+    border-radius:100px; transition:background .15s; opacity:.92; text-decoration:none;
+}
+.dh-nav-links a:hover,.dh-nav-links a.active{ background:rgba(255,255,255,.18); opacity:1; }
+.dh-nav-search{
+    display:flex; align-items:center; gap:8px; color:rgba(255,255,255,.8);
+    background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22);
+    border-radius:100px; padding:9px 18px; font-size:.82rem; min-width:150px;
+    backdrop-filter:blur(8px); text-decoration:none;
+}
+.dh-nav-spacer{ flex:1; }
+.dh-nav-actions{ display:flex; align-items:center; gap:10px; }
+.dh-btn-signin{
+    color:#fff; border:1.5px solid rgba(255,255,255,.5); border-radius:100px;
+    padding:9px 22px; font-size:.82rem; font-weight:600; transition:all .15s; text-decoration:none;
+    display:inline-block;
+}
+.dh-btn-signin:hover{ background:#fff; color:#0a2a68; }
+.dh-btn-download{
+    color:#fff; background:#1b4dc4; border-radius:100px;
+    padding:10px 22px; font-size:.82rem; font-weight:600; transition:transform .15s;
+    text-decoration:none; display:inline-flex; align-items:center; gap:6px; border:none; cursor:pointer;
+}
+.dh-btn-download:hover{ transform:translateY(-1px); color:#fff; }
+.dh-nav-toggle,.dh-nav-icon-btn{
+    display:none; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3);
+    width:44px; height:44px; border-radius:50%; cursor:pointer;
+    align-items:center; justify-content:center; color:#fff; font-size:1rem;
+}
+.dh-nav-toggle span{ display:block; width:18px; height:2px; background:#fff; border-radius:2px; position:relative; }
+.dh-nav-toggle span::before,.dh-nav-toggle span::after{
+    content:''; position:absolute; left:0; width:18px; height:2px; background:#fff; border-radius:2px;
+}
+.dh-nav-toggle span::before{ top:-6px; } .dh-nav-toggle span::after{ top:6px; }
+
+.loc-trigger{
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22);
+    color:#fff; border-radius:100px; padding:8px 16px 8px 12px; font-size:.82rem;
+    font-weight:500; cursor:pointer; transition:all .18s; white-space:nowrap;
+    max-width:210px; backdrop-filter:blur(8px);
+}
+.loc-trigger:hover{ background:rgba(255,255,255,.2); }
+.lt-pin{ font-size:.72rem; flex-shrink:0; }
+.lt-dot{ width:7px; height:7px; border-radius:50%; background:#22c55e; flex-shrink:0; display:none; }
+.loc-trigger.has-loc .lt-dot{ display:block; }
+.lt-label{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:130px; }
+.lt-chevron{ font-size:.55rem; opacity:.6; flex-shrink:0; }
+
+@media(max-width:900px){
+    .dh-nav-links,.dh-nav-search,.dh-btn-signin{ display:none; }
+    .dh-nav-toggle,.dh-nav-icon-btn{ display:flex; }
+    .loc-trigger{ display:none; }
+}
+@media(max-width:480px){
+    .dh-nav-download-txt{ display:none; }
+}
+
+/* ── PWA install banner / iOS sheet (travels with the nav) ── */
+.pwa-banner{
+    position:fixed; left:16px; right:16px; bottom:16px; z-index:2000; display:flex;
+    align-items:center; gap:12px; background:#fff; border-radius:16px; padding:12px 14px;
+    box-shadow:0 24px 60px rgba(10,42,104,.16);
+}
+.pwa-banner-icon img{ width:44px; height:44px; border-radius:10px; }
+.pwa-banner-body{ flex:1; }
+.pwa-banner-title{ font-weight:700; font-size:.9rem; color:#0f172a; }
+.pwa-banner-sub{ font-size:.74rem; color:#5b6b8c; }
+.pwa-banner-actions{ display:flex; align-items:center; gap:8px; }
+.pwa-install-btn{ background:#0a2a68; color:#fff; border:none; border-radius:100px; padding:9px 18px; font-weight:600; font-size:.82rem; cursor:pointer; }
+.pwa-dismiss-btn{ background:none; border:none; color:#5b6b8c; font-size:1rem; cursor:pointer; }
+.pwa-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:2000; display:none; }
+.pwa-backdrop.open{ display:block; }
+.pwa-ios-sheet{
+    position:fixed; left:0; right:0; bottom:0; z-index:2001; background:#fff;
+    border-radius:20px 20px 0 0; padding:20px; transform:translateY(110%); transition:transform .3s;
+}
+.pwa-ios-sheet.open{ transform:none; }
+.pwa-ios-handle{ width:40px; height:4px; border-radius:2px; background:#cbd5e1; margin:0 auto 16px; }
+.pwa-ios-steps{ list-style:none; padding:0; margin:16px 0 0; }
+.pwa-ios-step{ display:flex; gap:12px; align-items:flex-start; margin-bottom:14px; font-size:.85rem; color:#0f172a; }
+.pwa-ios-step-num{
+    width:24px; height:24px; border-radius:50%; background:#0a2a68; color:#fff;
+    display:flex; align-items:center; justify-content:center; font-size:.75rem; font-weight:700; flex-shrink:0;
+}
+.pwa-ios-icon{ display:inline-flex; align-items:center; gap:4px; font-weight:600; color:#0a2a68; }
+
+/* ── Footer — identical on every page ── */
+.dh-footer{ background:#071e4d; color:rgba(255,255,255,.72); padding:60px 0 0; }
+.dh-footer .wrap{ max-width:1240px; margin:0 auto; padding:0 24px; }
+.dh-footer-grid{ display:grid; grid-template-columns:1.6fr repeat(3,1fr); gap:40px; padding-bottom:44px; }
+.dh-footer-logo img{ height:34px; filter:brightness(0) invert(1); }
+.dh-footer-tag{ font-size:.85rem; color:rgba(255,255,255,.55); max-width:280px; margin:16px 0 20px; line-height:1.6; }
+.dh-footer-social{ display:flex; gap:10px; }
+.dh-footer-social a{
+    width:38px; height:38px; border-radius:50%; border:1px solid rgba(255,255,255,.2);
+    display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.7); transition:all .15s;
+}
+.dh-footer-social a:hover{ border-color:#fff; color:#fff; }
+.dh-footer-col-title{ font-size:.9rem; font-weight:700; color:#fff; margin-bottom:16px; }
+.dh-footer-links{ list-style:none; padding:0; margin:0; }
+.dh-footer-links li{ margin-bottom:11px; }
+.dh-footer-links a{ color:rgba(255,255,255,.6); font-size:.88rem; text-decoration:none; }
+.dh-footer-links a:hover{ color:#fff; }
+.dh-footer-bottom{
+    border-top:1px solid rgba(255,255,255,.1); padding:22px 0; display:flex;
+    align-items:center; justify-content:space-between; font-size:.78rem; color:rgba(255,255,255,.4);
+    flex-wrap:wrap; gap:10px;
+}
+@media(max-width:768px){
+    .dh-footer-grid{ grid-template-columns:1fr 1fr; gap:28px; }
+}
+@media(max-width:480px){
+    .dh-footer-grid{ grid-template-columns:1fr; }
+}
