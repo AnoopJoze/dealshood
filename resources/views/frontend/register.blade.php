@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link href="/frontend/css/soft-design-system.css?v=1.1.0" rel="stylesheet">
-    <link href="/frontend/css/dh-header-footer.css?v=1.0.1" rel="stylesheet">
+    <link href="/frontend/css/dh-header-footer.css?v=1.0.3" rel="stylesheet">
     <style>
     :root {
         --ink:#0f172a; --ink-2:#334155; --ink-3:#64748b;
