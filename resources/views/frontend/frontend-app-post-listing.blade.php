@@ -270,7 +270,6 @@
     @media(max-width:900px){
         .dh-nav-links,.dh-btn-signin{ display:none; }
         .dh-nav-icon-btn{ display:flex; }
-        .loc-trigger{ display:none; }
     }
     @media(max-width:768px){
         .dh-hero{ min-height:auto; padding:94px 0 40px; }
@@ -295,7 +294,6 @@
     'categories'      => $categories,
     'activeNav'       => 'listing',
     'activeLocName'   => $activeLoc->name ?? null,
-    'mobileNavAction' => 'openFilters()',
     'transparent'     => true,
 ])
 

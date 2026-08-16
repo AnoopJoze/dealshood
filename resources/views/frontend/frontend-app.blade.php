@@ -499,8 +499,8 @@ $catImages = [
                 <div class="dh-stat-lbl">Local Businesses</div>
             </div>
             <div class="dh-stat">
-                <div class="dh-stat-num">24 hrs</div>
-                <div class="dh-stat-lbl">Ad Review Time</div>
+                <div class="dh-stat-num">{{ max(1, $subcategoriesCount ?? 0) }}+</div>
+                <div class="dh-stat-lbl">Subcategories</div>
             </div>
         </div>
     </div>

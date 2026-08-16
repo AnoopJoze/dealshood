@@ -38,6 +38,7 @@ class FrontEndController extends Controller
         $categories = Category::withCount(['posts' => fn($q) => $q->where('status', 'published')])
             ->orderBy('id','asc')
             ->get();
+        $subcategoriesCount = Subcategory::where('is_active', 1)->count();
         $districtIds = Locality::where('type', 'district')
             ->where('parent_id', 2)
             ->pluck('id');
@@ -157,7 +158,7 @@ class FrontEndController extends Controller
             ->get();
 
         return view('frontend.frontend-app', compact(
-            'posts', 'categories', 'categoryCarousels', 'localities', 'trending'
+            'posts', 'categories', 'categoryCarousels', 'localities', 'trending', 'subcategoriesCount'
         ));
     }
 
