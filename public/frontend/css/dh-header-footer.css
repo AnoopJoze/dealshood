@@ -117,10 +117,10 @@
        locality is core to the product; app headers favor icon+short-label
        chips over full text controls. */
     .loc-trigger{
-        display:inline-flex; max-width:132px; padding:0 12px 0 8px; height:40px;
+        display:inline-flex; max-width:220px; padding:0 12px 0 8px; height:40px;
         font-size:.76rem; background:rgba(255,255,255,.1);
     }
-    .lt-label{ max-width:64px; }
+    .lt-label{ max-width:190px; }
     .lt-chevron{ display:none; }
 
     /* Native-app tactile feedback: quick scale-down on tap, no grey flash */
@@ -135,8 +135,8 @@
 @media(max-width:480px){
     .dh-nav-download-txt{ display:none; }
     .dh-nav-inner{ gap:6px; }
-    .loc-trigger{ max-width:112px; }
-    .lt-label{ max-width:48px; }
+    .loc-trigger{ max-width:190px; }
+    .lt-label{ max-width:160px; }
 }
 
 /* ── PWA install banner / iOS sheet (travels with the nav) ── */

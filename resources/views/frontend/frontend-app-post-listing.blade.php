@@ -66,7 +66,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link href="/frontend/css/soft-design-system.css?v=1.1.0" rel="stylesheet">
-    <link href="/frontend/css/dh-header-footer.css?v=1.0.3" rel="stylesheet">
+    <link href="/frontend/css/dh-header-footer.css?v=1.0.4" rel="stylesheet">
 
     <style>
     :root{
@@ -207,20 +207,26 @@
     .dh-grid.list-view .dh-card-media{ flex:0 0 200px; aspect-ratio:4/3; border-radius:12px; align-self:center; }
     .dh-grid.list-view .dh-card-body{ padding:0; }
 
-    /* ── list view, compact horizontal rows on mobile ── */
+    /* ── list view, compact horizontal rows on mobile ──
+       Image sized up from the original 96px, and business name / stats
+       row kept visible (previously hidden) so the mobile row shows the
+       same details as desktop, just laid out tighter. ── */
     @media(max-width:768px){
         .dh-grid.list-view .dh-card{ flex-direction:row; align-items:center; min-height:0; padding:8px; gap:10px; }
-        .dh-grid.list-view .dh-card-media{ flex:0 0 96px; aspect-ratio:1/1; border-radius:10px; align-self:center; }
+        .dh-grid.list-view .dh-card-media{ flex:0 0 116px; aspect-ratio:1/1; border-radius:10px; align-self:center; }
         .dh-grid.list-view .dh-card-fav,
         .dh-grid.list-view .dh-card-loc{ display:none; }
-        .dh-grid.list-view .dh-card-body{ padding:0; }
+        .dh-grid.list-view .dh-card-body{ padding:0; min-width:0; }
         .dh-grid.list-view .dh-badges{ margin-bottom:6px; }
         .dh-grid.list-view .dh-b{ font-size:.6rem; padding:4px 8px; }
         .dh-grid.list-view .dh-card-title-row{ margin-bottom:6px; }
         .dh-grid.list-view .dh-card-title{ font-size:.86rem;
             display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-        .dh-grid.list-view .dh-card-biz,
-        .dh-grid.list-view .dh-card-meta{ display:none; }
+        .dh-grid.list-view .dh-card-biz{ font-size:.72rem; margin-bottom:6px; }
+        .dh-grid.list-view .dh-card-meta{ flex-wrap:wrap; row-gap:4px; gap:10px; padding-top:8px; font-size:.68rem; }
+        .dh-grid.list-view .dh-meta-btn,
+        .dh-grid.list-view .dh-meta-box,
+        .dh-grid.list-view .dh-meta-time{ font-size:.68rem; }
         .dh-grid.list-view .dh-card-actions{ margin-top:8px; }
         .dh-grid.list-view .dh-card-actions .dh-btn-primary{ padding:8px 12px; font-size:.72rem; }
         .dh-grid.list-view .dh-card-actions .dh-btn-ghost{ width:30px; padding:8px; }
