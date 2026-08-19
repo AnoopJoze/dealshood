@@ -469,7 +469,7 @@ $catImages = [
         {{-- HIDDEN: "Over N+ Live Offers Today" badge --}}
         {{-- <span class="dh-hero-badge"><i class="fas fa-bolt"></i> Over {{ max(20, $categories->sum('posts_count')) }}+ Live Offers Today</span> --}}
         <h1 class="dh-hero-title">Discover the Best Deals Around You</h1>
-        <p class="dh-hero-lead">Never miss a discount. Find verified promo codes for fashion, electronics, food, travel, and more.</p>
+        {{-- <p class="dh-hero-lead">Never miss a discount. Find verified promo codes for fashion, electronics, food, travel, and more.</p> --}}
 
         <form class="dh-hero-search" action="{{ route('posts.listing') }}" method="GET">
             <i class="fas fa-magnifying-glass"></i>

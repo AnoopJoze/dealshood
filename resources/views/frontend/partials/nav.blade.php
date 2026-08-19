@@ -39,9 +39,9 @@
         <a href="https://www.instagram.com/dealshood" target="_blank" class="dh-nav-icon-btn" aria-label="Instagram">
             <i class="fab fa-instagram"></i>
         </a>
-        <a href="https://wa.me/918086087050" target="_blank" class="dh-nav-icon-btn" aria-label="WhatsApp">
+        {{-- <a href="https://wa.me/918086087050" target="_blank" class="dh-nav-icon-btn" aria-label="WhatsApp">
             <i class="fab fa-whatsapp"></i>
-        </a>
+        </a> --}}
         <div class="dh-nav-actions" id="navActions">
             <a href="{{ Route::has('login') ? route('login') : '#' }}" class="dh-btn-signin">Sign In</a>
         </div>
