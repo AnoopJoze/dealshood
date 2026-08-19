@@ -500,7 +500,7 @@ $catImages = [
             </div>
             <div class="dh-stat">
                 <div class="dh-stat-num">{{ max(1, $subcategoriesCount ?? 0) }}+</div>
-                <div class="dh-stat-lbl">Subcategories</div>
+                <div class="dh-stat-lbl">Categories</div>
             </div>
         </div>
     </div>
