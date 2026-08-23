@@ -231,29 +231,6 @@
         background: #0d0d0d;
     }
 
-    /* WhatsApp special color */
-    .bot-nav-item.bot-wa { color: #25d366; }
-    .bot-nav-item.bot-wa.active .bot-nav-icon { background: #dcfce7; }
-    .bot-nav-item.bot-wa::after { background: #25d366; }
-
-    /* Share — lifted out of the bar into a raised floating circle,
-       the spot the Add Post FAB used to occupy (bottom-right, above
-       the bar), now that Add Post lives in the bar itself. */
-    .bot-nav-item.bot-nav-fab {
-        position: fixed;
-        right: 16px;
-        bottom: calc(var(--bot-nav-h) + var(--safe-bottom) + 14px);
-        width: 52px; height: 52px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #0f3f7e, #1d6fd8);
-        color: #fff;
-        box-shadow: 0 6px 24px rgba(15,63,126,.4), 0 2px 8px rgba(0,0,0,.15);
-        flex: none;
-        z-index: 850;
-    }
-    .bot-nav-item.bot-nav-fab .bot-nav-icon { font-size: 1.1rem; color: #fff; }
-    .bot-nav-item.bot-nav-fab span:last-child { display: none; }
-    .bot-nav-item.bot-nav-fab:active { transform: scale(.96); }
 }
 </style>
 
@@ -271,25 +248,14 @@
         <span>Browse</span>
     </a>
 
-    <a type="button" id="dhAddPostBtn"
-   class="bot-nav-item" onclick="openPostAdModal && openPostAdModal()">
-    <span class="bot-nav-icon"><i class="fas fa-square-plus"></i></span>
-    <span>Add Post</span>
-</a>
-
     <a href="{{ route('favourites') }}"
    class="bot-nav-item {{ request()->routeIs('favourites') ? 'active':'' }}">
     <span class="bot-nav-icon"><i class="fas fa-heart"></i></span>
     <span>Saved</span>
 </a>
 
-    <a href="https://wa.me/918086087050?text=Hello%20I%20am%20interested%20in%20your%20listing"
-       target="_blank" class="bot-nav-item bot-wa">
-        <span class="bot-nav-icon"><i class="fab fa-whatsapp"></i></span>
-        <span>Contact</span>
-    </a>
     <a type="button" id="dhShareBtn"
-        class="bot-nav-item bot-nav-fab">
+        class="bot-nav-item">
     <span class="bot-nav-icon"><i class="fas fa-share-nodes"></i></span>
     <span>Share</span>
 </a>
