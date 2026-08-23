@@ -238,7 +238,7 @@ console.log('localities loaded:', window._dhLocalities);
                 <span>Choose your location</span>
             </div>
             <div class="lp-level-title" id="lpLevelTitle">Select District</div>
-            <p class="lp-level-sub" id="lpLevelSub">Pick a district to browse deals nearby.</p>
+            <p class="lp-level-sub" id="lpLevelSub">Pick a district to browse listings nearby.</p>
         </div>
 
         {{-- Search --}}
@@ -255,7 +255,7 @@ console.log('localities loaded:', window._dhLocalities);
                 <span class="lp-all-icon"><i class="fas fa-globe"></i></span>
                 <div>
                     <div style="font-size:.85rem;font-weight:700;">All Areas</div>
-                    <div style="font-size:.7rem;opacity:.6;font-weight:400;">Show deals from everywhere</div>
+                    <div style="font-size:.7rem;opacity:.6;font-weight:400;">Show listings from everywhere</div>
                 </div>
             </button>
         </div>
@@ -383,7 +383,7 @@ console.log('localities loaded:', window._dhLocalities);
         backBtn.classList.add('hidden');
         allWrap.style.display = '';
         levelTitle.textContent = 'Select District';
-        levelSub.textContent   = 'Pick a district to browse deals nearby.';
+        levelSub.textContent   = 'Pick a district to browse listings nearby.';
         breadcrumb.innerHTML   = '<i class="fas fa-map-marker-alt" style="color:#6366f1;"></i> <span>Choose your location</span>';
 
         renderLevel(districts, true, animDir || 'out');
@@ -473,7 +473,7 @@ console.log('localities loaded:', window._dhLocalities);
         if (fallback) {
             selected = { slug: fallback.slug, name: fallback.name };
             confirmBtn.disabled = false;
-            confirmTxt.textContent = 'Show deals in ' + fallback.name;
+            confirmTxt.textContent = 'Show listings in ' + fallback.name;
             confirmBtn.querySelector('i').className = 'fas fa-arrow-right';
         } else {
             selected = { slug: null, name: null };
@@ -486,7 +486,7 @@ console.log('localities loaded:', window._dhLocalities);
         item.classList.add('selected');
         selected = { slug: loc.slug, name: loc.name };
         confirmBtn.disabled = false;
-        confirmTxt.textContent = 'Show deals in ' + loc.name;
+        confirmTxt.textContent = 'Show listings in ' + loc.name;
         confirmBtn.querySelector('i').className = 'fas fa-arrow-right';
     }
 }
@@ -637,7 +637,7 @@ console.log('localities loaded:', window._dhLocalities);
             }
             if (selected.slug !== null) {
                 confirmBtn.disabled = false;
-                confirmTxt.textContent = 'Show deals in ' + selected.name;
+                confirmTxt.textContent = 'Show listings in ' + selected.name;
                 confirmBtn.querySelector('i').className = 'fas fa-arrow-right';
             }
         }, 50);

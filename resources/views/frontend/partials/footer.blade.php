@@ -44,7 +44,7 @@
             <div>
                 <p class="dh-footer-col-title">Resources</p>
                 <ul class="dh-footer-links">
-                    <li><a href="{{ route('posts.listing') }}">All Deals</a></li>
+                    <li><a href="{{ route('posts.listing') }}">All Listings</a></li>
                     <li><a href="{{ route('contact') }}">Help Center</a></li>
                     <li><a href="{{ route('home') }}#faq">Privacy</a></li>
                     <li><a href="{{ route('home') }}#faq">Terms</a></li>

@@ -88,7 +88,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link href="/frontend/css/soft-design-system.css?v=1.1.0" rel="stylesheet">
-    <link href="/frontend/css/dh-header-footer.css?v=1.0.4" rel="stylesheet">
+    <link href="/frontend/css/dh-header-footer.css?v=1.0.8" rel="stylesheet">
 
     <style>
     :root{
@@ -468,12 +468,12 @@ $catImages = [
     <div class="dh-hero-inner">
         {{-- HIDDEN: "Over N+ Live Offers Today" badge --}}
         {{-- <span class="dh-hero-badge"><i class="fas fa-bolt"></i> Over {{ max(20, $categories->sum('posts_count')) }}+ Live Offers Today</span> --}}
-        <h1 class="dh-hero-title">Discover the Best Deals Around You</h1>
+        <h1 class="dh-hero-title">Discover the Best Listings Around You</h1>
         {{-- <p class="dh-hero-lead">Never miss a discount. Find verified promo codes for fashion, electronics, food, travel, and more.</p> --}}
 
         <form class="dh-hero-search" action="{{ route('posts.listing') }}" method="GET">
             <i class="fas fa-magnifying-glass"></i>
-            <input type="text" name="keyword" placeholder="Search deals, stores, brands">
+            <input type="text" name="keyword" placeholder="Search listings, stores, brands">
             {{-- HIDDEN: location picker button in the search box --}}
             {{-- <button class="hs-loc" type="button" title="Choose your area"
                     onclick="window.openLocationPopup && window.openLocationPopup()">
@@ -511,7 +511,7 @@ $catImages = [
     <div class="wrap">
         <p class="nd-eyebrow">Explore</p>
         <h2 class="nd-h2">Shop by Categories</h2>
-        <p class="nd-sub">Handpicked deals across every category you love.</p>
+        <p class="nd-sub">Handpicked listings across every category you love.</p>
 
         <div class="dh-cat-grid" id="catGrid">
             @foreach ($categories as $i => $cat)
@@ -694,7 +694,7 @@ $catImages = [
         <div class="dh-sec-head">
             <div>
                 <div class="dh-eyebrow">Just in</div>
-                <h2 class="dh-sec-title" id="latestHeading">Latest Deals</h2>
+                <h2 class="dh-sec-title" id="latestHeading">Latest Listings</h2>
             </div>
             <a href="{{ route('posts.listing') }}" class="dh-view-all" id="latestViewAll">View all <i class="bi bi-arrow-right"></i></a>
         </div>
@@ -702,11 +702,11 @@ $catImages = [
             @forelse ($posts as $post)
                 @include('frontend.post-single-card', ['post' => $post])
             @empty
-                <div class="dh-empty"><p style="font-size:2rem;opacity:.3;">🔍</p><p>No deals yet — check back soon!</p></div>
+                <div class="dh-empty"><p style="font-size:2rem;opacity:.3;">🔍</p><p>No listings yet — check back soon!</p></div>
             @endforelse
         </div>
         <div class="dh-show-more" id="showMoreWrap">
-            <a href="{{ route('posts.listing') }}" class="dh-more-btn">Load More Deals
+            <a href="{{ route('posts.listing') }}" class="dh-more-btn">Load More Listings
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </a>
         </div>
@@ -878,16 +878,16 @@ function reloadContent() {
         headers: { 'X-Requested-With': 'XMLHttpRequest' },
         success: function (res) {
             $('#carouselContent').html(res.carousel_html ||
-                '<p style="text-align:center;color:var(--muted);padding:32px 0;font-size:.9rem;">No popular deals in this area yet.</p>');
+                '<p style="text-align:center;color:var(--muted);padding:32px 0;font-size:.9rem;">No popular listings in this area yet.</p>');
             $('#postsGrid').html(res.posts_html || '');
             if (res.next_page) {
                 const btn = '<div class="dh-show-more" id="showMoreWrap"><button class="dh-more-btn" id="loadMoreBtn" data-next="'
-                    + res.next_page + '">Load More Deals <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button></div>';
+                    + res.next_page + '">Load More Listings <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button></div>';
                 $('#showMoreWrap').length
                     ? $('#showMoreWrap').show().find('#loadMoreBtn').data('next', res.next_page)
                     : $('#postsGrid').after(btn);
             } else { $('#showMoreWrap').hide(); }
-            $('#latestHeading').text(activeLocSlug ? activeLocName + ' — Latest Deals' : 'Latest Deals');
+            $('#latestHeading').text(activeLocSlug ? activeLocName + ' — Latest Listings' : 'Latest Listings');
             refreshLinks();
         },
         error: function () { $('#carouselContent').html(''); }
@@ -924,10 +924,10 @@ $(document).on('click', '#loadMoreBtn', function () {
         if (res.html) {
             $('#postsGrid').append(res.html);
             res.next_page
-                ? btn.data('next',res.next_page).text('Load More Deals').prop('disabled',false)
+                ? btn.data('next',res.next_page).text('Load More Listings').prop('disabled',false)
                 : btn.closest('.dh-show-more').remove();
         }
-    }).fail(()=> btn.text('Load More Deals').prop('disabled',false));
+    }).fail(()=> btn.text('Load More Listings').prop('disabled',false));
 });
 
 /* ── Category card ripple ── */

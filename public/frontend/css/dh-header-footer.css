@@ -86,6 +86,47 @@
 }
 .dh-nav-toggle span::before{ top:-6px; } .dh-nav-toggle span::after{ top:6px; }
 
+/* Inline mobile search box ($mobileListingControls) — hidden by default
+   (desktop keeps the host page's own hero search bar); shown at <=900px. */
+.dh-nav-search-mobile{ display:none; margin:0; }
+
+/* ── Nav menu drawer (Instagram / WhatsApp) — offcanvas, mirrors the
+   Filters drawer pattern used on the listing page (right-side panel +
+   dim backdrop, not a small popover). ── */
+.dh-nav-menu-backdrop{
+    position:fixed; inset:0; z-index:2100; background:rgba(7,30,77,.45);
+    opacity:0; pointer-events:none; transition:opacity .25s;
+}
+.dh-nav-menu-backdrop.open{ opacity:1; pointer-events:auto; }
+.dh-nav-menu-drawer{
+    position:fixed; top:0; right:0; bottom:0; width:320px; max-width:85vw;
+    background:#fff; z-index:2101; transform:translateX(100%);
+    transition:transform .28s cubic-bezier(.4,0,.2,1);
+    box-shadow:0 24px 60px rgba(10,42,104,.16);
+    display:flex; flex-direction:column;
+}
+.dh-nav-menu-drawer.open{ transform:none; }
+.dh-nav-menu-head{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:22px 24px; border-bottom:1px solid #e4e9f2;
+}
+.dh-nav-menu-head h3{ display:flex; align-items:center; gap:10px; font-size:1.1rem; font-weight:700; color:#0a2a68; margin:0; }
+.dh-nav-menu-close{ background:#f4f6fa; border:none; width:36px; height:36px; border-radius:50%; cursor:pointer; color:#0a2a68; font-size:1rem; }
+.dh-nav-menu-body{ padding:14px; overflow-y:auto; flex:1; }
+.dh-nav-menu-row{
+    display:flex; align-items:center; gap:14px; padding:14px 12px; border-radius:14px;
+    color:#0f172a; font-size:.95rem; font-weight:600; transition:background .15s;
+}
+.dh-nav-menu-row:hover{ background:#f4f6fa; }
+.dh-nav-menu-ic{
+    width:44px; height:44px; border-radius:50%; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:1.15rem; color:#fff;
+}
+.dh-nav-menu-row.insta .dh-nav-menu-ic{ background:linear-gradient(135deg,#f58529,#dd2a7b,#8134af); }
+.dh-nav-menu-row.wa .dh-nav-menu-ic{ background:#25d366; }
+.dh-nav-menu-row.addpost{ width:100%; background:none; border:none; text-align:left; font-family:inherit; cursor:pointer; }
+.dh-nav-menu-row.addpost .dh-nav-menu-ic{ background:#0a2a68; }
+
 .loc-trigger{
     display:inline-flex; align-items:center; gap:8px;
     background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22);
@@ -115,13 +156,31 @@
     }
     /* Compact icon-pill location control — kept on mobile (not hidden) since
        locality is core to the product; app headers favor icon+short-label
-       chips over full text controls. */
+       chips over full text controls. Pages that opt into
+       $mobileListingControls replace it with an inline search box instead
+       (see .dh-nav-compact below) — they surface locality via the Filters
+       panel's own Location field. */
     .loc-trigger{
         display:inline-flex; max-width:220px; padding:0 12px 0 8px; height:40px;
         font-size:.76rem; background:rgba(255,255,255,.1);
     }
     .lt-label{ max-width:190px; }
     .lt-chevron{ display:none; }
+
+    /* $mobileListingControls: inline keyword search replaces the location
+       trigger on mobile (the listing page's Filters panel covers locality). */
+    .dh-nav-compact .loc-trigger{ display:none; }
+    .dh-nav-search-mobile{
+        display:flex; align-items:center; gap:8px; flex:1; min-width:0; height:40px;
+        background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22);
+        border-radius:100px; padding:0 14px;
+    }
+    .dh-nav-search-mobile i{ color:rgba(255,255,255,.7); font-size:.78rem; flex-shrink:0; }
+    .dh-nav-search-mobile input{
+        flex:1; min-width:0; border:none; outline:none; background:transparent; color:#fff;
+        font-size:.82rem; font-family:inherit;
+    }
+    .dh-nav-search-mobile input::placeholder{ color:rgba(255,255,255,.62); }
 
     /* Native-app tactile feedback: quick scale-down on tap, no grey flash */
     .dh-nav-icon-btn,.loc-trigger,.dh-nav-toggle{

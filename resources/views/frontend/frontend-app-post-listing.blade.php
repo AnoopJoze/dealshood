@@ -32,7 +32,7 @@
             : '/frontend/img/illustrations/IMG_4871.png';
     @endphp
 
-    <title>{{ $activeCat->name ?? 'Browse Deals' }}@if($activeLoc) in {{ $activeLoc->name }}@endif — {{ $siteName }}</title>
+    <title>{{ $activeCat->name ?? 'Browse Listings' }}@if($activeLoc) in {{ $activeLoc->name }}@endif — {{ $siteName }}</title>
 
     <meta name="description"        content="{{ Str::limit($richDesc, 160) }}">
     <meta name="keywords"           content="{{ $keywords }}">
@@ -66,7 +66,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link href="/frontend/css/soft-design-system.css?v=1.1.0" rel="stylesheet">
-    <link href="/frontend/css/dh-header-footer.css?v=1.0.4" rel="stylesheet">
+    <link href="/frontend/css/dh-header-footer.css?v=1.0.8" rel="stylesheet">
 
     <style>
     :root{
@@ -213,9 +213,11 @@
        same details as desktop, just laid out tighter. ── */
     @media(max-width:768px){
         .dh-grid.list-view .dh-card{ flex-direction:row; align-items:center; min-height:0; padding:8px; gap:10px; }
-        .dh-grid.list-view .dh-card-media{ flex:0 0 116px; aspect-ratio:1/1; border-radius:10px; align-self:center; }
-        .dh-grid.list-view .dh-card-fav,
-        .dh-grid.list-view .dh-card-loc{ display:none; }
+        .dh-grid.list-view .dh-card-media{ flex:0 0 150px; aspect-ratio:1/1; border-radius:10px; align-self:center; }
+        .dh-grid.list-view .dh-card-fav{ display:none; }
+        .dh-grid.list-view .dh-card-loc{
+            font-size:.6rem; padding:4px 8px; gap:3px; left:6px; bottom:6px;
+        }
         .dh-grid.list-view .dh-card-body{ padding:0; min-width:0; }
         .dh-grid.list-view .dh-badges{ margin-bottom:6px; }
         .dh-grid.list-view .dh-b{ font-size:.6rem; padding:4px 8px; }
@@ -276,13 +278,17 @@
     @media(max-width:900px){
         .dh-nav-links,.dh-btn-signin{ display:none; }
         .dh-nav-icon-btn{ display:flex; }
+        /* Search + Filters now live in the nav (see $mobileListingControls
+           on frontend.partials.nav) — the hero's own copy would just
+           duplicate them. */
+        .dh-hero-search{ display:none; }
+        /* Title/lead copy + the "Serving X neighbourhoods / Filters update
+           instantly" note — trimmed on mobile now that the hero is just a
+           breadcrumb + category chips above the results. */
+        .dh-hero-title,.dh-hero-lead,.dh-hero-note{ display:none; }
     }
     @media(max-width:768px){
         .dh-hero{ min-height:auto; padding:94px 0 40px; }
-        .dh-hero-search{ flex-wrap:wrap; }
-        .dh-hs-box{ order:1; flex-basis:100%; }
-        .dh-hs-search{ order:2; flex:1; padding:14px 0; }
-        .dh-hs-filter{ order:3; padding:14px 20px; }
         .dh-grid{ grid-template-columns:1fr 1fr; gap:14px; }
         .dh-footer-grid{ grid-template-columns:1fr 1fr; gap:28px; }
         .dh-result-title{ font-size:1.2rem; }
@@ -301,6 +307,7 @@
     'activeNav'       => 'listing',
     'activeLocName'   => $activeLoc->name ?? null,
     'transparent'     => true,
+    'mobileListingControls' => true,
 ])
 
 {{-- ═══════════ HERO ═══════════ --}}
@@ -311,7 +318,7 @@
         <nav class="dh-crumb" aria-label="Breadcrumb">
             <a href="{{ route('home') }}">Home</a>
             <i class="fas fa-chevron-right"></i>
-            <span class="cur">@if($activeCat){{ $activeCat->name }}@else All Deals @endif</span>
+            <span class="cur">@if($activeCat){{ $activeCat->name }}@else All Listings @endif</span>
         </nav>
 
         <h1 class="dh-hero-title" id="heroTitle">
@@ -319,14 +326,14 @@
             @elseif($activeCat){{ $activeCat->name }}
             @elseif($activeLoc){{ $activeLoc->name }}
             @elseif(request('keyword'))Results for "{{ request('keyword') }}"
-            @else Discover Deals Near You @endif
+            @else Discover Listings Near You @endif
         </h1>
         <p class="dh-hero-lead">Find verified deals, offers and services near you — compare, save and grab the best in your area.</p>
 
         <form class="dh-hero-search" onsubmit="event.preventDefault(); doSearch();">
             <div class="dh-hs-box">
                 <i class="fas fa-magnifying-glass"></i>
-                <input type="text" id="keywordInput" placeholder="Search deals by keyword…" value="{{ request('keyword') }}" autocomplete="off">
+                <input type="text" id="keywordInput" placeholder="Search listings by keyword…" value="{{ request('keyword') }}" autocomplete="off">
             </div>
             <button type="submit" class="dh-hs-search"><i class="fas fa-magnifying-glass"></i> Search</button>
             <button type="button" class="dh-hs-filter" onclick="openFilters()"><i class="fas fa-sliders"></i> Filters</button>
@@ -368,7 +375,7 @@
 {{-- ═══════════ RESULTS ═══════════ --}}
 <div class="dh-listwrap">
     <div class="dh-toolbar">
-        <h2 class="dh-result-title"><span id="resultCount">{{ number_format($posts->total()) }}</span> deals available</h2>
+        <h2 class="dh-result-title"><span id="resultCount">{{ number_format($posts->total()) }}</span> listings available</h2>
         <div class="dh-toolbar-right">
             <div class="dh-sort-pills">
                 <span class="dh-sort-pill {{ request('sort','latest') === 'latest' ? 'active' : '' }}" data-sort="latest"><i class="bi bi-clock"></i> Newest</span>
@@ -387,14 +394,14 @@
         @empty
             <div class="dh-empty">
                 <div class="dh-empty-icon">🔍</div>
-                <p class="dh-empty-title">No Deals Found</p>
+                <p class="dh-empty-title">No Listings Found</p>
                 <p class="dh-empty-text">Try a different locality, category, or keyword.</p>
             </div>
         @endforelse
     </div>
 
     <div class="dh-loader" id="loading"><span></span><span></span><span></span></div>
-    <div class="dh-end-msg" id="endMsg">You've seen all the deals</div>
+    <div class="dh-end-msg" id="endMsg">You've seen all the listings</div>
     <input type="hidden" id="next-page-url" value="{{ $posts->nextPageUrl() }}">
 </div>
 
@@ -578,14 +585,20 @@ $(document).on('click', '.dh-sort-pill', function(){
     loadPosts(true);
 });
 
-/* ── Hero search ── */
+/* ── Hero search (mirrored by the compact nav search box on mobile — see
+   frontend.partials.nav $mobileListingControls) ── */
+function setKeywordInputs(val){
+    const hero = document.getElementById('keywordInput'); if(hero) hero.value = val;
+    const nav  = document.getElementById('navKeywordInput'); if(nav) nav.value = val;
+}
 function doSearch(){
     filters.keyword = document.getElementById('keywordInput').value.trim();
     filters.page = 1;
     loadPosts(true);
 }
 window.doSearch = doSearch;
-$('#keywordInput').on('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); doSearch(); } });
+$('#keywordInput, #navKeywordInput').on('input', function(){ setKeywordInputs(this.value); });
+$('#keywordInput, #navKeywordInput').on('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); doSearch(); } });
 
 /* ── Filters panel ── */
 function openFilters(){
@@ -602,7 +615,7 @@ function applyFilters(){
     filters.sort        = document.getElementById('fSort').value;
     filters.subcategory_id = '';
     filters.page = 1;
-    document.getElementById('keywordInput').value = filters.keyword;
+    setKeywordInputs(filters.keyword);
     $('.dh-sort-pill').removeClass('active');
     $('.dh-sort-pill[data-sort="'+ filters.sort +'"]').addClass('active');
     setLocUI(filters.locality_id, document.querySelector('#fLocality option:checked')?.textContent.trim() || '', true);
@@ -614,7 +627,7 @@ function resetFilters(){
     filters.keyword = ''; filters.category_id = ''; filters.subcategory_id = '';
     filters.locality_id = ''; filters.sort = 'latest'; filters.page = 1;
     document.getElementById('fKeyword').value = '';
-    document.getElementById('keywordInput').value = '';
+    setKeywordInputs('');
     document.getElementById('fLocality').value = '';
     document.getElementById('fSort').value = 'latest';
     $('.dh-chip[data-filter="category_id"]').removeClass('active');
