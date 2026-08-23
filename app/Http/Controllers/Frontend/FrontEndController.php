@@ -99,7 +99,7 @@ class FrontEndController extends Controller
                 ->inLocalities($localityIds)
                 ->manualFirst()
                 ->latest()
-                ->paginate(12);
+                ->paginate(5);
 
             /* Build carousel HTML using the same partial as the full page */
             $carouselHtml = '';
