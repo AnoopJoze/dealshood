@@ -29,7 +29,7 @@
         @if($post->is_featured)
             <span class="dh-card-badge trend">Trending</span>
         @elseif($post->offer_percentage)
-            <span class="dh-card-badge hot">Hot Deal</span>
+            <span class="dh-card-badge hot">{{ $post->offer_percentage }}</span>
         @endif
 
         {{-- Location pill --}}

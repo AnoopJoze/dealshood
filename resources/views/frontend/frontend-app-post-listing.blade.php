@@ -213,7 +213,7 @@
        same details as desktop, just laid out tighter. ── */
     @media(max-width:768px){
         .dh-grid.list-view .dh-card{ flex-direction:row; align-items:center; min-height:0; padding:8px; gap:10px; }
-        .dh-grid.list-view .dh-card-media{ flex:0 0 150px; aspect-ratio:1/1; border-radius:10px; align-self:center; }
+        .dh-grid.list-view .dh-card-media{ flex:0 0 190px; aspect-ratio:1/1; border-radius:10px; align-self:center; }
         .dh-grid.list-view .dh-card-fav{ display:none; }
         .dh-grid.list-view .dh-card-loc{
             font-size:.6rem; padding:4px 8px; gap:3px; left:6px; bottom:6px;
