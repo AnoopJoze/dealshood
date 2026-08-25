@@ -114,6 +114,9 @@
     .dh-hero-note span{ display:inline-flex; align-items:center; gap:7px; }
     .dh-hero-note i{ color:#ffd34d; }
 
+    /* ══════════ MOBILE ADS STRIP ══════════ */
+    .dh-ads-sec{ display:none; }
+
     /* ══════════ CHIP ROWS ══════════ */
     .dh-chips-sec{ background:var(--bg); border-bottom:1px solid var(--line); }
     .dh-chips-inner{ max-width:1240px; margin:0 auto; padding:16px 24px; }
@@ -288,10 +291,23 @@
         .dh-hero-title,.dh-hero-lead,.dh-hero-note{ display:none; }
     }
     @media(max-width:768px){
-        .dh-hero{ min-height:auto; padding:94px 0 40px; }
+        /* Mobile hero only shows the breadcrumb (title/lead/search/note are
+           hidden at 900px), so it doesn't need full hero height/padding. */
+        .dh-hero{ min-height:auto; padding:76px 0 16px; }
+        .dh-hero-inner{ padding:0 16px; }
+        .dh-crumb{ margin-bottom:0; font-size:.76rem; }
         .dh-grid{ grid-template-columns:1fr 1fr; gap:14px; }
         .dh-footer-grid{ grid-template-columns:1fr 1fr; gap:28px; }
         .dh-result-title{ font-size:1.2rem; }
+
+        /* Sponsored ad banners — mobile only */
+        .dh-ads-sec{ display:block; background:var(--bg); border-bottom:1px solid var(--line); }
+        .dh-ads-inner{ padding:14px 16px; }
+        .dh-ads-label{ font-size:.62rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--muted-2); margin:0 0 10px; }
+        .dh-ads-row{ display:flex; gap:12px; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+        .dh-ads-row::-webkit-scrollbar{ display:none; }
+        .dh-ad-card{ flex:0 0 auto; width:80vw; max-width:340px; border-radius:14px; overflow:hidden; display:block; box-shadow:var(--sh-sm); background:var(--bg-soft); }
+        .dh-ad-card img{ width:100%; height:130px; object-fit:cover; display:block; }
     }
     @media(max-width:480px){
         .dh-grid{ grid-template-columns:1fr; }
@@ -345,6 +361,28 @@
         </div>
     </div>
 </header>
+
+{{-- ═══════════ ADS (mobile only) ═══════════ --}}
+@if($ads->isNotEmpty())
+<section class="dh-ads-sec">
+    <div class="dh-ads-inner">
+        <p class="dh-ads-label">Sponsored</p>
+        <div class="dh-ads-row">
+            @foreach($ads as $ad)
+                @if($ad->link_url)
+                    <a class="dh-ad-card" href="{{ $ad->link_url }}" target="_blank" rel="noopener sponsored">
+                        <img src="{{ $ad->image_url }}" alt="{{ $ad->title }}" loading="lazy">
+                    </a>
+                @else
+                    <div class="dh-ad-card">
+                        <img src="{{ $ad->image_url }}" alt="{{ $ad->title }}" loading="lazy">
+                    </div>
+                @endif
+            @endforeach
+        </div>
+    </div>
+</section>
+@endif
 
 {{-- ═══════════ CATEGORY CHIPS ═══════════ --}}
 <section class="dh-chips-sec">

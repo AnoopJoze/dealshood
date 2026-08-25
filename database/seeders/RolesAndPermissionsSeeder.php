@@ -50,6 +50,12 @@ class RolesAndPermissionsSeeder extends Seeder
             'localities.edit',
             'localities.delete',
 
+            // Ads
+            'ads.view',
+            'ads.create',
+            'ads.edit',
+            'ads.delete',
+
             // Users
             'users.view',
             'users.create',
@@ -100,6 +106,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'subcategories.view', 'subcategories.create', 'subcategories.edit', 'subcategories.delete',
 
             'localities.view', 'localities.create', 'localities.edit', 'localities.delete',
+
+            'ads.view', 'ads.create', 'ads.edit', 'ads.delete',
 
             'users.view', 'users.create', 'users.edit', 'users.delete',
 
