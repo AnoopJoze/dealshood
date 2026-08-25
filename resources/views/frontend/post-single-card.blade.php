@@ -69,9 +69,16 @@
             </div>
         </div>
 
-        {{-- Business name --}}
-        @if($post->company_name)
-            <div class="dh-card-biz"><i class="fas fa-store"></i> {{ $post->company_name }}</div>
+        {{-- Business name + location --}}
+        @if($post->company_name || $post->locality)
+            <div class="dh-card-biz">
+                @if($post->company_name)
+                    <span class="dh-card-biz-name"><i class="fas fa-store"></i> {{ $post->company_name }}</span>
+                @endif
+                @if($post->locality)
+                    <span class="dh-card-biz-loc"><i class="fas fa-location-dot"></i> {{ $post->locality->name }}</span>
+                @endif
+            </div>
         @endif
 
         {{-- Stats --}}

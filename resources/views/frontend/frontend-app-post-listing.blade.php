@@ -186,6 +186,7 @@
     .dh-card-biz{ display:flex; align-items:center; gap:7px; font-size:.78rem; font-weight:600;
                   color:var(--ink); text-transform:uppercase; letter-spacing:.02em; margin-bottom:12px; }
     .dh-card-biz i{ color:var(--muted); }
+    .dh-card-biz-loc{ display:none; }
     .dh-card-desc{ display:none; }
     .dh-card-meta{ display:flex; align-items:center; gap:14px; padding-top:12px; margin-top:auto;
                    border-top:1px solid var(--line); font-size:.74rem; color:var(--muted); }
@@ -216,18 +217,22 @@
        same details as desktop, just laid out tighter. ── */
     @media(max-width:768px){
         .dh-grid.list-view .dh-card{ flex-direction:row; align-items:center; min-height:0; padding:8px; gap:10px; }
-        .dh-grid.list-view .dh-card-media{ flex:0 0 190px; aspect-ratio:1/1; border-radius:10px; align-self:center; }
+        .dh-grid.list-view .dh-card-media{ flex:0 0 150px; aspect-ratio:1/1; border-radius:10px; align-self:center; }
         .dh-grid.list-view .dh-card-fav{ display:none; }
-        .dh-grid.list-view .dh-card-loc{
-            font-size:.6rem; padding:4px 8px; gap:3px; left:6px; bottom:6px;
-        }
+        .dh-grid.list-view .dh-card-loc{ display:none; }
         .dh-grid.list-view .dh-card-body{ padding:0; min-width:0; }
         .dh-grid.list-view .dh-badges{ margin-bottom:6px; }
         .dh-grid.list-view .dh-b{ font-size:.6rem; padding:4px 8px; }
         .dh-grid.list-view .dh-card-title-row{ margin-bottom:6px; }
         .dh-grid.list-view .dh-card-title{ font-size:.86rem;
             display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-        .dh-grid.list-view .dh-card-biz{ font-size:.72rem; margin-bottom:6px; }
+        .dh-grid.list-view .dh-card-biz{ font-size:.72rem; margin-bottom:6px; flex-wrap:wrap; row-gap:3px; }
+        .dh-grid.list-view .dh-card-biz-loc{
+            display:inline-flex; align-items:center; gap:3px; font-weight:500;
+            text-transform:none; color:var(--muted); padding-left:8px; margin-left:1px;
+            border-left:1px solid var(--line);
+        }
+        .dh-grid.list-view .dh-card-biz-loc i{ font-size:.68rem; color:var(--muted); }
         .dh-grid.list-view .dh-card-meta{ flex-wrap:wrap; row-gap:4px; gap:10px; padding-top:8px; font-size:.68rem; }
         .dh-grid.list-view .dh-meta-btn,
         .dh-grid.list-view .dh-meta-box,
