@@ -20,6 +20,7 @@ $nav = [
             ['label'=>'Categories',    'href'=>url('admin/categories'),    'match'=>'admin/categories*',    'icon'=>'fas fa-tags',           'color'=>'#f59e0b','bg'=>'#fef3c7','can'=>'categories.view'],
             ['label'=>'Subcategories', 'href'=>url('admin/subcategories'), 'match'=>'admin/subcategories*', 'icon'=>'fas fa-sitemap',        'color'=>'#f97316','bg'=>'#fff7ed','can'=>'subcategories.view'],
             ['label'=>'Localities',    'href'=>url('admin/localities'),    'match'=>'admin/localities*',    'icon'=>'fas fa-map-marker-alt', 'color'=>'#10b981','bg'=>'#d1fae5','can'=>'localities.view'],
+            ['label'=>'Ads',           'href'=>url('admin/ads'),           'match'=>'admin/ads*',           'icon'=>'fas fa-ad',             'color'=>'#7c3aed','bg'=>'#ede9fe','can'=>'ads.view'],
         ],
     ],
     [

@@ -18,6 +18,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\AdSubmissionController;
+use App\Http\Controllers\AdController;
 
 /*
 |--------------------------------------------------------------------------
@@ -68,6 +69,11 @@ Route::prefix('users')->name('users.')->group(function () {
     Route::post('/bulk-restore',          [UserController::class, 'bulkRestore'])->name('bulkRestore');
     Route::post('/empty-trash',           [UserController::class, 'emptyTrash'])->name('emptyTrash');
 });
+
+    // ── Ads ───────────────────────────────────────────────────────────────────
+    Route::post('ads/data',          [AdController::class, 'data'])        ->name('ads.data');
+    Route::post('ads/inline-update', [AdController::class, 'inlineUpdate'])->name('ads.inlineUpdate');
+    Route::resource('ads', AdController::class)->except(['create', 'edit', 'show']);
 
     // ── Localities ────────────────────────────────────────────────────────────
     Route::post('localities/data',          [LocalityController::class, 'data'])        ->name('localities.data');

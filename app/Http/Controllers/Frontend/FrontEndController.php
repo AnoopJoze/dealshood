@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Ad;
 use App\Models\Category;
 use App\Models\Locality;
 use App\Models\Post;
@@ -235,8 +236,10 @@ class FrontEndController extends Controller
   ->header('Pragma', 'no-cache');
         }
 
+        $ads = Ad::active()->ordered()->get();
+
         return view('frontend.frontend-app-post-listing',
-            compact('posts', 'categories', 'localities', 'subcategories'));
+            compact('posts', 'categories', 'localities', 'subcategories', 'ads'));
     }
 
     /* ════════════════════════════════════════════
