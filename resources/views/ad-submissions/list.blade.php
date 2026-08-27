@@ -87,8 +87,8 @@
 <div class="ps-card">
     <div class="ps-card-header">
         <div>
-            <h4 class="ps-page-title">Ad Submissions</h4>
-            <p class="ps-page-sub">User-submitted ads pending review</p>
+            <h4 class="ps-page-title">Post Submissions</h4>
+            <p class="ps-page-sub">User-submitted posts pending review</p>
         </div>
     </div>
 
@@ -178,7 +178,7 @@ $(document).on('click', '.ps-view-tab', function () {
 $(document).on('click', '.approveBtn', function () {
     const id = $(this).data('id');
     Swal.fire({
-        title: 'Approve this ad?',
+        title: 'Approve this Post?',
         text: 'It will be published immediately as a live post.',
         icon: 'question', showCancelButton: true,
         confirmButtonColor: '#059669', confirmButtonText: 'Approve & Publish',
@@ -202,7 +202,7 @@ $(document).on('click', '.approveBtn', function () {
 $(document).on('click', '.rejectBtn', function () {
     const id = $(this).data('id'), title = $(this).data('title');
     Swal.fire({
-        title: 'Reject this ad?',
+        title: 'Reject this Post?',
         html: '<strong>' + title + '</strong><br><br><textarea id="rejectReason" class="form-control form-control-sm" placeholder="Reason (optional, sent in admin notes)"></textarea>',
         icon: 'warning', showCancelButton: true,
         confirmButtonColor: '#dc2626', confirmButtonText: 'Reject',
