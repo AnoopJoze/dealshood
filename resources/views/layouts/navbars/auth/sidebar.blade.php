@@ -16,7 +16,7 @@ $nav = [
         'label' => 'Content',
         'items' => [
             ['label'=>'Posts',         'href'=>url('admin/posts'),         'match'=>'admin/posts*',         'icon'=>'fas fa-newspaper',      'color'=>'#0ea5e9','bg'=>'#e0f2fe','can'=>'posts.view'],
-            ['label'=>'Ad Submissions','href'=>url('admin/ad-submissions'),'match'=>'admin/ad-submissions*','icon'=>'fas fa-inbox',          'color'=>'#dc2626','bg'=>'#fef2f2','can'=>'posts.view','badge'=>true],
+            ['label'=>'Post Submissions','href'=>url('admin/ad-submissions'),'match'=>'admin/ad-submissions*','icon'=>'fas fa-inbox',          'color'=>'#dc2626','bg'=>'#fef2f2','can'=>'posts.view','badge'=>true],
             ['label'=>'Categories',    'href'=>url('admin/categories'),    'match'=>'admin/categories*',    'icon'=>'fas fa-tags',           'color'=>'#f59e0b','bg'=>'#fef3c7','can'=>'categories.view'],
             ['label'=>'Subcategories', 'href'=>url('admin/subcategories'), 'match'=>'admin/subcategories*', 'icon'=>'fas fa-sitemap',        'color'=>'#f97316','bg'=>'#fff7ed','can'=>'subcategories.view'],
             ['label'=>'Localities',    'href'=>url('admin/localities'),    'match'=>'admin/localities*',    'icon'=>'fas fa-map-marker-alt', 'color'=>'#10b981','bg'=>'#d1fae5','can'=>'localities.view'],
