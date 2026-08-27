@@ -371,7 +371,7 @@
 @if($ads->isNotEmpty())
 <section class="dh-ads-sec">
     <div class="dh-ads-inner">
-        <p class="dh-ads-label">Sponsored</p>
+        <p class="dh-ads-label" style="display:none;">Sponsored</p>
         <div class="dh-ads-row">
             @foreach($ads as $ad)
                 @if($ad->link_url)
